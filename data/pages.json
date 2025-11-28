@@ -1,0 +1,20 @@
+{
+    "about": {
+        "mission": "Notre mission est de fournir des services d'excellence dans le domaine de l'artisanat industriel, en proposant des équipements de qualité, des formations professionnelles et un accompagnement personnalisé à nos clients.",
+        "vision": "Devenir le leader régional de l'équipement industriel et de la formation professionnelle, en contribuant au développement économique du Haut-Katanga et de la RDC.",
+        "values": [
+            "Excellence et qualité",
+            "Intégrité et transparence",
+            "Innovation continue",
+            "Service client exemplaire",
+            "Engagement communautaire"
+        ],
+        "history": "Fondé en 2015, le Groupement des Artisans de Lubumbashi (GAL) est né de la volonté de plusieurs artisans locaux de mutualiser leurs compétences et leurs ressources pour mieux servir la communauté. Au fil des années, GAL est devenu un acteur incontournable dans le domaine de l'équipement industriel et de la formation professionnelle."
+    },
+    "contact": {
+        "address": "Lubumbashi, Haut-Katanga, République Démocratique du Congo",
+        "email": "contact@gal-lubumbashi.com",
+        "phone": "+243 979 022 998",
+        "whatsapp": "+243979022998"
+    }
+}

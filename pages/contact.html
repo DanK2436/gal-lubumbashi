@@ -1,0 +1,420 @@
+<header class="header" role="banner">
+    <div class="header__container">
+      <!-- Logo -->
+      <a href="#/home" class="header__logo">
+        <div class="header__logo-img bg-white text-primary d-flex align-center justify-center text-2xl font-bold">
+          GAL
+        </div>
+        <span class="mobile-hidden">GAL</span>
+      </a>
+
+      <!-- Navigation -->
+      <nav class="nav" role="navigation" aria-label="Navigation principale">
+        <ul class="nav__menu">
+          <li><a href="/index.html" class="nav__link active" data-i18n="nav.home">Accueil</a></li>
+          <li><a href="videos.html" class="nav__link" data-i18n="nav.videos">Vidéos</a></li>
+          <li><a href="formations.html" class="nav__link" data-i18n="nav.formations">Formations</a></li>
+          <li><a href="machines.html" class="nav__link" data-i18n="nav.machines">Machines</a></li>
+          <li><a href="a-propos.html" class="nav__link" data-i18n="nav.about">À propos</a></li>
+          <li><a href="contact.html" class="nav__link" data-i18n="nav.contact">Contact</a></li>
+          <li><a href="blog.html" class="nav__link" data-i18n="nav.blog">Blog</a></li>
+          <li><a href="faq.html" class="nav__link" data-i18n="nav.faq">FAQ</a></li>
+        </ul>
+
+        <!-- Actions -->
+        <div class="nav__actions">
+          <!-- Language Switcher -->
+          <div class="lang-switcher d-flex gap-2">
+            <button data-lang="fr" class="btn btn--sm btn--ghost text-light active" aria-label="Français">FR</button>
+            <button data-lang="en" class="btn btn--sm btn--ghost text-light" aria-label="English">EN</button>
+          </div>
+
+          <!-- WhatsApp Button -->
+          <button class="btn btn--whatsapp btn--sm mobile-hidden" data-whatsapp aria-label="Contact WhatsApp">
+            WhatsApp
+          </button>
+
+          <!-- Mobile Menu Toggle -->
+          <button class="nav__toggle" aria-label="Menu" aria-expanded="false">
+            ☰
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+ <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+  <h1 class="section__title" data-i18n="contact.title">Contactez-nous</h1>
+<p class="section__subtitle" data-i18n="contact.subtitle">
+    Notre équipe est à votre écoute pour répondre à vos questions
+</p>
+</div>
+</div>
+</section>
+
+<!-- Contact Section -->
+<section class="section">
+    <div class="container">
+        <div class="grid grid--2 gap-12">
+            <!-- Contact Form -->
+            <div class="card">
+                <div class="card__content p-8">
+                    <h2 class="text-2xl mb-6">Envoyez-nous un message</h2>
+                    <form id="contact-form" class="form">
+                        <div class="form-group">
+                            <label for="contact-name" class="form-label">Nom complet *</label>
+                            <input type="text" id="contact-name" class="form-input" required placeholder="Votre nom">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-email" class="form-label">Email *</label>
+                            <input type="email" id="contact-email" class="form-input" required
+                                placeholder="votre.email@exemple.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-phone" class="form-label">Téléphone</label>
+                            <input type="tel" id="contact-phone" class="form-input" placeholder="+243 979 022 998">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-subject" class="form-label">Sujet *</label>
+                            <select id="contact-subject" class="form-select" required>
+                                <option value="">Choisissez un sujet</option>
+                                <option value="adhesion">Adhésion au GAL</option>
+                                <option value="formation">Information sur les formations</option>
+                                <option value="machine">Demande de devis machine</option>
+                                <option value="partenariat">Proposition de partenariat</option>
+                                <option value="autre">Autre</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-message" class="form-label">Message *</label>
+                            <textarea id="contact-message" class="form-textarea" rows="5" required
+                                placeholder="Décrivez votre demande..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn--primary btn--lg w-full">
+                            Envoyer le message
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div>
+                <div class="card mb-6">
+                    <div class="card__content p-8">
+                        <h3 class="text-xl mb-6">Informations de contact</h3>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">📍</div>
+                            <div>
+                                <h4 class="font-bold mb-1">Adresse</h4>
+                                <p class="text-muted">Avenue Lubumbashi, Quartier Industriel<br>Lubumbashi, RDC</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">📞</div>
+                            <div>
+                                <h4 class="font-bold mb-1">Téléphone</h4>
+                                <p class="text-muted">+243 979 022 998</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">✉️</div>
+                            <div>
+                                <h4 class="font-bold mb-1">Email</h4>
+                                <p class="text-muted">contact@gal-lubumbashi.com</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">🕒</div>
+                            <div>
+                                <h4 class="font-bold mb-1">Heures d'ouverture</h4>
+                                <p class="text-muted">
+                                    Lundi - Vendredi: 8h00 - 17h00<br>
+                                    Samedi: 8h00 - 13h00<br>
+                                    Dimanche: Fermé
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Contact -->
+                <div class="card">
+                    <div class="card__content p-8">
+                        <h3 class="text-xl mb-4">Contact rapide</h3>
+                        <p class="text-muted mb-6">Besoin d'une réponse immédiate ?</p>
+                        <div class="d-flex flex-column gap-3">
+                            <button class="btn btn--whatsapp w-full" data-whatsapp>
+                                💬 WhatsApp
+                            </button>
+                            <button class="btn btn--outline w-full"
+                                onclick="document.getElementById('chatbot-toggle').click()">
+                                🤖 Chatbot
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="section section--alt">
+    <div class="container">
+        <div class="card">
+            <div class="card__content p-0">
+                <div class="map-container">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126093.23456789!2d27.4833!3d-11.6667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDQwJzAwLjAiUyAyN8KwMjknMDAuMCJF!5e0!3m2!1sfr!2scd!4v1234567890"
+                        width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade" title="Localisation GAL Lubumbashi">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Preview -->
+<section class="section">
+    <div class="container text-center">
+        <h2 class="text-3xl mb-4">Questions fréquentes ?</h2>
+        <p class="text-lg text-muted mb-6">
+            Consultez notre FAQ pour trouver des réponses rapides
+        </p>
+        <button class="btn btn--outline btn--lg" onclick="window.location.hash='#/faq'">
+            Voir la FAQ
+        </button>
+    </div>
+</section>
+</div>
+
+<script type="module">
+    import { saveContact } from '/js/storage.js';
+    import { showToast } from '/js/ui.js';
+    import { initWhatsAppButtons } from '/js/whatsapp.js';
+
+    // Handle form submission
+    const contactForm = document.getElementById('contact-form');
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = {
+            name: document.getElementById('contact-name').value,
+            email: document.getElementById('contact-email').value,
+            phone: document.getElementById('contact-phone').value,
+            subject: document.getElementById('contact-subject').value,
+            message: document.getElementById('contact-message').value,
+            date: new Date().toISOString()
+        };
+
+        try {
+            // Save to localStorage (mock backend)
+            await saveContact(formData);
+
+            showToast('Message envoyé avec succès ! Nous vous répondrons bientôt.', 'success');
+
+            // Reset form
+            contactForm.reset();
+
+            // In a real app, this would send to the backend
+            console.log('Contact form submitted:', formData);
+        } catch (error) {
+            console.error('Erreur:', error);
+            showToast('Erreur lors de l\'envoi. Veuillez réessayer.', 'error');
+        }
+    });
+
+    // Init WhatsApp buttons
+    initWhatsAppButtons();
+</script>
+
+<style>
+    .contact-info-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .contact-info-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .contact-info-item:first-child {
+        padding-top: 0;
+    }
+
+    .contact-info-icon {
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--color-text);
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--color-gray-300);
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .map-container {
+        width: 100%;
+        height: 450px;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .map-container iframe {
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .map-container {
+            height: 300px;
+        }
+    }
+</style>
+ <footer class="footer" role="contentinfo">
+    <div class="footer__container">
+      <div class="footer__grid">
+        <!-- À propos -->
+        <div class="footer__section">
+          <h4 data-i18n="footer.about">À propos</h4>
+          <p class="text-muted-light">
+            Le Groupement des Artisans de Lubumbashi (GAL) est votre partenaire de confiance pour tous vos besoins en machines, formations et services professionnels.
+          </p>
+          <div class="footer__social">
+            <a href="#" class="footer__social-link" aria-label="Facebook" target="_blank" rel="noopener">
+              <span>f</span>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="LinkedIn" target="_blank" rel="noopener">
+              <span>in</span>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="YouTube" target="_blank" rel="noopener">
+              <span>▶</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Liens rapides -->
+        <div class="footer__section">
+          <h4 data-i18n="footer.quick_links">Liens rapides</h4>
+          <ul class="footer__links">
+            <li><a href="/index.html" class="footer__link" data-i18n="nav.home">Accueil</a></li>
+            <li><a href="videos.html" class="footer__link" data-i18n="nav.videos">Vidéos</a></li>
+            <li><a href="formations.html" class="footer__link" data-i18n="nav.formations">Formations</a></li>
+            <li><a href="machines.html" class="footer__link" data-i18n="nav.machines">Machines</a></li>
+            <li><a href="blog.html" class="footer__link" data-i18n="nav.blog">Blog</a></li>
+            <li><a href="faq.html" class="footer__link" data-i18n="nav.faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer__section">
+          <h4 data-i18n="footer.contact">Contact</h4>
+          <ul class="footer__links list-none ml-0">
+            <li class="text-muted-light mb-3">
+              📍 Lubumbashi, Haut-Katanga, RDC
+            </li>
+            <li class="text-muted-light mb-3">
+              📧 contact@gal-lubumbashi.com
+            </li>
+            <li class="text-muted-light mb-3">
+              📱 +243 979 022 998
+            </li>
+          </ul>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="footer__section">
+          <h4 data-i18n="newsletter.title">Restez informé</h4>
+          <p class="text-muted-light mb-4" data-i18n="newsletter.subtitle">
+            Abonnez-vous à notre newsletter
+          </p>
+          <form id="newsletter-form" class="d-flex gap-2">
+            <input 
+              type="email" 
+              class="form-input" 
+              placeholder="Votre email"
+              data-i18n-placeholder="newsletter.email_placeholder"
+              required
+              aria-label="Email pour newsletter"
+            >
+            <button type="submit" class="btn btn--primary" aria-label="S'abonner">
+              →
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Bottom -->
+      <div class="footer__bottom">
+        <p>
+          © <span id="current-year"></span> GAL - Groupement des Artisans de Lubumbashi.
+          <span data-i18n="footer.rights">Tous droits réservés</span>.
+        </p>
+        <p class="mt-2">
+          <a href="#" class="footer__link" data-i18n="footer.legal">Mentions légales</a>
+          •
+          <a href="#" class="footer__link" data-i18n="footer.privacy">Politique de confidentialité</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="/js/app.js"></script>
+  
+  <!-- Set current year -->
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+  </script>
+
+  <!-- No JavaScript fallback -->
+  <noscript>
+    <div style="padding: 20px; background: #fee; color: #c00; text-align: center;">
+      <strong>JavaScript est requis</strong> pour utiliser ce site web.
+      Veuillez activer JavaScript dans votre navigateur.
+    </div>
+  </noscript>
+</body>
+</html>

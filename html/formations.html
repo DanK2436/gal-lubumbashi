@@ -1,0 +1,171 @@
+<div class="bg-gray-50 min-h-screen py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <span class="text-red-700 font-bold uppercase tracking-widest text-sm">Apprentissage</span>
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 mt-2 uppercase">Nos Formations</h1>
+            <p class="text-gray-600 mt-4 max-w-2xl mx-auto">Développez vos compétences avec nos programmes de
+                formation professionnelle adaptés aux besoins du marché.</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex flex-wrap justify-center gap-4 mb-12">
+            <button
+                class="filter-btn px-6 py-2 font-bold uppercase text-sm tracking-wider border-2 border-red-700 bg-red-700 text-white transition-all"
+                data-category="all">
+                Toutes
+            </button>
+            <button
+                class="filter-btn px-6 py-2 font-bold uppercase text-sm tracking-wider border-2 border-gray-300 text-gray-700 hover:border-red-700 hover:text-red-700 transition-all"
+                data-category="Technique">
+                Technique
+            </button>
+            <button
+                class="filter-btn px-6 py-2 font-bold uppercase text-sm tracking-wider border-2 border-gray-300 text-gray-700 hover:border-red-700 hover:text-red-700 transition-all"
+                data-category="Gestion">
+                Gestion
+            </button>
+            <button
+                class="filter-btn px-6 py-2 font-bold uppercase text-sm tracking-wider border-2 border-gray-300 text-gray-700 hover:border-red-700 hover:text-red-700 transition-all"
+                data-category="Sécurité">
+                Sécurité
+            </button>
+        </div>
+
+        <!-- Formations Grid -->
+        <div id="formations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Formations will be loaded here dynamically -->
+            <div class="text-center col-span-full py-12">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-red-700">
+                </div>
+                <p class="mt-4 text-gray-500">Chargement des formations...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { getFormations, initStorage } from '/js/storage.js';
+
+    // Initialize storage
+    initStorage();
+
+    let allFormations = [];
+    let currentCategory = 'all';
+
+    // Function to render formations
+    function renderFormations(formations) {
+        const container = document.getElementById('formations-container');
+
+        if (formations.length === 0) {
+            container.innerHTML = `
+                <div class="text-center col-span-full py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <p class="mt-4 text-gray-500 font-medium">Aucune formation disponible pour cette catégorie.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = formations.map(formation => `
+            <div class="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="${formation.image || 'https://placehold.co/600x400?text=Formation'}" 
+                         alt="${formation.title}" 
+                         class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
+                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-red-700 shadow-sm">
+                        ${formation.price || 'Sur devis'}
+                    </div>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-sm">
+                            ${formation.category}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>${formation.duration || 'Durée variable'}</span>
+                        <span class="mx-2">•</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <span>${formation.level || 'Tous niveaux'}</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">${formation.title}</h3>
+                    
+                    <p class="text-gray-600 text-sm mb-6 line-clamp-3 flex-grow">
+                        ${formation.description || 'Aucune description disponible.'}
+                    </p>
+
+                    <div class="mt-auto pt-4 border-t border-gray-100">
+                        <button onclick="window.location.href='/contact?subject=Formation: ${encodeURIComponent(formation.title)}'" 
+                                class="w-full bg-gray-900 text-white py-3 px-4 rounded-lg font-bold uppercase text-sm tracking-wide hover:bg-red-700 transition-colors flex items-center justify-center gap-2 group">
+                            S'inscrire
+                            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Function to filter formations
+    function filterFormations(category) {
+        currentCategory = category;
+        const filtered = category === 'all'
+            ? allFormations
+            : allFormations.filter(f => f.category === category);
+        renderFormations(filtered);
+
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            if (btn.dataset.category === category) {
+                btn.classList.remove('border-gray-300', 'text-gray-700');
+                btn.classList.add('border-red-700', 'bg-red-700', 'text-white');
+            } else {
+                btn.classList.remove('border-red-700', 'bg-red-700', 'text-white');
+                btn.classList.add('border-gray-300', 'text-gray-700');
+            }
+        });
+    }
+
+    // Load formations
+    async function loadFormationsData() {
+        try {
+            // Wait a bit for storage to initialize
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            allFormations = await getFormations();
+            console.log('Formations loaded:', allFormations);
+            renderFormations(allFormations);
+        } catch (error) {
+            console.error('Error loading formations:', error);
+            document.getElementById('formations-container').innerHTML = `
+                <div class="text-center col-span-full py-12">
+                    <svg class="mx-auto h-12 w-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="mt-4 text-gray-500 font-medium">Erreur lors du chargement des formations.</p>
+                </div>
+            `;
+        }
+    }
+
+    // Event listeners for filters
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterFormations(btn.dataset.category);
+        });
+    });
+
+    // Initial load
+    loadFormationsData();
+</script>

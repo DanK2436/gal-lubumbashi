@@ -1,0 +1,154 @@
+<div class="overflow-hidden">
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center bg-white overflow-hidden">
+        <!-- Background Elements -->
+        <div id="bg-elements" class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-red-700 rounded-full mix-blend-multiply filter blur-3xl">
+            </div>
+            <div
+                class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gray-400 rounded-full mix-blend-multiply filter blur-3xl">
+            </div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div id="hero-content">
+                <span
+                    class="inline-block py-1 px-3 rounded-full bg-red-50 text-red-700 text-sm font-bold tracking-widest uppercase mb-6 border border-red-100">
+                    Leader de l'artisanat à Lubumbashi
+                </span>
+                <h1 class="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter mb-8 leading-tight">
+                    GROUPEMENT DES <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-700 to-red-500">
+                        ARTISANS
+                    </span>
+                </h1>
+
+                <!-- Proverbes Défilants -->
+                <div class="max-w-4xl mx-auto mb-10 overflow-hidden min-h-[6rem] flex items-center">
+                    <p id="proverbe-text"
+                        class="text-xl text-gray-600 leading-relaxed font-light italic px-4 w-full proverbe-slide-in">
+                        « L'artisan qui prend le temps de mesurer deux fois n'a besoin de couper qu'une seule fois, car
+                        la patience et la précision sont les fondations invisibles de toute œuvre durable. »
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="/html/formations.html"
+                        class="group relative bg-red-700 text-white px-8 py-4 font-bold uppercase tracking-wider overflow-hidden">
+                        <div
+                            class="absolute inset-0 w-0 bg-gray-900 transition-all duration-[250ms] ease-out group-hover:w-full">
+                        </div>
+                        <span class="relative flex items-center gap-2">
+                            Découvrir les Formations
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </span>
+                    </a>
+                    <a href="/html/machines.html"
+                        class="group bg-white text-gray-900 border-2 border-gray-200 px-8 py-4 font-bold uppercase tracking-wider hover:border-red-700 hover:text-red-700 transition-colors">
+                        Nos Machines
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <div class="bg-gray-900 text-white py-20 relative z-20">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+            <div class="space-y-2">
+                <div class="text-5xl font-black text-red-600">150+</div>
+                <div class="text-sm uppercase tracking-widest text-gray-400">Artisans membres</div>
+            </div>
+            <div class="space-y-2">
+                <div class="text-5xl font-black text-red-600">500+</div>
+                <div class="text-sm uppercase tracking-widest text-gray-400">Projets réalisés</div>
+            </div>
+            <div class="space-y-2">
+                <div class="text-5xl font-black text-red-600">10+</div>
+                <div class="text-sm uppercase tracking-widest text-gray-400">Années d'expérience</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Grid -->
+    <section class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <!-- Feature 1 -->
+                <div
+                    class="group p-8 border border-gray-100 hover:border-red-700 transition-colors duration-300 relative bg-white shadow-sm hover:shadow-xl hover:shadow-red-700/10">
+                    <div
+                        class="h-14 w-14 bg-red-50 text-red-700 flex items-center justify-center mb-6 rounded-none group-hover:bg-red-700 group-hover:text-white transition-colors">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Vidéos & Réalisations</h3>
+                    <p class="text-gray-500 mb-6">Découvrez nos projets à travers une galerie complète de vidéos
+                        professionnelles.</p>
+                    <a href="/html/videos.html"
+                        class="text-sm font-bold uppercase tracking-wider text-red-700 border-b-2 border-transparent group-hover:border-red-700 inline-block pb-1">Voir
+                        les vidéos</a>
+                </div>
+
+                <!-- Feature 2 -->
+                <div
+                    class="group p-8 border border-gray-100 hover:border-red-700 transition-colors duration-300 relative bg-white shadow-sm hover:shadow-xl hover:shadow-red-700/10">
+                    <div
+                        class="h-14 w-14 bg-red-50 text-red-700 flex items-center justify-center mb-6 rounded-none group-hover:bg-red-700 group-hover:text-white transition-colors">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Formations Certifiantes</h3>
+                    <p class="text-gray-500 mb-6">Développez vos compétences avec nos programmes de formation reconnus.
+                    </p>
+                    <a href="/html/formations.html"
+                        class="text-sm font-bold uppercase tracking-wider text-red-700 border-b-2 border-transparent group-hover:border-red-700 inline-block pb-1">Voir
+                        les formations</a>
+                </div>
+
+                <!-- Feature 3 -->
+                <div
+                    class="group p-8 border border-gray-100 hover:border-red-700 transition-colors duration-300 relative bg-white shadow-sm hover:shadow-xl hover:shadow-red-700/10">
+                    <div
+                        class="h-14 w-14 bg-red-50 text-red-700 flex items-center justify-center mb-6 rounded-none group-hover:bg-red-700 group-hover:text-white transition-colors">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Machines Professionnelles</h3>
+                    <p class="text-gray-500 mb-6">Location et vente d'équipements de haute qualité pour tous vos
+                        besoins.</p>
+                    <a href="/html/machines.html"
+                        class="text-sm font-bold uppercase tracking-wider text-red-700 border-b-2 border-transparent group-hover:border-red-700 inline-block pb-1">Voir
+                        le catalogue</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-24 bg-red-700 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div
+                class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+            </div>
+        </div>
+        <div class="relative z-10 max-w-4xl mx-auto text-center px-4">
+            <h2 class="text-4xl md:text-5xl font-black text-white mb-8 tracking-tight">PRÊT À DÉMARRER VOTRE PROJET ?
+            </h2>
+            <p class="text-red-100 text-xl mb-10">Contactez-nous dès aujourd'hui pour discuter de vos besoins et
+                découvrir comment nous pouvons vous aider à réussir.</p>
+            <a href="/html/contact.html"
+                class="bg-white text-red-700 px-10 py-4 font-bold uppercase tracking-wider hover:bg-gray-100 transition-colors inline-block shadow-2xl">
+                Contactez-nous
+            </a>
+        </div>
+    </section>
+</div>

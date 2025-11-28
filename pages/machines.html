@@ -1,0 +1,318 @@
+<header class="header" role="banner">
+    <div class="header__container">
+      <!-- Logo -->
+      <a href="#/home" class="header__logo">
+        <div class="header__logo-img bg-white text-primary d-flex align-center justify-center text-2xl font-bold">
+          GAL
+        </div>
+        <span class="mobile-hidden">GAL</span>
+      </a>
+
+      <!-- Navigation -->
+      <nav class="nav" role="navigation" aria-label="Navigation principale">
+        <ul class="nav__menu">
+          <li><a href="/index.html" class="nav__link active" data-i18n="nav.home">Accueil</a></li>
+          <li><a href="videos.html" class="nav__link" data-i18n="nav.videos">Vidéos</a></li>
+          <li><a href="formations.html" class="nav__link" data-i18n="nav.formations">Formations</a></li>
+          <li><a href="machines.html" class="nav__link" data-i18n="nav.machines">Machines</a></li>
+          <li><a href="a-propos.html" class="nav__link" data-i18n="nav.about">À propos</a></li>
+          <li><a href="contact.html" class="nav__link" data-i18n="nav.contact">Contact</a></li>
+          <li><a href="blog.html" class="nav__link" data-i18n="nav.blog">Blog</a></li>
+          <li><a href="faq.html" class="nav__link" data-i18n="nav.faq">FAQ</a></li>
+        </ul>
+
+        <!-- Actions -->
+        <div class="nav__actions">
+          <!-- Language Switcher -->
+          <div class="lang-switcher d-flex gap-2">
+            <button data-lang="fr" class="btn btn--sm btn--ghost text-light active" aria-label="Français">FR</button>
+            <button data-lang="en" class="btn btn--sm btn--ghost text-light" aria-label="English">EN</button>
+          </div>
+
+          <!-- WhatsApp Button -->
+          <button class="btn btn--whatsapp btn--sm mobile-hidden" data-whatsapp aria-label="Contact WhatsApp">
+            WhatsApp
+          </button>
+
+          <!-- Mobile Menu Toggle -->
+          <button class="nav__toggle" aria-label="Menu" aria-expanded="false">
+            ☰
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+ <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+  <p class="section__subtitle" data-i18n="machines.subtitle">
+    Équipements professionnels de qualité
+</p>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar d-flex justify-center align-center gap-4 mb-12 flex-wrap">
+    <select id="category-filter" class="form-select" aria-label="Filtrer par catégorie">
+        <option value="">Toutes les catégories</option>
+        <option value="Génération">Génération d'énergie</option>
+        <option value="Soudure">Soudure</option>
+        <option value="Compression">Compression</option>
+        <option value="Découpe">Découpe</option>
+        <option value="Usinage">Usinage</option>
+    </select>
+
+    <select id="status-filter" class="form-select" aria-label="Filtrer par disponibilité">
+        <option value="">Tous les statuts</option>
+        <option value="Disponible">Disponible</option>
+        <option value="Sur commande">Sur commande</option>
+    </select>
+
+    <input type="search" id="search-machines" class="form-input" placeholder="Rechercher une machine..."
+        aria-label="Rechercher">
+</div>
+
+<!-- Machines Grid -->
+<div id="machines-grid" class="grid grid--3 mb-12">
+    <!-- Chargé dynamiquement -->
+    <div class="col-span-full text-center">
+        <div class="spinner spinner--lg"></div>
+        <p class="mt-4 text-muted">Chargement des machines...</p>
+    </div>
+</div>
+
+<!-- No Results -->
+<div id="no-results" class="text-center p-12 d-none">
+    <div class="text-6xl mb-4">🔍</div>
+    <h3 class="text-2xl mb-3" data-i18n="machines.no_results">Aucune machine trouvée</h3>
+    <p class="text-muted">Essayez de modifier vos filtres</p>
+</div>
+</div>
+</section>
+
+<!-- CTA Section -->
+<section class="section">
+    <div class="container text-center">
+        <div class="card max-w-4xl mx-auto">
+            <div class="card__content p-12">
+                <h2 class="text-3xl mb-4">Vous ne trouvez pas ce que vous cherchez ?</h2>
+                <p class="text-lg text-muted mb-6">
+                    Contactez-nous ! Nous pouvons vous aider à trouver la machine parfaite pour vos besoins.
+                </p>
+                <div class="d-flex justify-center gap-4 flex-wrap">
+                    <button class="btn btn--primary btn--lg" onclick="window.location.hash='#/contact'">
+                        Demander un devis
+                    </button>
+                    <button class="btn btn--whatsapp btn--lg" data-whatsapp>
+                        WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+
+<script type="module">
+    import { getMachines } from '/js/storage.js';
+    import { createMachineCard, showToast } from '/js/ui.js';
+    import { initWhatsAppButtons } from '/js/whatsapp.js';
+
+    let allMachines = [];
+    let filteredMachines = [];
+
+    // Charger les machines
+    async function loadMachines() {
+        try {
+            allMachines = await getMachines();
+            filteredMachines = [...allMachines];
+            renderMachines();
+        } catch (error) {
+            console.error('Erreur chargement machines:', error);
+            showToast('Erreur lors du chargement des machines', 'error');
+        }
+    }
+
+    // Render machines
+    function renderMachines() {
+        const grid = document.getElementById('machines-grid');
+        const noResults = document.getElementById('no-results');
+
+        if (filteredMachines.length === 0) {
+            grid.classList.add('d-none');
+            noResults.classList.remove('d-none');
+            return;
+        }
+
+        grid.classList.remove('d-none');
+        noResults.classList.add('d-none');
+        grid.innerHTML = '';
+
+        filteredMachines.forEach(machine => {
+            const card = createMachineCard(machine);
+            grid.appendChild(card);
+        });
+
+        // Réinitialiser les boutons WhatsApp
+        initWhatsAppButtons();
+    }
+
+    // Filtrer
+    function applyFilters() {
+        const categoryFilter = document.getElementById('category-filter').value;
+        const statusFilter = document.getElementById('status-filter').value;
+        const searchTerm = document.getElementById('search-machines').value.toLowerCase();
+
+        filteredMachines = allMachines.filter(machine => {
+            const matchesSearch = !searchTerm ||
+                machine.name.toLowerCase().includes(searchTerm) ||
+                machine.specs.some(s => s.value.toLowerCase().includes(searchTerm));
+
+            const matchesStatus = !statusFilter || machine.status === statusFilter;
+
+            // Pour la catégorie, on pourrait l'ajouter aux données
+            const matchesCategory = !categoryFilter;
+
+            return matchesSearch && matchesStatus && matchesCategory;
+        });
+
+        renderMachines();
+    }
+
+    // Event listeners
+    document.getElementById('category-filter').addEventListener('change', applyFilters);
+    document.getElementById('status-filter').addEventListener('change', applyFilters);
+    document.getElementById('search-machines').addEventListener('input', applyFilters);
+
+    // Init
+    loadMachines();
+</script>
+
+<style>
+    .filters-bar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .filters-bar .form-select,
+    .filters-bar .form-input {
+        min-width: 200px;
+    }
+
+    @media (max-width: 768px) {
+        .filters-bar {
+            flex-direction: column;
+        }
+
+        .filters-bar .form-select,
+        .filters-bar .form-input {
+            width: 100%;
+        }
+    }
+</style>
+ <footer class="footer" role="contentinfo">
+    <div class="footer__container">
+      <div class="footer__grid">
+        <!-- À propos -->
+        <div class="footer__section">
+          <h4 data-i18n="footer.about">À propos</h4>
+          <p class="text-muted-light">
+            Le Groupement des Artisans de Lubumbashi (GAL) est votre partenaire de confiance pour tous vos besoins en machines, formations et services professionnels.
+          </p>
+          <div class="footer__social">
+            <a href="#" class="footer__social-link" aria-label="Facebook" target="_blank" rel="noopener">
+              <span>f</span>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="LinkedIn" target="_blank" rel="noopener">
+              <span>in</span>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="YouTube" target="_blank" rel="noopener">
+              <span>▶</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Liens rapides -->
+        <div class="footer__section">
+          <h4 data-i18n="footer.quick_links">Liens rapides</h4>
+          <ul class="footer__links">
+            <li><a href="/index.html" class="footer__link" data-i18n="nav.home">Accueil</a></li>
+            <li><a href="videos.html" class="footer__link" data-i18n="nav.videos">Vidéos</a></li>
+            <li><a href="formations.html" class="footer__link" data-i18n="nav.formations">Formations</a></li>
+            <li><a href="machines.html" class="footer__link" data-i18n="nav.machines">Machines</a></li>
+            <li><a href="blog.html" class="footer__link" data-i18n="nav.blog">Blog</a></li>
+            <li><a href="faq.html" class="footer__link" data-i18n="nav.faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer__section">
+          <h4 data-i18n="footer.contact">Contact</h4>
+          <ul class="footer__links list-none ml-0">
+            <li class="text-muted-light mb-3">
+              📍 Lubumbashi, Haut-Katanga, RDC
+            </li>
+            <li class="text-muted-light mb-3">
+              📧 contact@gal-lubumbashi.com
+            </li>
+            <li class="text-muted-light mb-3">
+              📱 +243 979 022 998
+            </li>
+          </ul>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="footer__section">
+          <h4 data-i18n="newsletter.title">Restez informé</h4>
+          <p class="text-muted-light mb-4" data-i18n="newsletter.subtitle">
+            Abonnez-vous à notre newsletter
+          </p>
+          <form id="newsletter-form" class="d-flex gap-2">
+            <input 
+              type="email" 
+              class="form-input" 
+              placeholder="Votre email"
+              data-i18n-placeholder="newsletter.email_placeholder"
+              required
+              aria-label="Email pour newsletter"
+            >
+            <button type="submit" class="btn btn--primary" aria-label="S'abonner">
+              →
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Bottom -->
+      <div class="footer__bottom">
+        <p>
+          © <span id="current-year"></span> GAL - Groupement des Artisans de Lubumbashi.
+          <span data-i18n="footer.rights">Tous droits réservés</span>.
+        </p>
+        <p class="mt-2">
+          <a href="#" class="footer__link" data-i18n="footer.legal">Mentions légales</a>
+          •
+          <a href="#" class="footer__link" data-i18n="footer.privacy">Politique de confidentialité</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="/js/app.js"></script>
+  
+  <!-- Set current year -->
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+  </script>
+
+  <!-- No JavaScript fallback -->
+  <noscript>
+    <div style="padding: 20px; background: #fee; color: #c00; text-align: center;">
+      <strong>JavaScript est requis</strong> pour utiliser ce site web.
+      Veuillez activer JavaScript dans votre navigateur.
+    </div>
+  </noscript>
+</body>
+</html>

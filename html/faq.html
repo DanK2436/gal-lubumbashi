@@ -1,0 +1,70 @@
+<div class="bg-white min-h-screen py-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <span class="text-red-700 font-bold uppercase tracking-widest text-sm" data-i18n="nav.faq">Aide</span>
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 mt-2 uppercase" data-i18n="contact.faq.title">
+                Questions Fréquentes</h1>
+            <p class="mt-4 text-gray-500" data-i18n="services.subtitle">Tout ce que vous devez savoir sur le Groupement
+                des Artisans de Lubumbashi.</p>
+        </div>
+
+        <!-- Search & Filters -->
+        <div class="mb-12 space-y-6">
+            <div class="relative">
+                <input type="text" id="search-faq"
+                    class="w-full bg-gray-50 border border-gray-200 rounded-lg py-4 px-6 pl-12 focus:outline-none focus:border-red-700 transition-colors"
+                    placeholder="Rechercher une question..." data-i18n-placeholder="formations.search_placeholder">
+                <svg class="h-6 w-6 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-2" id="faq-filters">
+                <button
+                    class="faq-category-btn active px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 transition-all [&.active]:bg-red-700 [&.active]:text-white"
+                    data-category="all" data-i18n="formations.filter_all">Tout</button>
+                <button
+                    class="faq-category-btn px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 transition-all [&.active]:bg-red-700 [&.active]:text-white"
+                    data-category="adhesion">Adhésion</button>
+                <button
+                    class="faq-category-btn px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 transition-all [&.active]:bg-red-700 [&.active]:text-white"
+                    data-category="formations" data-i18n="nav.formations">Formations</button>
+                <button
+                    class="faq-category-btn px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 transition-all [&.active]:bg-red-700 [&.active]:text-white"
+                    data-category="machines" data-i18n="nav.machines">Machines</button>
+                <button
+                    class="faq-category-btn px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 transition-all [&.active]:bg-red-700 [&.active]:text-white"
+                    data-category="services">Services</button>
+            </div>
+        </div>
+
+        <!-- FAQ List -->
+        <div id="faq-accordion" class="space-y-4">
+            <!-- Dynamic content -->
+        </div>
+
+        <!-- No Results -->
+        <div id="no-results" class="hidden text-center py-12">
+            <svg class="h-16 w-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-gray-500" data-i18n="machines.no_results">Aucun résultat trouvé.</p>
+        </div>
+
+        <!-- Contact CTA -->
+        <div class="mt-16 text-center bg-gray-50 rounded-xl p-8">
+            <h3 class="text-xl font-bold text-gray-900 mb-2" data-i18n="machines.cta.title">Vous ne trouvez pas votre
+                réponse ?</h3>
+            <p class="text-gray-600 mb-6" data-i18n="machines.cta.subtitle">Contactez-nous directement, notre équipe est
+                là pour vous aider.</p>
+            <a href="#contact" onclick="window.location.hash='contact'"
+                class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-bold rounded-md text-white bg-red-700 hover:bg-red-800 md:py-4 md:text-lg md:px-10 transition-colors"
+                data-i18n="nav.contact">
+                Contactez-nous
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,186 @@
+[
+    {
+        "id": "1",
+        "name": "Batteuse à Maïs Motorisée",
+        "slug": "batteuse-mais-motorisee",
+        "category": "Agroalimentaire",
+        "image": "https://placehold.co/600x400?text=Batteuse+Maïs",
+        "specs": [
+            {
+                "label": "Capacité",
+                "value": "1000 kg/heure"
+            },
+            {
+                "label": "Moteur",
+                "value": "Honda 6.5 HP"
+            },
+            {
+                "label": "Matériaux",
+                "value": "Acier renforcé"
+            },
+            {
+                "label": "Garantie",
+                "value": "6 mois"
+            }
+        ],
+        "priceRange": "1 200 USD",
+        "status": "Disponible",
+        "defaultWhatsAppMessage": "Bonjour, je suis intéressé par la Batteuse à Maïs Motorisée. Est-elle en stock ?"
+    },
+    {
+        "id": "2",
+        "name": "Moule Métallique pour Bloc Ciment",
+        "slug": "moule-bloc-ciment",
+        "category": "Construction",
+        "image": "https://placehold.co/600x400?text=Moule+Bloc",
+        "specs": [
+            {
+                "label": "Dimensions",
+                "value": "40 x 20 x 20 cm"
+            },
+            {
+                "label": "Matériau",
+                "value": "Tôle d'acier épais"
+            },
+            {
+                "label": "Production",
+                "value": "250 blocs/jour"
+            },
+            {
+                "label": "Précision",
+                "value": "Haute"
+            }
+        ],
+        "priceRange": "150 USD",
+        "status": "Disponible",
+        "defaultWhatsAppMessage": "Bonjour, je voudrais commander des Moules pour Bloc Ciment."
+    },
+    {
+        "id": "3",
+        "name": "Rapeuse à Manioc",
+        "slug": "rapeuse-manioc",
+        "category": "Agroalimentaire",
+        "image": "https://placehold.co/600x400?text=Rapeuse+Manioc",
+        "specs": [
+            {
+                "label": "Production",
+                "value": "Constante"
+            },
+            {
+                "label": "Usage",
+                "value": "Intensif"
+            },
+            {
+                "label": "Entretien",
+                "value": "Facile"
+            }
+        ],
+        "priceRange": "Sur devis",
+        "status": "Disponible",
+        "defaultWhatsAppMessage": "Bonjour, quel est le prix de la Rapeuse à Manioc ?"
+    },
+    {
+        "id": "4",
+        "name": "Presse à Huile",
+        "slug": "presse-huile",
+        "category": "Agroalimentaire",
+        "image": "https://placehold.co/600x400?text=Presse+Huile",
+        "specs": [
+            {
+                "label": "Efficacité",
+                "value": "Maximale"
+            },
+            {
+                "label": "Extraction",
+                "value": "À froid / À chaud"
+            }
+        ],
+        "priceRange": "Sur devis",
+        "status": "Sur commande",
+        "defaultWhatsAppMessage": "Bonjour, je suis intéressé par la Presse à Huile."
+    },
+    {
+        "id": "5",
+        "name": "Moule pour Buses en Béton",
+        "slug": "moule-buses-beton",
+        "category": "Construction",
+        "image": "https://placehold.co/600x400?text=Moule+Buses",
+        "specs": [
+            {
+                "label": "Application",
+                "value": "Infrastructures"
+            },
+            {
+                "label": "Durabilité",
+                "value": "Extrême"
+            }
+        ],
+        "priceRange": "Sur devis",
+        "status": "Sur commande",
+        "defaultWhatsAppMessage": "Bonjour, je cherche des Moules pour Buses en Béton."
+    },
+    {
+        "id": "6",
+        "name": "Brouette Renforcée",
+        "slug": "brouette-renforcee",
+        "category": "Construction",
+        "image": "https://placehold.co/600x400?text=Brouette+GAL",
+        "specs": [
+            {
+                "label": "Charge max",
+                "value": "Lourde"
+            },
+            {
+                "label": "Structure",
+                "value": "Renforcée"
+            },
+            {
+                "label": "Terrain",
+                "value": "Difficile"
+            }
+        ],
+        "priceRange": "Sur devis",
+        "status": "Disponible",
+        "defaultWhatsAppMessage": "Bonjour, je voudrais acheter des Brouettes Renforcées GAL."
+    },
+    {
+        "id": "7",
+        "name": "Coffret Métallique Sur Mesure",
+        "slug": "coffret-metallique",
+        "category": "Sur Mesure",
+        "image": "https://placehold.co/600x400?text=Coffret+Métal",
+        "specs": [
+            {
+                "label": "Dimensions",
+                "value": "Selon besoin"
+            },
+            {
+                "label": "Finition",
+                "value": "Peinture époxy"
+            }
+        ],
+        "priceRange": "Sur devis",
+        "status": "Sur commande",
+        "defaultWhatsAppMessage": "Bonjour, j'ai besoin d'un coffret métallique sur mesure."
+    },
+    {
+        "id": "8",
+        "name": "Pétrin pour Boulangerie",
+        "slug": "petrin-boulangerie",
+        "category": "Sur Mesure",
+        "image": "https://placehold.co/600x400?text=Pétrin",
+        "specs": [
+            {
+                "label": "Capacité",
+                "value": "Variable"
+            },
+            {
+                "label": "Cuve",
+                "value": "Inox alimentaire"
+            }
+        ],
+        "priceRange": "Sur devis",
+        "status": "Sur commande",
+        "defaultWhatsAppMessage": "Bonjour, je souhaite commander un Pétrin pour ma boulangerie."
+    }
+]

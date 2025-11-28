@@ -1,0 +1,456 @@
+<header class="header" role="banner">
+    <div class="header__container">
+      <!-- Logo -->
+      <a href="#/home" class="header__logo">
+        <div class="header__logo-img bg-white text-primary d-flex align-center justify-center text-2xl font-bold">
+          GAL
+        </div>
+        <span class="mobile-hidden">GAL</span>
+      </a>
+
+      <!-- Navigation -->
+      <nav class="nav" role="navigation" aria-label="Navigation principale">
+        <ul class="nav__menu">
+          <li><a href="/index.html" class="nav__link active" data-i18n="nav.home">Accueil</a></li>
+          <li><a href="videos.html" class="nav__link" data-i18n="nav.videos">Vidéos</a></li>
+          <li><a href="formations.html" class="nav__link" data-i18n="nav.formations">Formations</a></li>
+          <li><a href="machines.html" class="nav__link" data-i18n="nav.machines">Machines</a></li>
+          <li><a href="a-propos.html" class="nav__link" data-i18n="nav.about">À propos</a></li>
+          <li><a href="contact.html" class="nav__link" data-i18n="nav.contact">Contact</a></li>
+          <li><a href="blog.html" class="nav__link" data-i18n="nav.blog">Blog</a></li>
+          <li><a href="faq.html" class="nav__link" data-i18n="nav.faq">FAQ</a></li>
+        </ul>
+
+        <!-- Actions -->
+        <div class="nav__actions">
+          <!-- Language Switcher -->
+          <div class="lang-switcher d-flex gap-2">
+            <button data-lang="fr" class="btn btn--sm btn--ghost text-light active" aria-label="Français">FR</button>
+            <button data-lang="en" class="btn btn--sm btn--ghost text-light" aria-label="English">EN</button>
+          </div>
+
+          <!-- WhatsApp Button -->
+          <button class="btn btn--whatsapp btn--sm mobile-hidden" data-whatsapp aria-label="Contact WhatsApp">
+            WhatsApp
+          </button>
+
+          <!-- Mobile Menu Toggle -->
+          <button class="nav__toggle" aria-label="Menu" aria-expanded="false">
+            ☰
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+ <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+  <h1 class="section__title" data-i18n="formations.title">Nos Formations</h1>
+<p class="section__subtitle" data-i18n="formations.subtitle">
+    Développez vos compétences avec nos formations professionnelles certifiantes
+</p>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar d-flex justify-center align-center gap-4 mb-12 flex-wrap">
+    <select id="theme-filter" class="form-select" aria-label="Filtrer par thème">
+        <option value="">Tous les thèmes</option>
+        <option value="Électricité">Électricité</option>
+        <option value="Menuiserie">Menuiserie</option>
+        <option value="Plomberie">Plomberie</option>
+        <option value="Mécanique">Mécanique</option>
+        <option value="Construction">Construction</option>
+    </select>
+
+    <input type="search" id="search-formations" class="form-input" placeholder="Rechercher une formation..."
+        aria-label="Rechercher">
+</div>
+
+<!-- Formations Grid -->
+<div id="formations-grid" class="grid grid--2 mb-12">
+    <!-- Chargé dynamiquement -->
+    <div class="col-span-full text-center">
+        <div class="spinner spinner--lg"></div>
+        <p class="mt-4 text-muted">Chargement des formations...</p>
+    </div>
+</div>
+
+<!-- No Results -->
+<div id="no-results" class="text-center p-12 d-none">
+    <div class="text-6xl mb-4">📚</div>
+    <h3 class="text-2xl mb-3" data-i18n="formations.no_results">Aucune formation trouvée</h3>
+    <p class="text-muted">Essayez de modifier vos filtres</p>
+</div>
+</div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="section">
+    <div class="container">
+        <div class="section__header text-center mb-12">
+            <h2 class="section__title">Pourquoi choisir nos formations ?</h2>
+        </div>
+        <div class="grid grid--3 gap-6">
+            <div class="card text-center">
+                <div class="card__content">
+                    <div class="text-5xl mb-4">🎓</div>
+                    <h3 class="text-xl mb-3">Certification reconnue</h3>
+                    <p class="text-muted">Obtenez un certificat reconnu par les professionnels du secteur</p>
+                </div>
+            </div>
+            <div class="card text-center">
+                <div class="card__content">
+                    <div class="text-5xl mb-4">👨‍🏫</div>
+                    <h3 class="text-xl mb-3">Formateurs experts</h3>
+                    <p class="text-muted">Apprenez auprès de professionnels expérimentés</p>
+                </div>
+            </div>
+            <div class="card text-center">
+                <div class="card__content">
+                    <div class="text-5xl mb-4">🛠️</div>
+                    <h3 class="text-xl mb-3">Pratique intensive</h3>
+                    <p class="text-muted">70% de pratique pour une maîtrise parfaite</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section section--alt">
+    <div class="container text-center">
+        <div class="card max-w-4xl mx-auto">
+            <div class="card__content p-12">
+                <h2 class="text-3xl mb-4">Prêt à vous former ?</h2>
+                <p class="text-lg text-muted mb-6">
+                    Contactez-nous pour plus d'informations sur nos formations et modalités d'inscription
+                </p>
+                <div class="d-flex justify-center gap-4 flex-wrap">
+                    <button class="btn btn--primary btn--lg" onclick="window.location.hash='#/contact'">
+                        Demander des informations
+                    </button>
+                    <button class="btn btn--whatsapp btn--lg" data-whatsapp>
+                        WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+
+<!-- Formation Modal -->
+<div id="formation-modal" class="modal" aria-hidden="true" role="dialog">
+    <div class="modal__overlay" data-close-modal></div>
+    <div class="modal__container modal__container--lg">
+        <button class="modal__close" data-close-modal aria-label="Fermer">✕</button>
+        <div class="modal__content">
+            <h2 id="modal-formation-title" class="text-2xl mb-4"></h2>
+            <div class="mb-4">
+                <span id="modal-formation-theme" class="badge badge--primary mr-2"></span>
+                <span id="modal-formation-duration" class="text-sm text-muted"></span>
+            </div>
+            <p id="modal-formation-description" class="text-lg mb-6"></p>
+            <div class="d-flex gap-4 flex-wrap">
+                <button class="btn btn--primary" onclick="window.location.hash='#/contact'">
+                    S'inscrire
+                </button>
+                <button class="btn btn--outline" data-whatsapp>
+                    Plus d'informations
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { getFormations } from '/js/storage.js';
+    import { showToast } from '/js/ui.js';
+    import { initWhatsAppButtons } from '/js/whatsapp.js';
+
+    let allFormations = [];
+    let filteredFormations = [];
+
+    // Format duration (seconds to hours)
+    function formatDuration(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        if (hours > 0) {
+            return `${hours}h${mins > 0 ? mins + 'min' : ''}`;
+        }
+        return `${mins}min`;
+    }
+
+    // Create formation card
+    function createFormationCard(formation) {
+        const card = document.createElement('div');
+        card.className = 'card card--hover formation-card';
+        card.innerHTML = `
+            <div class="card__image">
+                <img src="${formation.preview}" alt="${formation.title}" loading="lazy">
+                <div class="formation-duration">${formatDuration(formation.lengthSeconds)}</div>
+            </div>
+            <div class="card__content">
+                <span class="badge badge--primary mb-2">${formation.theme}</span>
+                <h3 class="card__title">${formation.title}</h3>
+                <p class="text-muted mb-4">${formation.description.substring(0, 100)}...</p>
+                <button class="btn btn--primary btn--sm w-full" data-formation-id="${formation.id}">
+                    Voir les détails
+                </button>
+            </div>
+        `;
+
+        // Add click handler
+        card.querySelector('button').addEventListener('click', () => openFormationModal(formation));
+
+        return card;
+    }
+
+    // Open formation modal
+    function openFormationModal(formation) {
+        const modal = document.getElementById('formation-modal');
+        const title = document.getElementById('modal-formation-title');
+        const theme = document.getElementById('modal-formation-theme');
+        const duration = document.getElementById('modal-formation-duration');
+        const description = document.getElementById('modal-formation-description');
+
+        title.textContent = formation.title;
+        theme.textContent = formation.theme;
+        duration.textContent = `Durée: ${formatDuration(formation.lengthSeconds)}`;
+        description.textContent = formation.description;
+
+        modal.classList.add('modal--active');
+        modal.setAttribute('aria-hidden', 'false');
+
+        // Reinit WhatsApp buttons
+        initWhatsAppButtons();
+
+        // Close handlers
+        modal.querySelectorAll('[data-close-modal]').forEach(el => {
+            el.addEventListener('click', () => closeFormationModal());
+        });
+    }
+
+    // Close formation modal
+    function closeFormationModal() {
+        const modal = document.getElementById('formation-modal');
+        modal.classList.remove('modal--active');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    // Load formations
+    async function loadFormations() {
+        try {
+            allFormations = await getFormations();
+            filteredFormations = [...allFormations];
+            renderFormations();
+        } catch (error) {
+            console.error('Erreur chargement formations:', error);
+            showToast('Erreur lors du chargement des formations', 'error');
+        }
+    }
+
+    // Render formations
+    function renderFormations() {
+        const grid = document.getElementById('formations-grid');
+        const noResults = document.getElementById('no-results');
+
+        if (filteredFormations.length === 0) {
+            grid.classList.add('d-none');
+            noResults.classList.remove('d-none');
+            return;
+        }
+
+        grid.classList.remove('d-none');
+        noResults.classList.add('d-none');
+        grid.innerHTML = '';
+
+        filteredFormations.forEach(formation => {
+            const card = createFormationCard(formation);
+            grid.appendChild(card);
+        });
+
+        // Réinitialiser les boutons WhatsApp
+        initWhatsAppButtons();
+    }
+
+    // Apply filters
+    function applyFilters() {
+        const themeFilter = document.getElementById('theme-filter').value;
+        const searchTerm = document.getElementById('search-formations').value.toLowerCase();
+
+        filteredFormations = allFormations.filter(formation => {
+            const matchesSearch = !searchTerm ||
+                formation.title.toLowerCase().includes(searchTerm) ||
+                formation.description.toLowerCase().includes(searchTerm);
+
+            const matchesTheme = !themeFilter || formation.theme === themeFilter;
+
+            return matchesSearch && matchesTheme;
+        });
+
+        renderFormations();
+    }
+
+    // Event listeners
+    document.getElementById('theme-filter').addEventListener('change', applyFilters);
+    document.getElementById('search-formations').addEventListener('input', applyFilters);
+
+    // Close modal on ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeFormationModal();
+    });
+
+    // Init
+    loadFormations();
+</script>
+
+<style>
+    .filters-bar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .filters-bar .form-select,
+    .filters-bar .form-input {
+        min-width: 200px;
+    }
+
+    .formation-duration {
+        position: absolute;
+        bottom: 0.5rem;
+        right: 0.5rem;
+        background: rgba(220, 38, 38, 0.95);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .formation-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .formation-card:hover {
+        transform: translateY(-4px);
+    }
+
+    @media (max-width: 768px) {
+        .filters-bar {
+            flex-direction: column;
+        }
+
+        .filters-bar .form-select,
+        .filters-bar .form-input {
+            width: 100%;
+        }
+    }
+</style>
+ <footer class="footer" role="contentinfo">
+    <div class="footer__container">
+      <div class="footer__grid">
+        <!-- À propos -->
+        <div class="footer__section">
+          <h4 data-i18n="footer.about">À propos</h4>
+          <p class="text-muted-light">
+            Le Groupement des Artisans de Lubumbashi (GAL) est votre partenaire de confiance pour tous vos besoins en machines, formations et services professionnels.
+          </p>
+          <div class="footer__social">
+            <a href="#" class="footer__social-link" aria-label="Facebook" target="_blank" rel="noopener">
+              <span>f</span>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="LinkedIn" target="_blank" rel="noopener">
+              <span>in</span>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="YouTube" target="_blank" rel="noopener">
+              <span>▶</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Liens rapides -->
+        <div class="footer__section">
+          <h4 data-i18n="footer.quick_links">Liens rapides</h4>
+          <ul class="footer__links">
+            <li><a href="/index.html" class="footer__link" data-i18n="nav.home">Accueil</a></li>
+            <li><a href="videos.html" class="footer__link" data-i18n="nav.videos">Vidéos</a></li>
+            <li><a href="formations.html" class="footer__link" data-i18n="nav.formations">Formations</a></li>
+            <li><a href="machines.html" class="footer__link" data-i18n="nav.machines">Machines</a></li>
+            <li><a href="blog.html" class="footer__link" data-i18n="nav.blog">Blog</a></li>
+            <li><a href="faq.html" class="footer__link" data-i18n="nav.faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer__section">
+          <h4 data-i18n="footer.contact">Contact</h4>
+          <ul class="footer__links list-none ml-0">
+            <li class="text-muted-light mb-3">
+              📍 Lubumbashi, Haut-Katanga, RDC
+            </li>
+            <li class="text-muted-light mb-3">
+              📧 contact@gal-lubumbashi.com
+            </li>
+            <li class="text-muted-light mb-3">
+              📱 +243 979 022 998
+            </li>
+          </ul>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="footer__section">
+          <h4 data-i18n="newsletter.title">Restez informé</h4>
+          <p class="text-muted-light mb-4" data-i18n="newsletter.subtitle">
+            Abonnez-vous à notre newsletter
+          </p>
+          <form id="newsletter-form" class="d-flex gap-2">
+            <input 
+              type="email" 
+              class="form-input" 
+              placeholder="Votre email"
+              data-i18n-placeholder="newsletter.email_placeholder"
+              required
+              aria-label="Email pour newsletter"
+            >
+            <button type="submit" class="btn btn--primary" aria-label="S'abonner">
+              →
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Bottom -->
+      <div class="footer__bottom">
+        <p>
+          © <span id="current-year"></span> GAL - Groupement des Artisans de Lubumbashi.
+          <span data-i18n="footer.rights">Tous droits réservés</span>.
+        </p>
+        <p class="mt-2">
+          <a href="#" class="footer__link" data-i18n="footer.legal">Mentions légales</a>
+          •
+          <a href="#" class="footer__link" data-i18n="footer.privacy">Politique de confidentialité</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="/js/app.js"></script>
+  
+  <!-- Set current year -->
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+  </script>
+
+  <!-- No JavaScript fallback -->
+  <noscript>
+    <div style="padding: 20px; background: #fee; color: #c00; text-align: center;">
+      <strong>JavaScript est requis</strong> pour utiliser ce site web.
+      Veuillez activer JavaScript dans votre navigateur.
+    </div>
+  </noscript>
+</body>
+</html>
