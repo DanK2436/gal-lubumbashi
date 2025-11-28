@@ -18,16 +18,28 @@ const STORAGE_KEYS = {
   CHATBOT_HISTORY: 'gal_chatbot_history'
 };
 
+// Helper pour obtenir le chemin de base correct (GitHub Pages support)
+const getBasePath = () => {
+  const path = window.location.pathname;
+  // Si on est dans un sous-dossier (html, admin, membres)
+  if (path.includes('/html/') || path.includes('/admin/') || path.includes('/membres/')) {
+    return '../';
+  }
+  // Si on est à la racine (index.html ou /)
+  return './';
+};
+
 /**
  * Initialise le stockage avec les données par défaut si nécessaire
  */
 export async function initStorage() {
+  const basePath = getBasePath();
   // Charger les données depuis les fichiers JSON si le localStorage est vide
   const loadPromises = [];
 
   if (!localStorage.getItem(STORAGE_KEYS.VIDEOS)) {
     loadPromises.push(
-      fetch('/data/videos.json')
+      fetch(`${basePath}data/videos.json`)
         .then(res => res.json())
         .then(data => localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(data)))
         .catch(() => localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify([])))
@@ -36,7 +48,7 @@ export async function initStorage() {
 
   if (!localStorage.getItem(STORAGE_KEYS.FORMATIONS)) {
     loadPromises.push(
-      fetch('/data/formations.json')
+      fetch(`${basePath}data/formations.json`)
         .then(res => res.json())
         .then(data => localStorage.setItem(STORAGE_KEYS.FORMATIONS, JSON.stringify(data)))
         .catch(() => localStorage.setItem(STORAGE_KEYS.FORMATIONS, JSON.stringify([])))
@@ -45,7 +57,7 @@ export async function initStorage() {
 
   if (!localStorage.getItem(STORAGE_KEYS.MACHINES)) {
     loadPromises.push(
-      fetch('/data/machines.json')
+      fetch(`${basePath}data/machines.json`)
         .then(res => res.json())
         .then(data => localStorage.setItem(STORAGE_KEYS.MACHINES, JSON.stringify(data)))
         .catch(() => localStorage.setItem(STORAGE_KEYS.MACHINES, JSON.stringify([])))
@@ -54,7 +66,7 @@ export async function initStorage() {
 
   if (!localStorage.getItem(STORAGE_KEYS.BLOG)) {
     loadPromises.push(
-      fetch('/data/blog.json')
+      fetch(`${basePath}data/blog.json`)
         .then(res => res.json())
         .then(data => localStorage.setItem(STORAGE_KEYS.BLOG, JSON.stringify(data)))
         .catch(() => localStorage.setItem(STORAGE_KEYS.BLOG, JSON.stringify([])))
@@ -63,7 +75,7 @@ export async function initStorage() {
 
   if (!localStorage.getItem(STORAGE_KEYS.NEWSLETTER)) {
     loadPromises.push(
-      fetch('/data/newsletter.json')
+      fetch(`${basePath}data/newsletter.json`)
         .then(res => res.json())
         .then(data => localStorage.setItem(STORAGE_KEYS.NEWSLETTER, JSON.stringify(data)))
         .catch(() => localStorage.setItem(STORAGE_KEYS.NEWSLETTER, JSON.stringify({ subscribers: [] })))
@@ -72,7 +84,7 @@ export async function initStorage() {
 
   if (!localStorage.getItem(STORAGE_KEYS.PAGES)) {
     loadPromises.push(
-      fetch('/data/pages.json')
+      fetch(`${basePath}data/pages.json`)
         .then(res => res.json())
         .then(data => localStorage.setItem(STORAGE_KEYS.PAGES, JSON.stringify(data)))
         .catch(() => localStorage.setItem(STORAGE_KEYS.PAGES, JSON.stringify({})))
