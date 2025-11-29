@@ -1,4 +1,4 @@
-import { getSession, logout, getVideos, getFormations, getMachines, getBlogPosts, getNewsletterSubscribers, getContacts, initStorage } from '../storage.js';
+import { getSession, logout, getVideos, getFormations, getMachines, getBlogPosts, getNewsletterSubscribers, getContacts, initStorage, getReservations, getFormationRegistrations } from '../storage.js';
 import {
     loadVideosManager, loadFormationsManager, loadMachinesManager, loadBlogManager,
     saveVideo, saveFormation, saveMachine, saveBlogPost,
@@ -104,8 +104,7 @@ async function loadDashboard() {
     const subscribers = await getNewsletterSubscribers();
     const contacts = await getContacts();
 
-    // Import reservations and registrations
-    const { getReservations, getFormationRegistrations } = await import('../storage.js');
+    // Use imported functions directly
     const reservations = await getReservations();
     const registrations = await getFormationRegistrations();
 

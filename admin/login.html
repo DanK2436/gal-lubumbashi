@@ -159,209 +159,48 @@
                 </button>
             </form>
 
-            <!DOCTYPE html>
-            <html lang="fr">
+            <div class="login-footer">
+                <a href="../index.html" class="back-link">← Retour au site</a>
+            </div>
+        </div>
+    </div>
 
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Connexion Admin - GAL</title>
+    <script type="module">
+        import { login } from '../js/storage.js';
 
-                <!-- Styles -->
-                <link rel="stylesheet" href="../css/main.css">
-                <link rel="stylesheet" href="../css/components.css">
-                <link rel="stylesheet" href="../css/utilities.css">
+        const loginForm = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
 
-                <style>
-                    body {
-                        margin: 0;
-                        min-height: 100vh;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-                        font-family: var(--font-sans);
-                    }
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-                    .login-container {
-                        width: 100%;
-                        max-width: 420px;
-                        padding: 1rem;
-                    }
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-                    .login-card {
-                        background: white;
-                        border-radius: 1rem;
-                        padding: 3rem 2rem;
-                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                    }
+            // Hide previous errors
+            errorMessage.classList.remove('show');
 
-                    .login-header {
-                        text-align: center;
-                        margin-bottom: 2rem;
-                    }
+            // Disable submit button
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Connexion...';
 
-                    .login-logo {
-                        font-size: 4rem;
-                        margin-bottom: 1rem;
-                    }
+            try {
+                await login(email, password);
 
-                    .login-title {
-                        font-size: 1.75rem;
-                        font-weight: 700;
-                        margin: 0 0 0.5rem;
-                        color: var(--color-text);
-                    }
+                // Redirect to dashboard (relative path)
+                window.location.href = 'index.html';
+            } catch (error) {
+                // Show error
+                errorMessage.textContent = error.message;
+                errorMessage.classList.add('show');
 
-                    .login-subtitle {
-                        color: var(--color-text-muted);
-                        margin: 0;
-                    }
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Se connecter';
+            }
+        });
+    </script>
+</body>
 
-                    .form-group {
-                        margin-bottom: 1.5rem;
-                    }
-
-                    .form-label {
-                        display: block;
-                        margin-bottom: 0.5rem;
-                        font-weight: 600;
-                        color: var(--color-text);
-                    }
-
-                    .form-input {
-                        width: 100%;
-                        padding: 0.875rem 1rem;
-                        border: 2px solid var(--color-gray-300);
-                        border-radius: 0.5rem;
-                        font-size: 1rem;
-                        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-                    }
-
-                    .form-input:focus {
-                        outline: none;
-                        border-color: var(--color-primary);
-                        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-                    }
-
-                    .error-message {
-                        background: #fee;
-                        color: var(--color-primary);
-                        padding: 0.75rem 1rem;
-                        border-radius: 0.5rem;
-                        margin-bottom: 1rem;
-                        font-size: 0.875rem;
-                        display: none;
-                    }
-
-                    .error-message.show {
-                        display: block;
-                    }
-
-                    .login-info {
-                        background: #f0f9ff;
-                        border: 1px solid #bae6fd;
-                        color: #0369a1;
-                        padding: 1rem;
-                        border-radius: 0.5rem;
-                        margin-top: 1.5rem;
-                        font-size: 0.875rem;
-                    }
-
-                    .login-info strong {
-                        display: block;
-                        margin-bottom: 0.5rem;
-                    }
-
-                    .login-footer {
-                        text-align: center;
-                        margin-top: 2rem;
-                    }
-
-                    .back-link {
-                        color: var(--color-primary);
-                        text-decoration: none;
-                        font-weight: 600;
-                    }
-
-                    .back-link:hover {
-                        text-decoration: underline;
-                    }
-                </style>
-            </head>
-
-            <body>
-                <div class="login-container">
-                    <div class="login-card">
-                        <div class="login-header">
-                            <img src="../public/logo-gal-official.jpg" alt="GAL" class="login-logo-img"
-                                style="max-width: 150px; margin-bottom: 1rem; display: block; margin-left: auto; margin-right: auto;">
-                            <h1 class="login-title">Connexion Admin</h1>
-                            <p class="login-subtitle">Groupement des Artisans de Lubumbashi</p>
-                        </div>
-
-                        <div id="error-message" class="error-message"></div>
-
-                        <form id="login-form">
-                            <div class="form-group">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" id="email" class="form-input" placeholder="exemple@gal.com" required
-                                    autocomplete="email">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="password" class="form-label">Mot de passe</label>
-                                <input type="password" id="password" class="form-input" placeholder="••••••••" required
-                                    autocomplete="current-password">
-                            </div>
-
-                            <button type="submit" class="btn btn--primary btn--lg w-full">
-                                Se connecter
-                            </button>
-                        </form>
-
-                        <div class="login-footer">
-                            <a href="../index.html" class="back-link">← Retour au site</a>
-                        </div>
-                    </div>
-                </div>
-
-                <script type="module">
-                    import { login } from '../js/storage.js';
-
-                    const loginForm = document.getElementById('login-form');
-                    const errorMessage = document.getElementById('error-message');
-
-                    loginForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-
-                        const email = document.getElementById('email').value;
-                        const password = document.getElementById('password').value;
-
-                        // Hide previous errors
-                        errorMessage.classList.remove('show');
-
-                        // Disable submit button
-                        const submitBtn = loginForm.querySelector('button[type="submit"]');
-                        submitBtn.disabled = true;
-                        submitBtn.textContent = 'Connexion...';
-
-                        try {
-                            await login(email, password);
-
-                            // Redirect to dashboard (relative path)
-                            window.location.href = 'index.html';
-                        } catch (error) {
-                            // Show error
-                            errorMessage.textContent = error.message;
-                            errorMessage.classList.add('show');
-
-                            // Re-enable submit button
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Se connecter';
-                        }
-                    });
-                </script>
-            </body>
-
-            </html>
+</html>
