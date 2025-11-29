@@ -442,10 +442,34 @@ export async function init() {
             });
         });
 
-        // Initial load
+        // Initial load with timeout
         const hash = window.location.hash || '#dashboard';
         updateActiveLink(hash);
-        await loadPage(hash.substring(1)); // Ajouter await ici pour attraper les erreurs de loadPage
+
+        console.log('Chargement de la page admin:', hash);
+
+        // Timeout de sécurité pour le chargement
+        const loadPromise = loadPage(hash.substring(1));
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Le chargement prend trop de temps (timeout 10s)')), 10000)
+        );
+
+        try {
+            await Promise.race([loadPromise, timeoutPromise]);
+            console.log('Page chargée avec succès');
+        } catch (err) {
+            console.error('Erreur chargement page:', err);
+            const main = document.getElementById('admin-main');
+            if (main) {
+                main.innerHTML = `
+                    <div class="text-center p-8 text-red-600">
+                        <h3 class="text-xl font-bold mb-2">Erreur de chargement</h3>
+                        <p>${err.message}</p>
+                        <button onclick="window.location.reload()" class="mt-4 btn btn--primary">Réessayer</button>
+                    </div>
+                `;
+            }
+        }
 
         // Logout
         document.getElementById('logout-btn').addEventListener('click', async () => {

@@ -208,76 +208,102 @@
             </form>
 
             <div class="login-footer">
-                <a href="../index.html">← Retour à l'accueil</a>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { showToast } from '../js/ui.js';
-
-        // Configuration
-        const form = document.getElementById('login-form');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const formData = new FormData(form);
-            const data = {
-                email: formData.get('email'),
-                password: formData.get('password'),
-                remember: formData.get('remember') === 'on'
-            };
-
-            try {
-                // Récupérer les membres créés depuis l'admin
-                const members = JSON.parse(localStorage.getItem('gal_members') || '[]');
-
-                const member = members.find(m =>
-                    m.email === data.email && m.password === data.password
-                );
-
-                if (member) {
-                    // Stocker les infos de session
-                    if (data.remember) {
-                        localStorage.setItem('memberToken', generateToken());
-                    } else {
-                        sessionStorage.setItem('memberToken', generateToken());
-                    }
-                    localStorage.setItem('memberData', JSON.stringify({
-                        id: member.id,
-                        name: member.name,
-                        email: member.email,
-                        phone: member.phone
-                    }));
-
-                    showToast('Connexion réussie ! Redirection...', 'success');
-
-                    // Rediriger vers le tableau de bord (chemin relatif)
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1000);
-                } else {
-                    showToast('Email ou mot de passe incorrect', 'error');
                 }
-            } catch (error) {
-                console.error('Erreur de connexion:', error);
-                showToast('Une erreur est survenue lors de la connexion', 'error');
-            }
-        });
+            </div>
 
-        // Générer un token de session
-        function generateToken() {
-            return Math.random().toString(36).substring(2) + Date.now().toString(36);
-        }
+            <script type="module">
+                // Debugging wrapper
+                window.onerror = function (msg, url, line) {
+                    alert('Erreur JS : ' + msg + '\nLigne : ' + line);
+                    return false;
+                };
 
-        // Vérifier si déjà connecté
-        const isAuthenticated = !!(localStorage.getItem('memberToken') || sessionStorage.getItem('memberToken'));
-        if (isAuthenticated) {
-            // Rediriger vers le dashboard si déjà connecté (chemin relatif)
-            window.location.href = 'dashboard.html';
-        }
-    </script>
+                try {
+                    import { showToast } from '../js/ui.js';
+
+                    // Configuration
+                    const form = document.getElementById('login-form');
+
+                    if (!form) {
+                        alert('Erreur : Formulaire introuvable !');
+                    }
+
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        console.log('Tentative de connexion...');
+
+                        const formData = new FormData(form);
+                        const data = {
+                            email: formData.get('email'),
+                            password: formData.get('password'),
+                            remember: formData.get('remember') === 'on'
+                        };
+
+                        try {
+                            // Récupérer les membres créés depuis l'admin
+                            const membersRaw = localStorage.getItem('gal_members');
+                            console.log('Membres trouvés (raw):', membersRaw);
+
+                            const members = JSON.parse(membersRaw || '[]');
+                            console.log('Membres parsés:', members);
+
+                            const member = members.find(m =>
+                                m.email === data.email && m.password === data.password
+                            );
+
+                            if (member) {
+                                // Stocker les infos de session
+                                if (data.remember) {
+                                    localStorage.setItem('memberToken', generateToken());
+                                } else {
+                                    sessionStorage.setItem('memberToken', generateToken());
+                                }
+                                localStorage.setItem('memberData', JSON.stringify({
+                                    id: member.id,
+                                    name: member.name,
+                                    email: member.email,
+                                    phone: member.phone
+                                }));
+
+                                showToast('Connexion réussie ! Redirection...', 'success');
+
+                                // Rediriger vers le tableau de bord (chemin relatif)
+                                setTimeout(() => {
+                                    window.location.href = 'dashboard.html';
+                                }, 1000);
+                            } else {
+                                console.warn('Login échoué : identifiants incorrects');
+                                showToast('Email ou mot de passe incorrect', 'error');
+                                // Fallback si showToast ne marche pas
+                                const alertBox = document.querySelector('.alert--info');
+                                if (alertBox) {
+                                    alertBox.className = 'alert alert--error';
+                                    alertBox.style.backgroundColor = '#fee';
+                                    alertBox.style.color = 'red';
+                                    alertBox.innerHTML = '<strong>Erreur :</strong> Email ou mot de passe incorrect.';
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Erreur de connexion:', error);
+                            alert('Erreur lors de la connexion : ' + error.message);
+                        }
+                    });
+
+                    // Générer un token de session
+                    function generateToken() {
+                        return Math.random().toString(36).substring(2) + Date.now().toString(36);
+                    }
+
+                    // Vérifier si déjà connecté
+                    const isAuthenticated = !!(localStorage.getItem('memberToken') || sessionStorage.getItem('memberToken'));
+                    if (isAuthenticated) {
+                        // Rediriger vers le dashboard si déjà connecté (chemin relatif)
+                        window.location.href = 'dashboard.html';
+                    }
+                } catch (err) {
+                    alert('Erreur critique au chargement du script : ' + err.message);
+                }
+            </script>
 </body>
 
 </html>
