@@ -1,6 +1,6 @@
 import { getFormations, initStorage } from '../storage.js';
 import { showToast } from '../ui.js';
-import { t } from '../i18n.js';
+import { t, initI18n } from '../i18n.js';
 
 let allFormations = [];
 
@@ -94,3 +94,6 @@ export function init() {
         showToast('Fonctionnalité de réservation bientôt disponible', 'info');
     };
 }
+
+// Auto-initialize
+initI18n().then(init);

@@ -1,4 +1,5 @@
 import { initWhatsAppButtons } from '../whatsapp.js';
+import { initI18n } from '../i18n.js';
 
 function animateNumber(element, start, end, duration) {
     const increment = (end - start) / (duration / 16);
@@ -43,3 +44,6 @@ export function init() {
     initWhatsAppButtons();
     animateStats();
 }
+
+// Auto-initialize
+initI18n().then(init);

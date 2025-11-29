@@ -1,6 +1,6 @@
 import { getBlogPosts, saveNewsletter, initStorage } from '../storage.js';
 import { showToast } from '../ui.js';
-import { t } from '../i18n.js';
+import { t, initI18n } from '../i18n.js';
 
 let allPosts = [];
 
@@ -90,3 +90,6 @@ export function init() {
         });
     }
 }
+
+// Auto-initialize
+initI18n().then(init);

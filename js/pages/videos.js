@@ -1,7 +1,7 @@
 import { getVideos, initStorage } from '../storage.js';
 import { showToast } from '../ui.js';
 import { initWhatsAppButtons } from '../whatsapp.js';
-import { t } from '../i18n.js';
+import { t, initI18n } from '../i18n.js';
 
 let allVideos = [];
 let activeFilter = 'all';
@@ -201,3 +201,6 @@ export function init() {
 
     loadVideos();
 }
+
+// Auto-initialize
+initI18n().then(init);

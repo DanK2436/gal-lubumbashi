@@ -6,6 +6,8 @@ import {
     showFormationForm, deleteFormationItem,
     showMachineForm, deleteMachineItem,
     showBlogForm, deleteBlogPostItem,
+    loadReservationsManager, deleteReservationItem, confirmReservationItem,
+    loadFormationRegistrationsManager, deleteFormationRegistrationItem, confirmFormationRegistrationItem,
     closeModal
 } from '../admin.js';
 import { loadMembresManager, initMemberFormHandlers } from './admin-membres.js';
@@ -54,6 +56,12 @@ async function loadPage(page) {
             main.innerHTML = await loadMachinesManager();
             initFormHandlers();
             break;
+        case 'reservations':
+            main.innerHTML = await loadReservationsManager();
+            break;
+        case 'inscriptions-formations':
+            main.innerHTML = await loadFormationRegistrationsManager();
+            break;
         case 'blog':
             main.innerHTML = await loadBlogManager();
             initFormHandlers();
@@ -96,77 +104,123 @@ async function loadDashboard() {
     const subscribers = await getNewsletterSubscribers();
     const contacts = await getContacts();
 
+    // Import reservations and registrations
+    const { getReservations, getFormationRegistrations } = await import('../storage.js');
+    const reservations = await getReservations();
+    const registrations = await getFormationRegistrations();
+
     return `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div>
-                                <div class="stat-value">${videos.length}</div>
-                                <div class="stat-label">Vidéos</div>
-                            </div>
-                            <div class="stat-icon stat-icon--primary">🎬</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div>
-                                <div class="stat-value">${formations.length}</div>
-                                <div class="stat-label">Formations</div>
-                            </div>
-                            <div class="stat-icon stat-icon--success">📚</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div>
-                                <div class="stat-value">${machines.length}</div>
-                                <div class="stat-label">Machines</div>
-                            </div>
-                            <div class="stat-icon stat-icon--warning">🛠️</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div>
-                                <div class="stat-value">${posts.length}</div>
-                                <div class="stat-label">Articles</div>
-                            </div>
-                            <div class="stat-icon stat-icon--info">📝</div>
-                        </div>
-                    </div>
-                </div>
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">📊 Dashboard</h1>
+            <p class="text-gray-600">Vue d'ensemble de votre plateforme GAL</p>
+        </div>
 
-                <div class="grid grid--2 gap-6">
-                    <div class="admin-card">
-                        <h2>Abonnés Newsletter</h2>
-                        <div class="stat-value">${subscribers.length}</div>
-                        <p class="text-muted mt-2">Personnes inscrites</p>
-                    </div>
-                    <div class="admin-card">
-                        <h2>Messages de Contact</h2>
-                        <div class="stat-value">${contacts.length}</div>
-                        <p class="text-muted mt-2">Messages reçus</p>
-                    </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon stat-icon--primary">🎬</div>
+                <div class="stat-content">
+                    <div class="stat-value">${videos.length}</div>
+                    <div class="stat-label">Vidéos</div>
                 </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon stat-icon--success">📚</div>
+                <div class="stat-content">
+                    <div class="stat-value">${formations.length}</div>
+                    <div class="stat-label">Formations</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon stat-icon--warning">🛠️</div>
+                <div class="stat-content">
+                    <div class="stat-value">${machines.length}</div>
+                    <div class="stat-label">Machines</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon stat-icon--info">📝</div>
+                <div class="stat-content">
+                    <div class="stat-value">${posts.length}</div>
+                    <div class="stat-label">Articles</div>
+                </div>
+            </div>
+        </div>
 
-                <div class="admin-card">
-                    <h2>Actions rapides</h2>
-                    <div class="quick-actions">
-                        <button class="btn btn--primary" data-action="videos">
-                            Ajouter une vidéo
-                        </button>
-                        <button class="btn btn--primary" data-action="formations">
-                            Ajouter une formation
-                        </button>
-                        <button class="btn btn--primary" data-action="machines">
-                            Ajouter une machine
-                        </button>
-                        <button class="btn btn--primary" data-action="blog">
-                            Nouvel article
-                        </button>
-                    </div>
+        <div class="grid grid--2 gap-6 mb-6">
+            <div class="admin-card">
+                <div class="d-flex justify-between align-center mb-4">
+                    <h2 class="text-lg font-bold">🎓 Inscriptions Formations</h2>
+                    <a href="#inscriptions-formations" class="text-primary hover:underline text-sm">Voir tout →</a>
                 </div>
-            `;
+                <div class="stat-value text-red-700">${registrations.length}</div>
+                <p class="text-muted mt-2">${registrations.filter(r => r.status === 'En attente').length} en attente de confirmation</p>
+                <div class="mt-4">
+                    <button class="btn btn--sm btn--primary" data-action="inscriptions-formations">
+                        Gérer les inscriptions
+                    </button>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="d-flex justify-between align-center mb-4">
+                    <h2 class="text-lg font-bold">📅 Réservations Machines</h2>
+                    <a href="#reservations" class="text-primary hover:underline text-sm">Voir tout →</a>
+                </div>
+                <div class="stat-value text-red-700">${reservations.length}</div>
+                <p class="text-muted mt-2">${reservations.filter(r => r.status === 'En attente').length} en attente de confirmation</p>
+                <div class="mt-4">
+                    <button class="btn btn--sm btn--primary" data-action="reservations">
+                        Gérer les réservations
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid--2 gap-6 mb-6">
+            <div class="admin-card">
+                <h2 class="text-lg font-bold mb-4">📧 Abonnés Newsletter</h2>
+                <div class="stat-value">${subscribers.length}</div>
+                <p class="text-muted mt-2">Personnes inscrites</p>
+                <div class="mt-4">
+                    <button class="btn btn--sm btn--outline" data-action="newsletter">
+                        Voir les abonnés
+                    </button>
+                </div>
+            </div>
+            
+            <div class="admin-card">
+                <h2 class="text-lg font-bold mb-4">✉️ Messages de Contact</h2>
+                <div class="stat-value">${contacts.length}</div>
+                <p class="text-muted mt-2">Messages reçus</p>
+                <div class="mt-4">
+                    <button class="btn btn--sm btn--outline" data-action="contacts">
+                        Lire les messages
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <h2 class="text-lg font-bold mb-4">⚡ Actions rapides</h2>
+            <div class="quick-actions">
+                <button class="btn btn--primary" data-action="videos">
+                    <span>🎬</span> Ajouter une vidéo
+                </button>
+                <button class="btn btn--primary" data-action="formations">
+                    <span>📚</span> Ajouter une formation
+                </button>
+                <button class="btn btn--primary" data-action="machines">
+                    <span>🛠️</span> Ajouter une machine
+                </button>
+                <button class="btn btn--primary" data-action="blog">
+                    <span>📝</span> Nouvel article
+                </button>
+            </div>
+        </div>
+    `;
 }
 
 // Initialize form handlers
@@ -417,6 +471,16 @@ export async function init() {
             showBlogForm,
             editBlogPost: showBlogForm,
             deleteBlogPost: deleteBlogPostItem,
+
+            showBlogForm,
+            editBlogPost: showBlogForm,
+            deleteBlogPost: deleteBlogPostItem,
+
+            deleteReservation: deleteReservationItem,
+            confirmReservation: confirmReservationItem,
+
+            deleteFormationRegistration: deleteFormationRegistrationItem,
+            confirmFormationRegistration: confirmFormationRegistrationItem,
 
             closeModal
         };

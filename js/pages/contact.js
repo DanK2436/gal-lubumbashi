@@ -1,7 +1,7 @@
 import { saveContact } from '../storage.js';
 import { showToast } from '../ui.js';
 import { initWhatsAppButtons } from '../whatsapp.js';
-import { t } from '../i18n.js';
+import { t, initI18n } from '../i18n.js';
 
 export function init() {
     console.log('Initializing Contact Page...');
@@ -59,3 +59,6 @@ export function init() {
     // Init WhatsApp buttons
     initWhatsAppButtons();
 }
+
+// Auto-initialize
+initI18n().then(init);

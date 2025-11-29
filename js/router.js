@@ -1,22 +1,43 @@
-// Router SPA with page script loading
+// Router SPA with page script loading - GitHub Pages compatible
+// Get the base path for GitHub Pages
+const BASE_PATH = window.location.hostname.includes('github.io')
+    ? window.location.pathname.split('/')[1]
+    : '';
+const basePath = BASE_PATH ? `/${BASE_PATH}` : '';
+
 const routes = {
-    '/': { html: '/html/home.html', script: '/js/pages/home.js' },
-    '/videos': { html: '/html/videos.html', script: '/js/pages/videos.js' },
-    '/formations': { html: '/html/formations.html', script: '/js/pages/formations.js' },
-    '/machines': { html: '/html/machines.html', script: '/js/pages/machines.js' },
-    '/blog': { html: '/html/blog.html', script: '/js/pages/blog.js' },
-    '/faq': { html: '/html/faq.html', script: '/js/pages/faq.js' },
-    '/a-propos': { html: '/html/about.html', script: '/js/pages/about.js' },
-    '/contact': { html: '/html/contact.html', script: '/js/pages/contact.js' }
+    '': { html: 'html/home.html', script: 'js/pages/home.js' },
+    'home': { html: 'html/home.html', script: 'js/pages/home.js' },
+    'videos': { html: 'html/videos.html', script: 'js/pages/videos.js' },
+    'formations': { html: 'html/formations.html', script: 'js/pages/formations.js' },
+    'machines': { html: 'html/machines.html', script: 'js/pages/machines.js' },
+    'blog': { html: 'html/blog.html', script: 'js/pages/blog.js' },
+    'faq': { html: 'html/faq.html', script: 'js/pages/faq.js' },
+    'a-propos': { html: 'html/about.html', script: 'js/pages/about.js' },
+    'contact': { html: 'html/contact.html', script: 'js/pages/contact.js' }
 };
 
+// Get current route from hash
+function getCurrentRoute() {
+    const hash = window.location.hash.replace('#', '');
+    return hash || '';
+}
+
 // Load page content
-async function loadPage(path) {
+async function loadPage(routeName) {
     const content = document.getElementById('content');
-    const route = routes[path] || routes['/'];
+    if (!content) {
+        console.error('Content element not found');
+        return;
+    }
+
+    const route = routes[routeName] || routes[''];
 
     try {
-        const response = await fetch(route.html);
+        // Use relative paths for GitHub Pages compatibility
+        const htmlPath = basePath ? `${basePath}/${route.html}` : route.html;
+        const response = await fetch(htmlPath);
+
         if (response.ok) {
             const html = await response.text();
             content.innerHTML = html;
@@ -33,7 +54,8 @@ async function loadPage(path) {
             // Load page-specific JavaScript module if it exists
             if (route.script) {
                 try {
-                    const module = await import(route.script);
+                    const scriptPath = basePath ? `${basePath}/${route.script}` : `./${route.script}`;
+                    const module = await import(scriptPath);
                     if (module.init && typeof module.init === 'function') {
                         await module.init();
                         console.log(`✅ Initialized ${route.script}`);
@@ -44,7 +66,7 @@ async function loadPage(path) {
             }
 
             // Update active navigation link
-            updateActiveLink(path);
+            updateActiveLink(routeName);
 
             // Scroll to top
             window.scrollTo(0, 0);
@@ -53,15 +75,29 @@ async function loadPage(path) {
         }
     } catch (error) {
         console.error('Error loading page:', error);
-        content.innerHTML = '<div class="min-h-screen flex items-center justify-center"><h1 class="text-4xl font-bold">Erreur de chargement</h1></div>';
+        content.innerHTML = '<div class="min-h-screen flex items-center justify-center"><h1 class="text-4xl font-bold text-red-600">Erreur de chargement</h1><p class="text-gray-600 mt-4">Impossible de charger la page</p></div>';
     }
 }
 
 // Update active navigation link
-function updateActiveLink(path) {
+function updateActiveLink(routeName) {
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
-        if (link.getAttribute('href') === path) {
+        const href = link.getAttribute('href');
+        let linkRoute = '';
+
+        // Extract route name from different href formats
+        if (href && href.includes('#')) {
+            linkRoute = href.split('#')[1] || 'home';
+        } else if (href && href.includes('html/')) {
+            const fileName = href.split('/').pop().replace('.html', '');
+            linkRoute = fileName === 'home' ? '' : fileName;
+            if (fileName === 'about') linkRoute = 'a-propos';
+        } else if (href === 'index.html') {
+            linkRoute = '';
+        }
+
+        if (linkRoute === routeName || (routeName === '' && linkRoute === 'home')) {
             link.classList.add('text-red-700');
             link.classList.remove('text-gray-800');
         } else {
@@ -72,53 +108,59 @@ function updateActiveLink(path) {
 }
 
 // Handle navigation
-function navigate(path) {
-    history.pushState(null, null, path);
-    loadPage(path);
+function navigate(routeName) {
+    window.location.hash = routeName;
+}
 
-    // Close mobile menu if open
+// Handle link clicks
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (link && link.getAttribute('href')) {
+        const href = link.getAttribute('href');
+
+        // Convert HTML file paths to route names
+        const routeMap = {
+            'html/videos.html': 'videos',
+            'html/formations.html': 'formations',
+            'html/machines.html': 'machines',
+            'html/blog.html': 'blog',
+            'html/faq.html': 'faq',
+            'html/about.html': 'a-propos',
+            'html/contact.html': 'contact',
+            'html/home.html': '',
+            'index.html': ''
+        };
+
+        // Check if it's an internal navigation link
+        if (routeMap.hasOwnProperty(href)) {
+            e.preventDefault();
+            navigate(routeMap[href]);
+        } else if (href.startsWith('#') && !href.startsWith('#/')) {
+            // Already a hash link, let it work naturally
+            return;
+        }
+    }
+});
+
+// Handle hash changes
+window.addEventListener('hashchange', () => {
+    const route = getCurrentRoute();
+    loadPage(route);
+});
+
+// Close mobile menu after navigation
+window.addEventListener('hashchange', () => {
     const mobileMenu = document.getElementById('mobile-menu');
     if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
         mobileMenu.classList.add('hidden');
         document.getElementById('menu-icon').classList.remove('hidden');
         document.getElementById('close-icon').classList.add('hidden');
     }
-}
-
-// Handle link clicks
-// Intercept clicks on internal links to use SPA routing
-document.addEventListener('click', (e) => {
-    const link = e.target.closest('a');
-    if (link && link.getAttribute('href')) {
-        const href = link.getAttribute('href');
-
-        // Convert direct file paths to SPA routes
-        const routeMap = {
-            '/html/videos.html': '/videos',
-            '/html/formations.html': '/formations',
-            '/html/machines.html': '/machines',
-            '/html/blog.html': '/blog',
-            '/html/faq.html': '/faq',
-            '/html/about.html': '/a-propos',
-            '/html/contact.html': '/contact',
-            '/html/home.html': '/'
-        };
-
-        // If it's a mapped route or starts with '/', use SPA navigation
-        if (routeMap[href] || (href.startsWith('/') && !href.startsWith('/html/'))) {
-            e.preventDefault();
-            const route = routeMap[href] || href;
-            navigate(route);
-        }
-    }
-});
-
-// Handle browser back/forward
-window.addEventListener('popstate', () => {
-    loadPage(window.location.pathname);
 });
 
 // Initialize router
 document.addEventListener('DOMContentLoaded', () => {
-    loadPage(window.location.pathname);
+    const initialRoute = getCurrentRoute();
+    loadPage(initialRoute);
+    console.log('🚀 Router initialized for:', window.location.hostname.includes('github.io') ? 'GitHub Pages' : 'Local');
 });

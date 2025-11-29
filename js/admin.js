@@ -7,7 +7,9 @@ import {
     getVideos, createVideo, updateVideo, deleteVideo,
     getFormations, createFormation, updateFormation, deleteFormation,
     getMachines, createMachine, updateMachine, deleteMachine,
-    getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost
+    getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost,
+    getReservations, deleteReservation, updateReservationStatus,
+    getFormationRegistrations, deleteFormationRegistration, updateFormationRegistrationStatus
 } from './storage.js';
 import { createMediaPicker } from './media-picker.js';
 
@@ -797,7 +799,192 @@ export async function loadBlogManager() {
 }
 
 /**
+ * Charge et affiche la liste des réservations
+ */
+export async function loadReservationsManager() {
+    const reservations = await getReservations();
+
+    return `
+        <div class="admin-card">
+            <div class="d-flex justify-between align-center mb-6">
+                <h2>Gestion des Réservations (${reservations.length})</h2>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Machine</th>
+                            <th>Contact</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${reservations.map(res => `
+                            <tr>
+                                <td>${new Date(res.date).toLocaleDateString('fr-FR')}</td>
+                                <td><strong>${res.userName}</strong></td>
+                                <td>${res.machineName}</td>
+                                <td>
+                                    <div>${res.userEmail}</div>
+                                    <div class="text-sm text-muted">${res.userPhone}</div>
+                                </td>
+                                <td>
+                                    <span class="badge badge--${res.status === 'Confirmé' ? 'success' : res.status === 'En attente' ? 'warning' : 'primary'}">
+                                        ${res.status}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        ${res.status !== 'Confirmé' ? `
+                                            <button class="btn btn--sm btn--primary" 
+                                                    onclick="window.adminModule.confirmReservation('${res.id}')">
+                                                ✅ Confirmer
+                                            </button>
+                                        ` : ''}
+                                        <button class="btn btn--sm btn--outline" style="color: #ef4444; border-color: #ef4444;"
+                                                onclick="window.adminModule.deleteReservation('${res.id}')">
+                                            🗑️ Supprimer
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                        ${reservations.length === 0 ? `
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    Aucune réservation pour le moment
+                                </td>
+                            </tr>
+                        ` : ''}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Confirme une réservation
+ */
+export async function confirmReservationItem(id) {
+    if (confirm('Voulez-vous confirmer cette réservation ?')) {
+        await updateReservationStatus(id, 'Confirmé');
+        showToast('Réservation confirmée !');
+        refreshCurrentPage();
+    }
+}
+
+/**
+ * Supprime une réservation
+ */
+export async function deleteReservationItem(id) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')) {
+        await deleteReservation(id);
+        showToast('Réservation supprimée avec succès !');
+        refreshCurrentPage();
+    }
+}
+
+/**
+ * Charge et affiche la liste des inscriptions aux formations
+ */
+export async function loadFormationRegistrationsManager() {
+    const registrations = await getFormationRegistrations();
+
+    return `
+        <div class="admin-card">
+            <div class="d-flex justify-between align-center mb-6">
+                <h2>Inscriptions aux Formations (${registrations.length})</h2>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Participant</th>
+                            <th>Formation</th>
+                            <th>Contact</th>
+                            <th>Niveau</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${registrations.map(reg => `
+                            <tr>
+                                <td>${new Date(reg.date).toLocaleDateString('fr-FR')}</td>
+                                <td><strong>${reg.userName}</strong></td>
+                                <td>${reg.formationTitle}</td>
+                                <td>
+                                    <div>${reg.userEmail}</div>
+                                    <div class="text-sm text-muted">${reg.userPhone}</div>
+                                </td>
+                                <td><span class="badge badge--info">${reg.level || 'Non spécifié'}</span></td>
+                                <td>
+                                    <span class="badge badge--${reg.status === 'Confirmé' ? 'success' : reg.status === 'En attente' ? 'warning' : 'primary'}">
+                                        ${reg.status}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        ${reg.status !== 'Confirmé' ? `
+                                            <button class="btn btn--sm btn--primary" 
+                                                    onclick="window.adminModule.confirmFormationRegistration('${reg.id}')">
+                                                ✅ Confirmer
+                                            </button>
+                                        ` : ''}
+                                        <button class="btn btn--sm btn--outline" style="color: #ef4444; border-color: #ef4444;"
+                                                onclick="window.adminModule.deleteFormationRegistration('${reg.id}')">
+                                            🗑️ Supprimer
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                        ${registrations.length === 0 ? `
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    Aucune inscription pour le moment
+                                </td>
+                            </tr>
+                        ` : ''}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Confirme une inscription à une formation
+ */
+export async function confirmFormationRegistrationItem(id) {
+    if (confirm('Voulez-vous confirmer cette inscription ?')) {
+        await updateFormationRegistrationStatus(id, 'Confirmé');
+        showToast('Inscription confirmée !');
+        refreshCurrentPage();
+    }
+}
+
+/**
+ * Supprime une inscription à une formation
+ */
+export async function deleteFormationRegistrationItem(id) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette inscription ?')) {
+        await deleteFormationRegistration(id);
+        showToast('Inscription supprimée avec succès !');
+        refreshCurrentPage();
+    }
+}
+
+/**
  * Affiche le formulaire de blog
+
  */
 export function showBlogForm(postId = null) {
     const modal = document.getElementById('blog-form-modal');

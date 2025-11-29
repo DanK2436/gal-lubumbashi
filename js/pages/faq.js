@@ -1,6 +1,6 @@
 import { showToast } from '../ui.js';
 import { initWhatsAppButtons } from '../whatsapp.js';
-import { t } from '../i18n.js';
+import { t, initI18n } from '../i18n.js';
 
 // FAQ Data
 const faqData = [
@@ -17,7 +17,11 @@ const faqData = [
     { category: 'services', question: 'faq.q11.q', answer: 'faq.q11.a' },
     { category: 'services', question: 'faq.q12.q', answer: 'faq.q12.a' },
     { category: 'services', question: 'faq.q13.q', answer: 'faq.q13.a' },
-    { category: 'services', question: 'faq.q14.q', answer: 'faq.q14.a' }
+    { category: 'services', question: 'faq.q14.q', answer: 'faq.q14.a' },
+    { category: 'machines', question: 'faq.q15.q', answer: 'faq.q15.a' },
+    { category: 'machines', question: 'faq.q16.q', answer: 'faq.q16.a' },
+    { category: 'formations', question: 'faq.q17.q', answer: 'faq.q17.a' },
+    { category: 'services', question: 'faq.q18.q', answer: 'faq.q18.a' }
 ];
 
 let currentCategory = 'all';
@@ -136,3 +140,8 @@ export function init() {
     renderFaq();
     initWhatsAppButtons();
 }
+
+// Auto-initialize when the script is loaded
+initI18n().then(() => {
+    init();
+});

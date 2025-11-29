@@ -15,7 +15,9 @@ const STORAGE_KEYS = {
   PAGES: 'gal_pages',
   AUTH: 'gal_auth',
   LANGUAGE: 'gal_language',
-  CHATBOT_HISTORY: 'gal_chatbot_history'
+  CHATBOT_HISTORY: 'gal_chatbot_history',
+  RESERVATIONS: 'gal_reservations',
+  FORMATION_REGISTRATIONS: 'gal_formation_registrations'
 };
 
 // Helper pour obtenir le chemin de base correct (GitHub Pages support)
@@ -423,6 +425,82 @@ export async function setLanguage(lang) {
   return lang;
 }
 
+// ===== RÉSERVATIONS MACHINES =====
+
+export async function getReservations() {
+  const data = localStorage.getItem(STORAGE_KEYS.RESERVATIONS);
+  return data ? JSON.parse(data) : [];
+}
+
+export async function saveReservation(reservationData) {
+  const reservations = await getReservations();
+  const newReservation = {
+    ...reservationData,
+    id: Date.now().toString(),
+    date: new Date().toISOString(),
+    status: 'En attente'
+  };
+  reservations.push(newReservation);
+  localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(reservations));
+  return newReservation;
+}
+
+export async function deleteReservation(id) {
+  const reservations = await getReservations();
+  const filtered = reservations.filter(r => r.id !== id);
+  localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(filtered));
+  return true;
+}
+
+export async function updateReservationStatus(id, status) {
+  const reservations = await getReservations();
+  const index = reservations.findIndex(r => r.id === id);
+  if (index !== -1) {
+    reservations[index].status = status;
+    localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(reservations));
+    return reservations[index];
+  }
+  return null;
+}
+
+// ===== INSCRIPTIONS FORMATIONS =====
+
+export async function getFormationRegistrations() {
+  const data = localStorage.getItem(STORAGE_KEYS.FORMATION_REGISTRATIONS);
+  return data ? JSON.parse(data) : [];
+}
+
+export async function saveFormationRegistration(registrationData) {
+  const registrations = await getFormationRegistrations();
+  const newRegistration = {
+    ...registrationData,
+    id: Date.now().toString(),
+    date: new Date().toISOString(),
+    status: 'En attente'
+  };
+  registrations.push(newRegistration);
+  localStorage.setItem(STORAGE_KEYS.FORMATION_REGISTRATIONS, JSON.stringify(registrations));
+  return newRegistration;
+}
+
+export async function deleteFormationRegistration(id) {
+  const registrations = await getFormationRegistrations();
+  const filtered = registrations.filter(r => r.id !== id);
+  localStorage.setItem(STORAGE_KEYS.FORMATION_REGISTRATIONS, JSON.stringify(filtered));
+  return true;
+}
+
+export async function updateFormationRegistrationStatus(id, status) {
+  const registrations = await getFormationRegistrations();
+  const index = registrations.findIndex(r => r.id === id);
+  if (index !== -1) {
+    registrations[index].status = status;
+    localStorage.setItem(STORAGE_KEYS.FORMATION_REGISTRATIONS, JSON.stringify(registrations));
+    return registrations[index];
+  }
+  return null;
+}
+
 // ===== EXPORT PAR DÉFAUT =====
 export default {
   initStorage,
@@ -462,5 +540,13 @@ export default {
   saveChatbotMessage,
   clearChatbotHistory,
   getLanguage,
-  setLanguage
+  setLanguage,
+  getReservations,
+  saveReservation,
+  deleteReservation,
+  updateReservationStatus,
+  getFormationRegistrations,
+  saveFormationRegistration,
+  deleteFormationRegistration,
+  updateFormationRegistrationStatus
 };

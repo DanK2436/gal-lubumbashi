@@ -389,9 +389,86 @@ function simulateTyping(text, callback) {
     callback(text);
 }
 
+// Injection du HTML du chatbot
+function injectChatbotHTML() {
+    if (document.getElementById('chatbot-widget')) return;
+
+    const html = `
+        <div id="chatbot-widget" class="fixed bottom-6 right-6 z-[9999] flex flex-col items-end font-sans">
+            <!-- Fenêtre de chat -->
+            <div id="assistant-chat" class="hidden bg-white w-[90vw] sm:w-96 h-[500px] max-h-[80vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 transition-all duration-300 transform origin-bottom-right mb-4">
+                <!-- En-tête -->
+                <div class="bg-red-700 p-4 flex justify-between items-center text-white">
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-700 font-bold text-xl border-2 border-red-200">
+                                D
+                            </div>
+                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-red-700"></div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg leading-tight">Dan Kande</h3>
+                            <p class="text-xs text-red-100 opacity-90">Assistant GAL • En ligne</p>
+                        </div>
+                    </div>
+                    <button id="close-assistant" class="text-white hover:bg-red-600 p-2 rounded-full transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Zone de messages -->
+                <div id="messages-container" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 scroll-smooth">
+                    <!-- Les messages seront injectés ici -->
+                </div>
+
+                <!-- Zone de saisie -->
+                <div class="p-4 bg-white border-t border-gray-100">
+                    <form id="chat-form" class="flex gap-2">
+                        <input type="text" id="chat-input" 
+                            class="flex-1 bg-gray-100 text-gray-800 rounded-full px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-700 focus:bg-white transition-all"
+                            placeholder="Posez votre question..." autocomplete="off">
+                        <button type="submit" 
+                            class="bg-red-700 text-white p-3 rounded-full hover:bg-red-800 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                        </button>
+                    </form>
+                    <div class="text-center mt-2">
+                        <button id="human-support-btn" class="text-xs text-gray-400 hover:text-red-700 underline transition-colors">
+                            Parler à un humain sur WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bouton d'ouverture -->
+            <button id="assistant-button" 
+                class="bg-red-700 hover:bg-red-800 text-white rounded-full p-4 shadow-2xl transition-all duration-300 transform hover:scale-110 flex items-center gap-3 group">
+                <span class="hidden group-hover:block text-sm font-bold pr-2">Besoin d'aide ?</span>
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+            </button>
+        </div>
+    `;
+
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    document.body.appendChild(div);
+}
+
 // Initialisation du chatbot
 function initChatbotStandalone() {
     console.log('🤖 Initialisation du chatbot humain GAL (Dan Kande)...');
+
+    // Injecter le HTML si nécessaire
+    if (!document.getElementById('assistant-button')) {
+        injectChatbotHTML();
+    }
 
     const assistantButton = document.getElementById('assistant-button');
     const closeAssistant = document.getElementById('close-assistant');
@@ -402,7 +479,7 @@ function initChatbotStandalone() {
     const humanSupportBtn = document.getElementById('human-support-btn');
 
     if (!assistantButton || !closeAssistant || !chatForm) {
-        console.warn('⚠️ Éléments du chatbot non trouvés');
+        console.warn('⚠️ Éléments du chatbot non trouvés même après injection');
         return;
     }
 
