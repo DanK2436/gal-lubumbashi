@@ -208,76 +208,274 @@
             </form>
 
             <div class="login-footer">
-                <a href="../index.html">← Retour à l'accueil</a>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { showToast } from '/js/ui.js';
-
-        // Configuration
-        const form = document.getElementById('login-form');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const formData = new FormData(form);
-            const data = {
-                email: formData.get('email'),
-                password: formData.get('password'),
-                remember: formData.get('remember') === 'on'
-            };
-
-            try {
-                // Récupérer les membres créés depuis l'admin
-                const members = JSON.parse(localStorage.getItem('gal_members') || '[]');
-
-                const member = members.find(m =>
-                    m.email === data.email && m.password === data.password
-                );
-
-                if (member) {
-                    // Stocker les infos de session
-                    if (data.remember) {
-                        localStorage.setItem('memberToken', generateToken());
-                    } else {
-                        sessionStorage.setItem('memberToken', generateToken());
-                    }
-                    localStorage.setItem('memberData', JSON.stringify({
-                        id: member.id,
-                        name: member.name,
-                        email: member.email,
-                        phone: member.phone
-                    }));
-
-                    showToast('Connexion réussie ! Redirection...', 'success');
-
-                    // Rediriger vers le tableau de bord (chemin corrigé)
-                    setTimeout(() => {
-                        window.location.href = '/membres/pages/dashboard.html';
-                    }, 1000);
-                } else {
-                    showToast('Email ou mot de passe incorrect', 'error');
                 }
-            } catch (error) {
-                console.error('Erreur de connexion:', error);
-                showToast('Une erreur est survenue lors de la connexion', 'error');
-            }
-        });
 
-        // Générer un token de session
-        function generateToken() {
-            return Math.random().toString(36).substring(2) + Date.now().toString(36);
-        }
+                .login-page {
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                padding: 2rem;
+                position: relative;
+                overflow: hidden;
+                }
 
-        // Vérifier si déjà connecté
-        const isAuthenticated = !!(localStorage.getItem('memberToken') || sessionStorage.getItem('memberToken'));
-        if (isAuthenticated) {
-            // Rediriger vers le dashboard si déjà connecté (chemin corrigé)
-            window.location.href = '/membres/pages/dashboard.html';
-        }
-    </script>
-</body>
+                .login-page::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="2" fill="white" opacity="0.1" />
+                </svg>');
+                opacity: 0.3;
+                }
+
+                .login-container {
+                background: white;
+                border-radius: 1.5rem;
+                padding: 2rem;
+                max-width: 500px;
+                width: 100%;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                position: relative;
+                z-index: 1;
+                }
+
+                .login-logo {
+                max-width: 150px;
+                height: auto;
+                display: block;
+                margin: 0 auto 1.5rem;
+                }
+
+                .login-header {
+                text-align: center;
+                margin-bottom: 1.5rem;
+                }
+
+                .login-header h1 {
+                font-size: 1.75rem;
+                color: var(--color-text);
+                margin: 0 0 0.5rem;
+                }
+
+                .login-header p {
+                color: var(--color-text-muted);
+                font-size: 0.95rem;
+                }
+
+                .form-group {
+                margin-bottom: 1rem;
+                }
+
+                .form-label {
+                display: block;
+                margin-bottom: 0.4rem;
+                font-weight: 600;
+                color: var(--color-text);
+                font-size: 0.95rem;
+                }
+
+                .form-input {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                border: 2px solid var(--color-gray-300);
+                border-radius: 0.5rem;
+                font-size: 0.95rem;
+                transition: all 0.3s ease;
+                }
+
+                .form-input:focus {
+                outline: none;
+                border-color: var(--color-primary);
+                box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+                }
+
+                .form-checkbox {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 1.25rem;
+                }
+
+                .form-checkbox input {
+                width: 1.1rem;
+                height: 1.1rem;
+                cursor: pointer;
+                }
+
+                .form-checkbox label {
+                cursor: pointer;
+                user-select: none;
+                font-size: 0.95rem;
+                }
+
+                .login-footer {
+                text-align: center;
+                margin-top: 1.5rem;
+                padding-top: 1.5rem;
+                border-top: 1px solid var(--color-gray-200);
+                }
+
+                .login-footer a {
+                color: var(--color-primary);
+                text-decoration: none;
+                font-weight: 600;
+                }
+
+                .login-footer a:hover {
+                text-decoration: underline;
+                }
+
+                .alert {
+                padding: 1rem;
+                border-radius: 0.5rem;
+                margin-bottom: 1.5rem;
+                border-left: 4px solid;
+                }
+
+                .alert--info {
+                background: rgba(59, 130, 246, 0.1);
+                border-color: #3b82f6;
+                color: #1e40af;
+                }
+
+                .alert--info strong {
+                font-weight: 700;
+                }
+
+                @media (max-width: 640px) {
+                .login-page {
+                padding: 1rem;
+                }
+
+                .login-container {
+                padding: 1.5rem;
+                width: 100%;
+                max-width: 100%;
+                }
+
+                .login-header h1 {
+                font-size: 1.5rem;
+                }
+                }
+                </style>
+                </head>
+
+                <body>
+                    <div class="login-page">
+                        <div class="login-container">
+                            <img src="../public/logo-gal-official.jpg" alt="Logo GAL" class="login-logo">
+
+                            <div class="login-header">
+                                <h1>Connexion Membres</h1>
+                                <p>Accédez à votre espace personnel</p>
+                            </div>
+
+                            <div class="alert alert--info">
+                                <strong>ℹ️ Information</strong><br>
+                                Votre compte doit être créé par un administrateur. Si vous n'avez pas encore de compte,
+                                contactez-nous.
+                            </div>
+
+                            <form id="login-form">
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Adresse email *</label>
+                                    <input type="email" id="email" name="email" class="form-input"
+                                        placeholder="votre.email@example.com" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password" class="form-label">Mot de passe *</label>
+                                    <input type="password" id="password" name="password" class="form-input"
+                                        placeholder="••••••••" required>
+                                </div>
+
+                                <div class="form-checkbox">
+                                    <input type="checkbox" id="remember" name="remember">
+                                    <label for="remember">Se souvenir de moi</label>
+                                </div>
+
+                                <button type="submit" class="btn btn--primary btn--lg w-full">
+                                    Se connecter
+                                </button>
+                            </form>
+
+                            <div class="login-footer">
+                                <a href="../index.html">← Retour à l'accueil</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script type="module">
+                        import { showToast } from '../js/ui.js';
+
+                        // Configuration
+                        const form = document.getElementById('login-form');
+
+                        form.addEventListener('submit', async (e) => {
+                            e.preventDefault();
+
+                            const formData = new FormData(form);
+                            const data = {
+                                email: formData.get('email'),
+                                password: formData.get('password'),
+                                remember: formData.get('remember') === 'on'
+                            };
+
+                            try {
+                                // Récupérer les membres créés depuis l'admin
+                                const members = JSON.parse(localStorage.getItem('gal_members') || '[]');
+
+                                const member = members.find(m =>
+                                    m.email === data.email && m.password === data.password
+                                );
+
+                                if (member) {
+                                    // Stocker les infos de session
+                                    if (data.remember) {
+                                        localStorage.setItem('memberToken', generateToken());
+                                    } else {
+                                        sessionStorage.setItem('memberToken', generateToken());
+                                    }
+                                    localStorage.setItem('memberData', JSON.stringify({
+                                        id: member.id,
+                                        name: member.name,
+                                        email: member.email,
+                                        phone: member.phone
+                                    }));
+
+                                    showToast('Connexion réussie ! Redirection...', 'success');
+
+                                    // Rediriger vers le tableau de bord (chemin relatif)
+                                    setTimeout(() => {
+                                        window.location.href = 'dashboard.html';
+                                    }, 1000);
+                                } else {
+                                    showToast('Email ou mot de passe incorrect', 'error');
+                                }
+                            } catch (error) {
+                                console.error('Erreur de connexion:', error);
+                                showToast('Une erreur est survenue lors de la connexion', 'error');
+                            }
+                        });
+
+                        // Générer un token de session
+                        function generateToken() {
+                            return Math.random().toString(36).substring(2) + Date.now().toString(36);
+                        }
+
+                        // Vérifier si déjà connecté
+                        const isAuthenticated = !!(localStorage.getItem('memberToken') || sessionStorage.getItem('memberToken'));
+                        if (isAuthenticated) {
+                            // Rediriger vers le dashboard si déjà connecté (chemin relatif)
+                            window.location.href = 'dashboard.html';
+                        }
+                    </script>
+                </body>
 
 </html>
