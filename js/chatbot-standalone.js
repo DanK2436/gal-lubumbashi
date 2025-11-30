@@ -1,7 +1,145 @@
-{ title: "Menuiserie professionnelle", keywords: ['menuiserie', 'bois', 'meuble', 'ébénisterie', 'table', 'chaise'], duration: "Professionnelle", description: "De la conception à la réalisation, apprenez l'art de la menuiserie moderne et traditionnelle." },
-{ title: "Plomberie sanitaire", keywords: ['plomberie', 'sanitaire', 'tuyau', 'eau', 'fuite'], duration: "Complète", description: "Formation complète sur les systèmes de plomberie, sanitaires et évacuation des eaux." },
-{ title: "Mécanique automobile", keywords: ['mécanique', 'auto', 'voiture', 'véhicule', 'moteur', 'panne'], duration: "Niveau Pro", description: "Diagnostic, réparation et entretien de tous types de véhicules." },
-{ title: "Gestion de chantier", keywords: ['gestion', 'chantier', 'btp', 'construction', 'chef', 'projet'], duration: "Managériale", description: "Apprenez à gérer efficacement un chantier de construction, de la planification à la livraison." }
+/**
+ * Chatbot intelligent GAL - Version ultra-réaliste
+ * Connecté à la FAQ et avec une personnalité humaine
+ */
+
+// Import des questions FAQ (simulé depuis i18n)
+const faqData = {
+    adhesion: {
+        q1: {
+            keywords: ['membre', 'adhésion', 'adhérer', 'rejoindre', 'inscription', 'devenir membre', 'comment', 'inscrire'],
+            question: "Comment devenir membre de GAL ?",
+            answer: "Pour devenir membre de GAL, vous devez être un artisan actif dans la région de Lubumbashi. Contactez-nous via le formulaire de contact ou WhatsApp pour démarrer le processus d'adhésion. Nous vous guiderons à travers les étapes nécessaires."
+        },
+        q2: {
+            keywords: ['coût', 'prix', 'tarif', 'combien', 'payer', 'cotisation', 'montant'],
+            question: "Quel est le coût de l'adhésion ?",
+            answer: "La cotisation annuelle est de 50 USD. Ce montant donne accès à tous les services de GAL : formations à tarif réduit, prix préférentiels sur les machines, événements de networking et accompagnement personnalisé."
+        },
+        q3: {
+            keywords: ['avantages', 'bénéfices', 'pourquoi', 'intérêt', 'utilité'],
+            question: "Quels sont les avantages d'être membre ?",
+            answer: "Les membres bénéficient de prix réduits sur les machines et formations, d'un accès prioritaire aux nouvelles opportunités, d'un réseau professionnel étendu, de conseils personnalisés et d'une certification professionnelle reconnue."
+        }
+    },
+    formations: {
+        q4: {
+            keywords: ['certificat', 'certifié', 'certification', 'diplôme', 'reconnu'],
+            question: "Les formations sont-elles certifiées ?",
+            answer: "Oui, toutes nos formations délivrent un certificat reconnu par les professionnels du secteur. Ce certificat atteste de vos compétences et peut faciliter votre intégration professionnelle."
+        },
+        q5: {
+            keywords: ['durée', 'temps', 'combien de temps', 'long', 'période'],
+            question: "Quelle est la durée des formations ?",
+            answer: "La durée varie selon le type de formation : de quelques jours pour les modules courts à plusieurs semaines pour les cursus complets. Consultez notre page Formations pour plus de détails sur chaque programme."
+        },
+        q6: {
+            keywords: ['sans membre', 'non membre', 'obligatoire', 'nécessaire'],
+            question: "Puis-je suivre une formation sans être membre ?",
+            answer: "Oui, les formations sont ouvertes à tous. Cependant, les membres bénéficient de tarifs préférentiels allant jusqu'à 30% de réduction."
+        },
+        q17: {
+            keywords: ['week-end', 'samedi', 'dimanche', 'weekend', 'disponibilité', 'horaire formation'],
+            question: "Les formations sont-elles disponibles le week-end ?",
+            answer: "Nous proposons des sessions de formation flexibles, y compris le samedi, pour s'adapter aux horaires des professionnels et des étudiants."
+        }
+    },
+    machines: {
+        q7: {
+            keywords: ['après-vente', 'garantie', 'réparation', 'maintenance', 'service'],
+            question: "Proposez-vous un service après-vente ?",
+            answer: "Absolument ! Nous offrons un service après-vente complet incluant la maintenance, les pièces de rechange et l'assistance technique. Une garantie de 1 à 2 ans est incluse selon le type de machine."
+        },
+        q8: {
+            keywords: ['neuve', 'occasion', 'état', 'qualité'],
+            question: "Les machines sont-elles neuves ou d'occasion ?",
+            answer: "Nous proposons principalement des machines neuves avec garantie constructeur. Nous avons également une sélection de machines d'occasion révisées et certifiées à prix réduit."
+        },
+        q9: {
+            keywords: ['paiement', 'crédit', 'facilité', 'échelonné', 'mensualité'],
+            question: "Proposez-vous des facilités de paiement ?",
+            answer: "Oui, nous proposons des solutions de paiement échelonné pour l'achat de machines. Les modalités sont définies au cas par cas en fonction du montant et de votre profil. Contactez-nous pour discuter des options."
+        },
+        q10: {
+            keywords: ['voir', 'tester', 'essayer', 'showroom', 'visite'],
+            question: "Puis-je voir les machines avant d'acheter ?",
+            answer: "Bien sûr ! Nous vous invitons à visiter notre showroom pour voir et tester les machines. Prenez rendez-vous via notre page contact ou WhatsApp."
+        },
+        q15: {
+            keywords: ['sur mesure', 'personnalisé', 'custom', 'spécial', 'commander', 'conception'],
+            question: "Puis-je commander une machine sur mesure ?",
+            answer: "Oui, nous sommes spécialisés dans la fabrication sur mesure. Nos ingénieurs peuvent concevoir une machine adaptée exactement à vos besoins et contraintes."
+        },
+        q16: {
+            keywords: ['livraison', 'livrer', 'expédition', 'transport', 'dehors', 'province'],
+            question: "Livrez-vous en dehors de Lubumbashi ?",
+            answer: "Oui, nous expédions nos machines dans toute la RDC. Les frais de transport sont calculés en fonction de la destination et du poids de la machine."
+        },
+        q18: {
+            keywords: ['garantie', 'couvre', 'assurance', 'défaut', 'protection'],
+            question: "Que couvre la garantie de vos machines ?",
+            answer: "La garantie couvre les défauts de fabrication et les pièces mécaniques principales. Elle ne couvre pas l'usure normale ou les dommages causés par une mauvaise utilisation."
+        }
+    },
+    services: {
+        q11: {
+            keywords: ['événement', 'networking', 'rencontre', 'réseau'],
+            question: "Organisez-vous des événements de networking ?",
+            answer: "Oui, nous organisons régulièrement des événements (trimestriels) où les membres peuvent se rencontrer, échanger et créer des partenariats. Les dates sont communiquées via notre newsletter."
+        },
+        q12: {
+            keywords: ['conseil', 'accompagnement', 'aide', 'support'],
+            question: "Proposez-vous des services de conseil ?",
+            answer: "Oui, nous offrons un accompagnement personnalisé pour le développement de votre activité : choix d'équipements, optimisation des processus, stratégie commerciale, etc."
+        },
+        q13: {
+            keywords: ['newsletter', 'abonner', 'actualité', 'informations'],
+            question: "Comment s'abonner à la newsletter ?",
+            answer: "Vous pouvez vous abonner directement via le formulaire dans le pied de page de notre site. Vous recevrez ensuite toutes nos actualités, événements et offres spéciales."
+        },
+        q14: {
+            keywords: ['chatbot', 'bot', 'assistant', 'répondre', 'questions', 'automatique', 'ia'],
+            question: "Le chatbot peut-il répondre à toutes mes questions ?",
+            answer: "Notre chatbot peut répondre aux questions courantes 24h/24 et 7j/7. Pour des demandes plus spécifiques, nous vous invitons à contacter directement notre équipe via WhatsApp ou le formulaire de contact."
+        }
+    },
+    privacy: {
+        p1: {
+            keywords: ['données', 'personnelles', 'confidentialité', 'privacy', 'rgpd', 'protection', 'vie privée', 'informations'],
+            question: "Comment mes données personnelles sont-elles protégées ?",
+            answer: "Nous prenons la protection de vos données très au sérieux. Toutes les informations collectées sont stockées de manière sécurisée et ne sont jamais partagées avec des tiers sans votre consentement explicite. Nous utilisons vos données uniquement pour améliorer nos services et vous tenir informé de nos actualités si vous y avez consenti."
+        },
+        p2: {
+            keywords: ['collecte', 'collecter', 'récupérer', 'données collectées', 'quelles informations'],
+            question: "Quelles données collectez-vous ?",
+            answer: "Nous collectons uniquement les informations nécessaires : nom, email, téléphone (si vous nous contactez), et les données de navigation anonymisées pour améliorer l'expérience utilisateur. Lors d'une inscription à une formation ou d'un achat de machine, nous collectons les informations nécessaires à la transaction."
+        },
+        p3: {
+            keywords: ['cookies', 'cookie', 'trackers', 'suivi', 'tracking'],
+            question: "Utilisez-vous des cookies ?",
+            answer: "Oui, nous utilisons des cookies essentiels pour le fonctionnement du site (mémorisation de la langue, panier, etc.). Nous n'utilisons pas de cookies publicitaires ou de suivi tiers. Vous pouvez gérer vos préférences de cookies dans les paramètres de votre navigateur."
+        },
+        p4: {
+            keywords: ['supprimer', 'effacer', 'compte', 'données', 'droit', 'oubli'],
+            question: "Puis-je supprimer mes données ?",
+            answer: "Absolument. Vous avez le droit de demander la suppression de vos données personnelles à tout moment. Contactez-nous par email à contact@gal-lubumbashi.com avec votre demande, et nous procéderons à la suppression dans les 30 jours."
+        },
+        p5: {
+            keywords: ['partage', 'vendre', 'tiers', 'partenaires', 'données partagées'],
+            question: "Partagez-vous mes données avec des tiers ?",
+            answer: "Non, nous ne vendons ni ne louons vos données personnelles. Nous ne les partageons qu'avec des prestataires de services essentiels (hébergement web, emailing) qui sont contractuellement tenus de protéger vos informations et de les utiliser uniquement pour les services demandés."
+        }
+    }
+};
+
+// Données détaillées des produits et services
+const formationsList = [
+    { title: "Électricité industrielle", keywords: ['électricité', 'électrique', 'industrielle', 'câblage', 'courant'], duration: "Complète", description: "Apprenez les fondamentaux de l'électricité industrielle, de l'installation aux normes de sécurité." },
+    { title: "Soudure et métallurgie", keywords: ['soudure', 'tig', 'mig', 'arc', 'métal', 'métallurgie', 'fer'], duration: "Avancée", description: "Maîtrisez les techniques de soudure TIG, MIG et arc électrique." },
+    { title: "Menuiserie professionnelle", keywords: ['menuiserie', 'bois', 'meuble', 'ébénisterie', 'table', 'chaise'], duration: "Professionnelle", description: "De la conception à la réalisation, apprenez l'art de la menuiserie moderne et traditionnelle." },
+    { title: "Plomberie sanitaire", keywords: ['plomberie', 'sanitaire', 'tuyau', 'eau', 'fuite'], duration: "Complète", description: "Formation complète sur les systèmes de plomberie, sanitaires et évacuation des eaux." },
+    { title: "Mécanique automobile", keywords: ['mécanique', 'auto', 'voiture', 'véhicule', 'moteur', 'panne'], duration: "Niveau Pro", description: "Diagnostic, réparation et entretien de tous types de véhicules." },
+    { title: "Gestion de chantier", keywords: ['gestion', 'chantier', 'btp', 'construction', 'chef', 'projet'], duration: "Managériale", description: "Apprenez à gérer efficacement un chantier de construction, de la planification à la livraison." }
 ];
 
 const machinesList = [
