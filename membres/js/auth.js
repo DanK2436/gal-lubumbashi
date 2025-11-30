@@ -25,5 +25,5 @@ export function logout() {
     localStorage.removeItem('memberToken');
     localStorage.removeItem('memberData');
     sessionStorage.removeItem('memberToken');
-    window.location.href = '/membres/login.html';
+    window.location.href = '../login.html';
 }
