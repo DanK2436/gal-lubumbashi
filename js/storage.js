@@ -24,10 +24,17 @@ const STORAGE_KEYS = {
 // Helper pour obtenir le chemin de base correct (GitHub Pages support)
 const getBasePath = () => {
   const path = window.location.pathname;
-  // Si on est dans un sous-dossier (html, admin, membres)
+
+  // Si on est dans un sous-dossier profond (membres/pages)
+  if (path.includes('/membres/pages/')) {
+    return '../../';
+  }
+
+  // Si on est dans un sous-dossier (html, admin, membres racine)
   if (path.includes('/html/') || path.includes('/admin/') || path.includes('/membres/')) {
     return '../';
   }
+
   // Si on est à la racine (index.html ou /)
   return './';
 };
