@@ -1,196 +1,211 @@
-bottom: 0;
-background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="2" fill="white" opacity="0.1" />
-</svg>');
-opacity: 0.3;
-}
+<!DOCTYPE html>
+<html lang="fr">
 
-.members-hero-content {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 4rem;
-align-items: center;
-position: relative;
-z-index: 1;
-}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Membre - GAL</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/components.css">
+    <link rel="stylesheet" href="../../css/utilities.css">
+    <style>
+        .members-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1" /></svg>');
+            opacity: 0.3;
+        }
 
-.members-hero-actions {
-display: flex;
-gap: 1rem;
-flex-wrap: wrap;
-}
+        .members-hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
 
-.hero-card {
-background: rgba(255, 255, 255, 0.1);
-backdrop-filter: blur(10px);
-border: 1px solid rgba(255, 255, 255, 0.2);
-border-radius: 1rem;
-padding: 2rem;
-text-align: center;
-}
+        .members-hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
 
-.hero-card-icon {
-font-size: 4rem;
-margin-bottom: 1rem;
-}
+        .hero-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+        }
 
-.hero-card h3 {
-font-size: 1.5rem;
-margin-bottom: 0.5rem;
-}
+        .hero-card-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
 
-.members-features {
-background: #f9fafb;
-}
+        .hero-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
 
-.features-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-gap: 2rem;
-}
+        .members-features {
+            background: #f9fafb;
+        }
 
-.feature-card {
-background: white;
-padding: 2rem;
-border-radius: 1rem;
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-transition: all 0.3s ease;
-}
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
 
-.feature-card:hover {
-transform: translateY(-5px);
-box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            transition: all 0.3s ease;
+        }
 
-.feature-icon {
-font-size: 3rem;
-margin-bottom: 1rem;
-}
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
 
-.members-auth {
-background: white;
-}
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
 
-.auth-wrapper {
-max-width: 600px;
-margin: 0 auto;
-}
+        .members-auth {
+            background: white;
+        }
 
-.auth-card {
-background: white;
-border-radius: 1rem;
-padding: 3rem;
-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
+        .auth-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-.logo-image {
-max-width: 200px;
-height: auto;
-display: block;
-margin: 0 auto;
-}
+        .auth-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
 
-.auth-tabs {
-display: flex;
-gap: 0.5rem;
-background: var(--color-bg-alt);
-padding: 0.25rem;
-border-radius: 0.5rem;
-}
+        .logo-image {
+            max-width: 200px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
 
-.auth-tab {
-flex: 1;
-padding: 0.75rem 1rem;
-background: transparent;
-border: none;
-border-radius: 0.375rem;
-cursor: pointer;
-font-weight: 600;
-transition: all 0.2s;
-}
+        .auth-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--color-bg-alt);
+            padding: 0.25rem;
+            border-radius: 0.5rem;
+        }
 
-.auth-tab.active {
-background: white;
-color: var(--color-primary);
-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
 
-.auth-tab:not(.active):hover {
-background: rgba(0, 0, 0, 0.05);
-}
+        .auth-tab.active {
+            background: white;
+            color: var(--color-primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
 
-.checkbox-label {
-display: flex;
-align-items: center;
-gap: 0.5rem;
-cursor: pointer;
-}
+        .auth-tab:not(.active):hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
 
-@media (max-width: 768px) {
-.members-hero {
-padding: 4rem 0;
-}
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
 
-.members-hero-content {
-grid-template-columns: 1fr;
-gap: 2rem;
-}
+        @media (max-width: 768px) {
+            .members-hero {
+                padding: 4rem 0;
+            }
 
-.auth-card {
-padding: 2rem;
-}
+            .members-hero-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
 
-.features-grid {
-grid-template-columns: 1fr;
-}
-}
+            .auth-card {
+                padding: 2rem;
+            }
 
-/* Smooth scroll */
-html {
-scroll-behavior: smooth;
-}
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
-/* Animation */
-@keyframes fadeInUp {
-from {
-opacity: 0;
-transform: translateY(30px);
-}
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
 
-to {
-opacity: 1;
-transform: translateY(0);
-}
-}
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
 
-.feature-card {
-animation: fadeInUp 0.6s ease-out;
-}
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.feature-card:nth-child(1) {
-animation-delay: 0.1s;
-}
+        .feature-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
 
-.feature-card:nth-child(2) {
-animation-delay: 0.2s;
-}
+        .feature-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
 
-.feature-card:nth-child(3) {
-animation-delay: 0.3s;
-}
+        .feature-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
 
-.feature-card:nth-child(4) {
-animation-delay: 0.4s;
-}
+        .feature-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
 
-.feature-card:nth-child(5) {
-animation-delay: 0.5s;
-}
+        .feature-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
 
-.feature-card:nth-child(6) {
-animation-delay: 0.6s;
-}
-</style>
+        .feature-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .feature-card:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+    </style>
 </head>
 
 <body>
