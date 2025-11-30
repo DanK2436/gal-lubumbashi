@@ -9,16 +9,19 @@ function createBlogCard(post) {
     const div = document.createElement('div');
     div.className = 'bg-white group hover:shadow-xl transition-shadow duration-300';
 
+    const imageSrc = post.cover || post.image || 'https://picsum.photos/400/300?random=' + post.id;
+    const category = post.category || (post.tags && post.tags.length > 0 ? post.tags[0] : 'Général');
+
     div.innerHTML = `
         <div class="h-48 overflow-hidden">
-            <img src="${post.image || 'https://picsum.photos/400/300?random=' + post.id}" alt="${post.title}"
+            <img src="${imageSrc}" alt="${post.title}"
                 class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
         </div>
         <div class="p-8">
-            <div class="text-xs font-bold text-red-700 uppercase tracking-wider mb-2">${post.category || 'Général'}</div>
+            <div class="text-xs font-bold text-red-700 uppercase tracking-wider mb-2">${category}</div>
             <h3 class="text-xl font-bold text-gray-900 mb-4 group-hover:text-red-700 transition-colors">
                 ${post.title}</h3>
-            <p class="text-gray-500 text-sm mb-6">${post.excerpt || ''}</p>
+            <p class="text-gray-500 text-sm mb-6 line-clamp-3">${post.excerpt || ''}</p>
             <button class="inline-flex items-center text-sm font-bold uppercase text-gray-900 hover:text-red-700 transition-colors" onclick="showArticleModal('${post.id}')">
                 Lire l'article
                 <svg class="h-4 w-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

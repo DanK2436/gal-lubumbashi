@@ -1,5 +1,6 @@
 import { getMachines, saveReservation, initStorage } from '../storage.js';
 import { t, initI18n } from '../i18n.js';
+import { showToast } from '../ui.js';
 
 let allMachines = [];
 let currentCategory = 'all';
@@ -158,12 +159,12 @@ function createReservationModal() {
 
         try {
             await saveReservation(data);
-            alert('Votre demande de réservation a été enregistrée avec succès ! Nous vous contacterons bientôt.');
+            showToast('🎉 Votre demande de réservation a été enregistrée avec succès ! Nous vous contacterons bientôt.', 'success', 6000);
             closeReservationModal();
             e.target.reset();
         } catch (error) {
             console.error(error);
-            alert('Une erreur est survenue.');
+            showToast('❌ Une erreur est survenue. Veuillez réessayer.', 'error');
         } finally {
             btn.disabled = false;
             btn.textContent = originalText;

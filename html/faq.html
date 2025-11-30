@@ -239,8 +239,8 @@
                 <div>
                     <h4 class="font-bold uppercase tracking-wider text-sm mb-4 text-red-700">Newsletter</h4>
                     <p class="text-gray-500 text-sm mb-4">Restez informé de nos dernières formations et machines.</p>
-                    <form class="flex flex-col gap-2">
-                        <input type="email" placeholder="Votre email"
+                    <form id="footer-newsletter-form" class="flex flex-col gap-2">
+                        <input type="email" id="footer-newsletter-email" placeholder="Votre email"
                             class="bg-gray-50 border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:border-red-700 transition-colors">
                         <button type="submit"
                             class="bg-red-700 text-white px-4 py-2 text-sm font-bold uppercase tracking-wide hover:bg-red-800 transition-colors">S'abonner</button>
@@ -272,6 +272,7 @@
     </footer>
     <script src="../js/menu.js"></script>
     <script src="../js/chatbot-standalone.js"></script>
+    <script type="module" src="../js/newsletter.js"></script>
     <script type='module' src='../js/pages/faq.js'></script>
 </body>
 

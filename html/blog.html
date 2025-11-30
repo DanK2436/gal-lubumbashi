@@ -110,6 +110,7 @@
             </div>
         </div>
     </nav>
+
     <main>
         <div class="bg-gray-50 min-h-screen py-20">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -135,108 +136,8 @@
                 </div>
             </div>
         </div>
-
-        <script type="module">
-            // Simple placeholder - you can add dynamic blog loading here
-            const container = document.getElementById('blog-container');
-
-            // Example blog posts (replace with actual data source)
-            const blogPosts = [
-                {
-                    id: 1,
-                    title: "L'Innovation dans l'Artisanat Congolais",
-                    excerpt: "Découvrez comment le GAL transforme l'industrie locale avec des solutions innovantes et durables.",
-                    image: "https://picsum.photos/400/300?random=1",
-                    date: "2025-01-15",
-                    category: "Innovation",
-                    author: "Équipe GAL"
-                },
-                {
-                    id: 2,
-                    title: "Guide Complet des Machines Agricoles",
-                    excerpt: "Tout ce que vous devez savoir sur nos batteuses à maïs et rapeuses à manioc pour optimiser vos rendements.",
-                    image: "https://picsum.photos/400/300?random=2",
-                    date: "2025-01-10",
-                    category: "Agriculture",
-                    author: "Équipe GAL"
-                },
-                {
-                    id: 3,
-                    title: "Construire Durablement au Congo",
-                    excerpt: "Les meilleures pratiques pour utiliser nos équipements de construction de manière efficace.",
-                    image: "https://picsum.photos/400/300?random=3",
-                    date: "2025-01-05",
-                    category: "Construction",
-                    author: "Équipe GAL"
-                }
-            ];
-
-            function renderBlogPosts() {
-                if (blogPosts.length === 0) {
-                    container.innerHTML = `
-                <div class="text-center col-span-full py-12">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-                    </svg>
-                    <p class="mt-4 text-gray-500 font-medium">Aucun article disponible pour le moment.</p>
-                </div>
-            `;
-                    return;
-                }
-
-                container.innerHTML = blogPosts.map(post => `
-            <article class="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full group">
-                <div class="relative h-56 overflow-hidden">
-                    <img src="${post.image}" 
-                         alt="${post.title}" 
-                         class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                         onerror="this.src='https://placehold.co/400x300?text=${encodeURIComponent(post.title)}'">
-                    
-                    <div class="absolute top-4 left-4">
-                        <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-sm">
-                            ${post.category}
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="p-6 flex-grow flex flex-col">
-                    <div class="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                        <div class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <span>${new Date(post.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                        </div>
-                        <span>•</span>
-                        <span>${post.author}</span>
-                    </div>
-
-                    <h2 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-700 transition-colors line-clamp-2">
-                        ${post.title}
-                    </h2>
-                    
-                    <p class="text-gray-600 text-sm mb-6 line-clamp-3 flex-grow">
-                        ${post.excerpt}
-                    </p>
-
-                    <div class="mt-auto pt-4 border-t border-gray-100">
-                        <button onclick="alert('Article complet à venir')" 
-                                class="w-full bg-gray-900 text-white py-3 px-4 rounded-lg font-bold uppercase text-sm tracking-wide hover:bg-red-700 transition-colors flex items-center justify-center gap-2 group">
-                            Lire l'article
-                            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </article>
-        `).join('');
-            }
-
-            // Render blog posts
-            renderBlogPosts();
-        </script>
     </main>
+
     <footer class="bg-white border-t border-gray-200 pt-16 pb-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
@@ -287,8 +188,8 @@
                 <div>
                     <h4 class="font-bold uppercase tracking-wider text-sm mb-4 text-red-700">Newsletter</h4>
                     <p class="text-gray-500 text-sm mb-4">Restez informé de nos dernières formations et machines.</p>
-                    <form class="flex flex-col gap-2">
-                        <input type="email" placeholder="Votre email"
+                    <form id="footer-newsletter-form" class="flex flex-col gap-2">
+                        <input type="email" id="footer-newsletter-email" placeholder="Votre email"
                             class="bg-gray-50 border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:border-red-700 transition-colors">
                         <button type="submit"
                             class="bg-red-700 text-white px-4 py-2 text-sm font-bold uppercase tracking-wide hover:bg-red-800 transition-colors">S'abonner</button>
@@ -318,9 +219,11 @@
             </div>
         </div>
     </footer>
+
     <script src="../js/menu.js"></script>
     <script src="../js/chatbot-standalone.js"></script>
-    <script type='module' src='../js/pages/blog.js'></script>
+    <script type="module" src="../js/newsletter.js"></script>
+    <script type="module" src="../js/pages/blog.js"></script>
 </body>
 
 </html>

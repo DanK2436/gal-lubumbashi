@@ -1,53 +1,54 @@
-import { getFormations, initStorage } from '../storage.js';
+import { getFormations, initStorage, saveFormationRegistration } from '../storage.js';
 import { showToast } from '../ui.js';
 import { t, initI18n } from '../i18n.js';
 
 let allFormations = [];
+let currentCategory = 'all';
 
 // Create formation card
 function createFormationCard(formation) {
     const div = document.createElement('div');
-    div.className = 'bg-white border-l-4 border-red-700 p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row gap-8 items-center';
+    div.className = 'bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full';
 
     div.innerHTML = `
-        <div class="flex-1">
-            <h3 class="text-2xl font-bold text-gray-900 mb-2">${formation.title}</h3>
-            <p class="text-gray-600 mb-4">${formation.description}</p>
-            <div class="flex flex-wrap gap-4 text-sm font-medium text-gray-500">
-                <span class="flex items-center gap-1">
-                    <svg class="h-4 w-4 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Certificat Inclus
-                </span>
-                <span class="flex items-center gap-1">
-                    <svg class="h-4 w-4 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    ${formation.duration}
-                </span>
-                <span class="flex items-center gap-1">
-                    <svg class="h-4 w-4 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    ${formation.level || 'Tous niveaux'}
+        <div class="relative h-48 overflow-hidden">
+            <img src="${formation.image || 'https://placehold.co/600x400?text=Formation'}" 
+                 alt="${formation.title}" 
+                 class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
+            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-red-700 shadow-sm">
+                ${formation.price || 'Sur devis'}
+            </div>
+            <div class="absolute top-4 left-4">
+                <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-sm">
+                    ${formation.category}
                 </span>
             </div>
-            ${formation.modules ? `
-                <div class="mt-4 pt-4 border-t border-gray-100">
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Modules inclus :</p>
-                    <ul class="list-disc list-inside text-sm text-gray-600 grid grid-cols-1 md:grid-cols-2 gap-1">
-                        ${formation.modules.slice(0, 4).map(m => `<li>${m}</li>`).join('')}
-                        ${formation.modules.length > 4 ? `<li>+ ${formation.modules.length - 4} autres...</li>` : ''}
-                    </ul>
-                </div>
-            ` : ''}
         </div>
-        <div class="text-right flex-shrink-0 w-full md:w-auto flex flex-row md:flex-col justify-between items-center md:items-end gap-4">
-            <div class="text-3xl font-black text-gray-900">${formation.price}</div>
-            <button class="bg-gray-900 text-white px-6 py-3 font-bold uppercase text-sm hover:bg-red-700 transition-colors whitespace-nowrap w-full md:w-auto" onclick="showReservationModal('${formation.id}')">
-                Réserver
-            </button>
+        
+        <div class="p-6 flex-grow flex flex-col">
+            <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>${formation.duration || 'Durée variable'}</span>
+                <span class="mx-2">•</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                <span>${formation.level || 'Tous niveaux'}</span>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">${formation.title}</h3>
+            <p class="text-gray-600 mb-4 line-clamp-3 flex-grow">${formation.description}</p>
+            
+            <div class="mt-auto pt-4 border-t border-gray-100">
+                <button class="w-full bg-gray-900 text-white py-3 px-4 rounded-lg font-bold uppercase text-sm tracking-wide hover:bg-red-700 transition-colors flex items-center justify-center gap-2 group" onclick="showReservationModal('${formation.id}')">
+                    Réserver
+                    <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
     `;
 
@@ -63,6 +64,7 @@ async function loadFormations() {
     try {
         allFormations = await getFormations();
         renderFormations();
+        setupFilters();
     } catch (error) {
         console.error('Erreur chargement formations:', error);
         container.innerHTML = '<div class="text-center text-red-500 py-12">Erreur lors du chargement des formations.</div>';
@@ -74,14 +76,41 @@ function renderFormations() {
     const container = document.getElementById('formations-container');
     if (!container) return;
 
-    if (allFormations.length === 0) {
-        container.innerHTML = '<div class="text-center text-gray-500 py-12">Aucune formation disponible pour le moment.</div>';
+    const filtered = currentCategory === 'all'
+        ? allFormations
+        : allFormations.filter(f => f.category === currentCategory);
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="text-center text-gray-500 py-12">Aucune formation disponible pour cette catégorie.</div>';
         return;
     }
 
     container.innerHTML = '';
-    allFormations.forEach(formation => {
+    filtered.forEach(formation => {
         container.appendChild(createFormationCard(formation));
+    });
+}
+
+// Setup filters
+function setupFilters() {
+    const container = document.getElementById('formation-filters');
+    if (!container) return;
+
+    const categories = ['all', ...new Set(allFormations.map(f => f.category))];
+
+    container.innerHTML = categories.map(cat => `
+        <button class="filter-btn px-6 py-2 font-bold uppercase text-sm tracking-wider border-2 transition-all ${currentCategory === cat ? 'border-red-700 bg-red-700 text-white' : 'border-gray-300 text-gray-700 hover:border-red-700 hover:text-red-700'}"
+            data-category="${cat}">
+            ${cat === 'all' ? 'Toutes' : cat}
+        </button>
+    `).join('');
+
+    container.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentCategory = btn.dataset.category;
+            renderFormations();
+            setupFilters();
+        });
     });
 }
 
@@ -91,7 +120,94 @@ export function init() {
 
     // Global function for reservation button
     window.showReservationModal = (id) => {
-        showToast('Fonctionnalité de réservation bientôt disponible', 'info');
+        const formation = allFormations.find(f => f.id === id);
+        if (!formation) return;
+
+        const modalHTML = `
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Réserver une formation</h2>
+                <p class="text-gray-600">${formation.title}</p>
+                <p class="text-red-700 font-bold text-xl mt-2">${formation.price}</p>
+            </div>
+            <form id="reservation-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Nom complet *</label>
+                    <input type="text" required name="fullName"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-red-700 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Email *</label>
+                    <input type="email" required name="email"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-red-700 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Téléphone *</label>
+                    <input type="tel" required name="phone"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-red-700 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Message (optionnel)</label>
+                    <textarea name="message" rows="3"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-red-700 transition-colors"></textarea>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" id="cancel-reservation" 
+                        class="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-bold hover:bg-gray-50 transition-colors">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-6 py-3 bg-red-700 text-white rounded-lg font-bold hover:bg-red-800 transition-colors">
+                        Confirmer la réservation
+                    </button>
+                </div>
+            </form>
+        `;
+
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'fixed inset-0 z-50 flex items-center justify-center';
+        modalDiv.innerHTML = `
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+            <div class="relative bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-6 max-h-[90vh] overflow-y-auto">
+                ${modalHTML}
+            </div>
+        `;
+
+        document.body.appendChild(modalDiv);
+        document.body.style.overflow = 'hidden';
+
+        const closeModal = () => {
+            modalDiv.remove();
+            document.body.style.overflow = '';
+        };
+
+        modalDiv.querySelector('.absolute').addEventListener('click', closeModal);
+        modalDiv.querySelector('#cancel-reservation').addEventListener('click', closeModal);
+
+        modalDiv.querySelector('#reservation-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const registrationData = {
+                formationId: id,
+                formationTitle: formation.title,
+                level: formation.level || 'Non spécifié',
+                userName: formData.get('fullName'),
+                userEmail: formData.get('email'),
+                userPhone: formData.get('phone'),
+                message: formData.get('message') || '',
+                date: new Date().toISOString(),
+                status: 'En attente'
+            };
+
+            try {
+                await saveFormationRegistration(registrationData);
+                console.log('✅ Inscription sauvegardée:', registrationData);
+                showToast(`🎉 Merci ${registrationData.userName}! Votre demande d'inscription pour "${formation.title}" a été envoyée avec succès. Nous vous contacterons bientôt.`, 'success', 6000);
+                closeModal();
+            } catch (error) {
+                console.error('❌ Erreur lors de la sauvegarde:', error);
+                showToast('❌ Une erreur est survenue. Veuillez réessayer.', 'error', 4000);
+            }
+        });
     };
 }
 

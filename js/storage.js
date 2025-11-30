@@ -17,7 +17,8 @@ const STORAGE_KEYS = {
   LANGUAGE: 'gal_language',
   CHATBOT_HISTORY: 'gal_chatbot_history',
   RESERVATIONS: 'gal_reservations',
-  FORMATION_REGISTRATIONS: 'gal_formation_registrations'
+  FORMATION_REGISTRATIONS: 'gal_formation_registrations',
+  MEMBERS: 'gal_members'
 };
 
 // Helper pour obtenir le chemin de base correct (GitHub Pages support)
@@ -91,6 +92,20 @@ export async function initStorage() {
         .then(data => localStorage.setItem(STORAGE_KEYS.PAGES, JSON.stringify(data)))
         .catch(() => localStorage.setItem(STORAGE_KEYS.PAGES, JSON.stringify({})))
     );
+  }
+
+  // Initialiser les membres par défaut si nécessaire
+  if (!localStorage.getItem(STORAGE_KEYS.MEMBERS)) {
+    const defaultMember = {
+      id: 'default-member',
+      name: 'Dan Kande',
+      email: 'dankande3@gmail.com',
+      password: 'Danknd243&',
+      phone: '+243000000000',
+      dateJoined: new Date().toISOString(),
+      status: 'Actif'
+    };
+    localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify([defaultMember]));
   }
 
   // Attendre que toutes les promesses soient résolues
@@ -501,6 +516,60 @@ export async function updateFormationRegistrationStatus(id, status) {
   return null;
 }
 
+// ===== MEMBRES =====
+
+export async function getMembers() {
+  const data = localStorage.getItem(STORAGE_KEYS.MEMBERS);
+  return data ? JSON.parse(data) : [];
+}
+
+export async function getMemberById(id) {
+  const members = await getMembers();
+  return members.find(m => m.id === id);
+}
+
+export async function getMemberByEmail(email) {
+  const members = await getMembers();
+  return members.find(m => m.email === email);
+}
+
+export async function createMember(member) {
+  const members = await getMembers();
+
+  // Vérifier si l'email existe déjà
+  if (members.find(m => m.email === member.email)) {
+    throw new Error('Cet email est déjà utilisé');
+  }
+
+  const newMember = {
+    ...member,
+    id: Date.now().toString(),
+    dateJoined: new Date().toISOString(),
+    status: member.status || 'Actif'
+  };
+  members.push(newMember);
+  localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(members));
+  return newMember;
+}
+
+export async function updateMember(id, updates) {
+  const members = await getMembers();
+  const index = members.findIndex(m => m.id === id);
+  if (index !== -1) {
+    members[index] = { ...members[index], ...updates };
+    localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(members));
+    return members[index];
+  }
+  return null;
+}
+
+export async function deleteMember(id) {
+  const members = await getMembers();
+  const filtered = members.filter(m => m.id !== id);
+  localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(filtered));
+  return true;
+}
+
 // ===== EXPORT PAR DÉFAUT =====
 export default {
   initStorage,
@@ -548,5 +617,11 @@ export default {
   getFormationRegistrations,
   saveFormationRegistration,
   deleteFormationRegistration,
-  updateFormationRegistrationStatus
+  updateFormationRegistrationStatus,
+  getMembers,
+  getMemberById,
+  getMemberByEmail,
+  createMember,
+  updateMember,
+  deleteMember
 };
