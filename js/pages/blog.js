@@ -22,7 +22,7 @@ function createBlogCard(post) {
             <h3 class="text-xl font-bold text-gray-900 mb-4 group-hover:text-red-700 transition-colors">
                 ${post.title}</h3>
             <p class="text-gray-500 text-sm mb-6 line-clamp-3">${post.excerpt || ''}</p>
-            <button class="inline-flex items-center text-sm font-bold uppercase text-gray-900 hover:text-red-700 transition-colors" onclick="showArticleModal('${post.id}')">
+            <button class="inline-flex items-center text-sm font-bold uppercase text-gray-900 hover:text-red-700 transition-colors" onclick="window.showArticleModal('${post.id}')">
                 Lire l'article
                 <svg class="h-4 w-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -72,7 +72,32 @@ export function init() {
 
     // Global function for article modal
     window.showArticleModal = (id) => {
-        showToast('Lecture d\'article bientôt disponible', 'info');
+        const post = allPosts.find(p => p.id === id);
+        if (!post) return;
+
+        const modal = document.getElementById('article-modal');
+        const title = document.getElementById('modal-title');
+        const image = document.getElementById('modal-image');
+        const meta = document.getElementById('modal-meta');
+        const content = document.getElementById('modal-content');
+
+        if (modal && title && image && meta && content) {
+            title.textContent = post.title;
+            image.src = post.cover || post.image || 'https://picsum.photos/800/400?random=' + post.id;
+            meta.textContent = `Publié le ${new Date(post.date).toLocaleDateString('fr-FR')} | ${post.category || 'Général'}`;
+            content.innerHTML = post.content || post.excerpt || 'Contenu non disponible.';
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+    };
+
+    window.closeArticleModal = () => {
+        const modal = document.getElementById('article-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
     };
 
     // Newsletter form
