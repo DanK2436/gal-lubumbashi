@@ -73,15 +73,15 @@ async function loadPage(page) {
             await loadContacts();
             break;
         case 'membres':
-            main.innerHTML = loadMembresManager('members');
+            main.innerHTML = await loadMembresManager('members');
             initMemberFormHandlers();
             break;
         case 'messages':
-            main.innerHTML = loadMembresManager('messages');
+            main.innerHTML = await loadMembresManager('messages');
             initMemberFormHandlers();
             break;
         case 'annonces':
-            main.innerHTML = loadMembresManager('annonces');
+            main.innerHTML = await loadMembresManager('annonces');
             initMemberFormHandlers();
             break;
         case 'chantiers':

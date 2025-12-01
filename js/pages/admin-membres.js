@@ -1,15 +1,34 @@
 /**
  * admin-membres.js - Gestion des membres, messages et annonces
  * GAL - Groupement des Artisans de Lubumbashi
+ * Version Supabase
  */
 
 import { showToast } from '../ui.js';
+import {
+    getMembers,
+    createMember,
+    updateMember,
+    deleteMember
+} from '../storage.js';
+
+// Fonctions temporaires pour messages/annonces (restent en localStorage pour l'instant)
+function getMessages() { return JSON.parse(localStorage.getItem('gal_messages') || '[]'); }
+function getAnnonces() { return JSON.parse(localStorage.getItem('gal_member_messages') || '[]'); }
 
 /**
  * Charger et afficher la page de gestion des membres
  */
-export function loadMembresManager(activeTab = 'members') {
-    const members = getMembers();
+export async function loadMembresManager(activeTab = 'members') {
+    // Charger les données (async pour Supabase)
+    let members = [];
+    try {
+        members = await getMembers();
+    } catch (error) {
+        console.error('Erreur chargement membres:', error);
+        showToast('Erreur lors du chargement des membres', 'error');
+    }
+
     const messages = getMessages();
     const annonces = getAnnonces();
 
@@ -240,13 +259,12 @@ function renderModals() {
     `;
 }
 
-// Data Getters
-function getMembers() { return JSON.parse(localStorage.getItem('gal_members') || '[]'); }
-function getMessages() { return JSON.parse(localStorage.getItem('gal_messages') || '[]'); }
-function getAnnonces() { return JSON.parse(localStorage.getItem('gal_member_messages') || '[]'); }
 function getRecentMembers(members, days) {
     const now = new Date();
-    return members.filter(m => (now - new Date(m.createdAt)) / (1000 * 60 * 60 * 24) < days);
+    return members.filter(m => {
+        const date = m.created_at || m.createdAt; // Support Supabase & Legacy
+        return (now - new Date(date)) / (1000 * 60 * 60 * 24) < days;
+    });
 }
 
 // Render Rows
@@ -255,9 +273,9 @@ function renderMembersRows(members) {
         <tr>
             <td><strong>${escapeHtml(m.name)}</strong></td>
             <td>${escapeHtml(m.email)}</td>
-            <td>${escapeHtml(m.phone)}</td>
-            <td>${formatDate(m.createdAt)}</td>
-            <td>${isRecent(m.createdAt) ? '⭐ Nouveau' : '✓ Actif'}</td>
+            <td>${escapeHtml(m.phone || '')}</td>
+            <td>${formatDate(m.created_at || m.createdAt)}</td>
+            <td>${isRecent(m.created_at || m.createdAt) ? '⭐ Nouveau' : '✓ Actif'}</td>
             <td>
                 <button class="action-btn" onclick="window.adminMembres.showMessageModal('${m.id}')" title="Message">💬</button>
                 <button class="action-btn" onclick="window.adminMembres.editMember('${m.id}')" title="Modifier">✏️</button>
@@ -303,9 +321,16 @@ function renderAnnoncesRows(annonces) {
 }
 
 // Helpers
-function formatDate(date) { return new Date(date).toLocaleDateString('fr-FR'); }
-function isRecent(date) { return (new Date() - new Date(date)) / (1000 * 60 * 60 * 24) < 7; }
+function formatDate(date) {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString('fr-FR');
+}
+function isRecent(date) {
+    if (!date) return false;
+    return (new Date() - new Date(date)) / (1000 * 60 * 60 * 24) < 7;
+}
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
@@ -340,59 +365,78 @@ window.adminMembres = {
         document.getElementById('modal-title').textContent = 'Ajouter un membre';
         document.getElementById('member-modal').classList.add('active');
     },
-    editMember(id) {
-        const member = getMembers().find(m => m.id === id);
-        if (!member) return;
-        const form = document.getElementById('member-form');
-        document.getElementById('member-id').value = member.id;
-        form.name.value = member.name;
-        form.email.value = member.email;
-        form.phone.value = member.phone;
-        document.getElementById('member-password').required = false;
-        document.getElementById('modal-title').textContent = 'Modifier le membre';
-        document.getElementById('member-modal').classList.add('active');
+    async editMember(id) {
+        try {
+            const members = await getMembers();
+            const member = members.find(m => m.id === id);
+            if (!member) return;
+            const form = document.getElementById('member-form');
+            document.getElementById('member-id').value = member.id;
+            form.name.value = member.name;
+            form.email.value = member.email;
+            form.phone.value = member.phone || '';
+            document.getElementById('member-password').required = false;
+            document.getElementById('modal-title').textContent = 'Modifier le membre';
+            document.getElementById('member-modal').classList.add('active');
+        } catch (error) {
+            console.error(error);
+            showToast('Erreur chargement membre', 'error');
+        }
     },
-    deleteMember(id) {
+    async deleteMember(id) {
         if (!confirm('Supprimer ce membre ?')) return;
-        const members = getMembers().filter(m => m.id !== id);
-        localStorage.setItem('gal_members', JSON.stringify(members));
-        refreshPage();
-        showToast('Membre supprimé', 'success');
+        try {
+            await deleteMember(id);
+            await refreshPage();
+            showToast('Membre supprimé', 'success');
+        } catch (error) {
+            console.error(error);
+            showToast('Erreur suppression: ' + error.message, 'error');
+        }
     },
 
     // Message Actions
-    showMessageModal(memberId = null) {
+    async showMessageModal(memberId = null) {
         // Populate members dropdown
-        const members = getMembers();
-        const select = document.getElementById('message-recipient');
-        select.innerHTML = '<option value="">Sélectionner un membre</option>' +
-            members.map(m => `<option value="${m.id}">${escapeHtml(m.name)} (${escapeHtml(m.email)})</option>`).join('');
+        try {
+            const members = await getMembers();
+            const select = document.getElementById('message-recipient');
+            select.innerHTML = '<option value="">Sélectionner un membre</option>' +
+                members.map(m => `<option value="${m.id}">${escapeHtml(m.name)} (${escapeHtml(m.email)})</option>`).join('');
 
-        if (memberId) {
-            select.value = memberId;
+            if (memberId) {
+                select.value = memberId;
+            }
+
+            document.getElementById('message-id').value = '';
+            document.getElementById('message-modal-title').textContent = 'Envoyer un message';
+            document.getElementById('message-modal').classList.add('active');
+        } catch (error) {
+            console.error(error);
+            showToast('Erreur chargement membres', 'error');
         }
-
-        document.getElementById('message-id').value = '';
-        document.getElementById('message-modal-title').textContent = 'Envoyer un message';
-        document.getElementById('message-modal').classList.add('active');
     },
-    editMessage(id) {
+    async editMessage(id) {
         const msg = getMessages().find(m => m.id === id);
         if (!msg) return;
 
         // Populate members dropdown
-        const members = getMembers();
-        const select = document.getElementById('message-recipient');
-        select.innerHTML = '<option value="">Sélectionner un membre</option>' +
-            members.map(m => `<option value="${m.id}">${escapeHtml(m.name)} (${escapeHtml(m.email)})</option>`).join('');
+        try {
+            const members = await getMembers();
+            const select = document.getElementById('message-recipient');
+            select.innerHTML = '<option value="">Sélectionner un membre</option>' +
+                members.map(m => `<option value="${m.id}">${escapeHtml(m.name)} (${escapeHtml(m.email)})</option>`).join('');
 
-        const form = document.getElementById('message-form');
-        document.getElementById('message-id').value = msg.id;
-        select.value = msg.recipientId;
-        form.subject.value = msg.subject;
-        form.message.value = msg.message;
-        document.getElementById('message-modal-title').textContent = 'Modifier le message';
-        document.getElementById('message-modal').classList.add('active');
+            const form = document.getElementById('message-form');
+            document.getElementById('message-id').value = msg.id;
+            select.value = msg.recipientId;
+            form.subject.value = msg.subject;
+            form.message.value = msg.message;
+            document.getElementById('message-modal-title').textContent = 'Modifier le message';
+            document.getElementById('message-modal').classList.add('active');
+        } catch (error) {
+            console.error(error);
+        }
     },
     deleteMessage(id) {
         if (!confirm('Supprimer ce message ?')) return;
@@ -427,44 +471,51 @@ window.adminMembres = {
     }
 };
 
-function refreshPage() {
+async function refreshPage() {
     // Trouver l'onglet actif actuel
     const activeTab = document.querySelector('.tab-content.active')?.id.replace('tab-', '') || 'members';
-    document.getElementById('admin-main').innerHTML = loadMembresManager(activeTab);
+    // Mettre à jour le contenu
+    const html = await loadMembresManager(activeTab);
+    document.getElementById('admin-main').innerHTML = html;
     initMemberFormHandlers();
 }
 
 export function initMemberFormHandlers() {
     // Member Form
-    document.getElementById('member-form')?.addEventListener('submit', (e) => {
+    document.getElementById('member-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Enregistrement...';
+
         const formData = new FormData(e.target);
-        const members = getMembers();
         const id = formData.get('id');
         const data = {
             name: formData.get('name'),
             email: formData.get('email'),
             phone: formData.get('phone')
         };
+        const password = formData.get('password');
+        if (password) data.password = password;
 
-        if (id) {
-            const index = members.findIndex(m => m.id === id);
-            if (index !== -1) {
-                members[index] = { ...members[index], ...data };
-                if (formData.get('password')) members[index].password = formData.get('password');
+        try {
+            if (id) {
+                await updateMember(id, data);
+                showToast('Membre modifié', 'success');
+            } else {
+                await createMember(data);
+                showToast('Membre créé', 'success');
             }
-        } else {
-            members.push({
-                id: Date.now().toString(),
-                ...data,
-                password: formData.get('password'),
-                createdAt: new Date().toISOString()
-            });
+            window.adminMembres.closeModal('member-modal');
+            await refreshPage();
+        } catch (error) {
+            console.error(error);
+            showToast('Erreur: ' + error.message, 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
         }
-        localStorage.setItem('gal_members', JSON.stringify(members));
-        window.adminMembres.closeModal('member-modal');
-        refreshPage();
-        showToast('Membre enregistré', 'success');
     });
 
     // Message Form
