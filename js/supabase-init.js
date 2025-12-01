@@ -11,7 +11,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabaseConfig = {
     url: "https://isshhhysudktvowdzzwc.supabase.co",
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlzc2hoaHlzdWRrdHZvd2R6endjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMwODUxMDcsImV4cCI6MjA0ODY2MTEwN30.sb_publishable_iniEKgijEkYshMfTNBQ8hg_oSAOeipp"
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlzc2hoaHlzdWRrdHZvd2R6endjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MTkxNDIsImV4cCI6MjA4MDE5NTE0Mn0.XvzQ2JocU-8ln9Cc0W38E9XWBYxnqLZDZILvj5j4at4"
 };
 
 // Initialisation de Supabase
