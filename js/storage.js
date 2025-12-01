@@ -301,6 +301,113 @@ export async function deleteProject(id) {
   return await supabaseDelete('projects', id);
 }
 
+// ===== MESSAGES (Messages privés aux membres) =====
+
+export async function getMessages() {
+  return await getCollection('messages', { orderBy: 'sent_at', ascending: false });
+}
+
+export async function getMessageById(id) {
+  return await getDocument('messages', id);
+}
+
+export async function getMessagesByRecipient(recipientId) {
+  return await queryDocuments('messages', {
+    filters: [{ column: 'recipient_id', value: recipientId }],
+    orderBy: 'sent_at',
+    ascending: false
+  });
+}
+
+export async function createMessage(message) {
+  return await addDocument('messages', {
+    ...message,
+    read: false,
+    comments: message.comments || []
+  });
+}
+
+export async function updateMessage(id, updates) {
+  return await supabaseUpdate('messages', id, updates);
+}
+
+export async function deleteMessage(id) {
+  return await supabaseDelete('messages', id);
+}
+
+// ===== ANNOUNCEMENTS (Annonces générales) =====
+
+export async function getAnnouncements() {
+  return await getCollection('announcements', { orderBy: 'sent_at', ascending: false });
+}
+
+export async function getAnnouncementById(id) {
+  return await getDocument('announcements', id);
+}
+
+export async function createAnnouncement(announcement) {
+  return await addDocument('announcements', {
+    ...announcement,
+    comments: announcement.comments || []
+  });
+}
+
+export async function updateAnnouncement(id, updates) {
+  return await supabaseUpdate('announcements', id, updates);
+}
+
+export async function deleteAnnouncement(id) {
+  return await supabaseDelete('announcements', id);
+}
+
+// ===== CHATBOT CONVERSATIONS =====
+
+export async function getChatbotConversations(userId = null) {
+  if (userId) {
+    return await queryDocuments('chatbot_conversations', {
+      filters: [{ column: 'user_id', value: userId }],
+      orderBy: 'updated_at',
+      ascending: false
+    });
+  }
+  return await getCollection('chatbot_conversations', { orderBy: 'updated_at', ascending: false });
+}
+
+export async function getChatbotConversationById(id) {
+  return await getDocument('chatbot_conversations', id);
+}
+
+export async function createChatbotConversation(conversation) {
+  return await addDocument('chatbot_conversations', {
+    user_id: conversation.user_id || null,
+    messages: conversation.messages || []
+  });
+}
+
+export async function updateChatbotConversation(id, updates) {
+  return await supabaseUpdate('chatbot_conversations', id, {
+    ...updates,
+    updated_at: new Date().toISOString()
+  });
+}
+
+export async function deleteChatbotConversation(id) {
+  return await supabaseDelete('chatbot_conversations', id);
+}
+
+// Helper pour ajouter un message à une conversation
+export async function addMessageToConversation(conversationId, message) {
+  const conversation = await getChatbotConversationById(conversationId);
+  if (!conversation) throw new Error('Conversation not found');
+
+  const messages = conversation.messages || [];
+  messages.push({
+    ...message,
+    timestamp: new Date().toISOString()
+  });
+
+  return await updateChatbotConversation(conversationId, { messages });
+}
 
 // ===== PAGES STATIQUES (localStorage temporairement) =====
 
