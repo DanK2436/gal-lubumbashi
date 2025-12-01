@@ -1,7 +1,7 @@
 /**
  * admin-membres.js - Gestion des membres, messages et annonces
  * GAL - Groupement des Artisans de Lubumbashi
- * Version Supabase
+ * Version Supabase avec Délégation d'Événements Globale
  */
 
 import { showToast } from '../ui.js';
@@ -477,28 +477,33 @@ async function refreshPage() {
     // Mettre à jour le contenu
     const html = await loadMembresManager(activeTab);
     document.getElementById('admin-main').innerHTML = html;
-    initMemberFormHandlers();
+    // initMemberFormHandlers n'est plus nécessaire avec la délégation globale
 }
 
 export function initMemberFormHandlers() {
-    // Member Form
-    const memberForm = document.getElementById('member-form');
-    if (memberForm) {
-        console.log('Formulaire membre trouvé, attachement event listener');
-        // Supprimer les anciens listeners pour éviter les doublons (clone)
-        const newForm = memberForm.cloneNode(true);
-        memberForm.parentNode.replaceChild(newForm, memberForm);
+    // Cette fonction est maintenue pour compatibilité mais ne fait rien
+    // Les écouteurs sont gérés globalement par la délégation d'événements ci-dessous
+}
 
-        newForm.addEventListener('submit', async (e) => {
+// Initialisation des gestionnaires globaux (une seule fois)
+// Utilisation d'un flag pour éviter les attachements multiples si le module est rechargé
+if (!window.adminMembresEventsInitialized) {
+    document.addEventListener('submit', async (e) => {
+        // Gestionnaire pour le formulaire membre
+        if (e.target && e.target.id === 'member-form') {
             e.preventDefault();
-            console.log('Soumission formulaire membre détectée');
+            console.log('Soumission formulaire membre détectée (Global Delegation)');
 
-            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
+
+            if (submitBtn.disabled) return; // Éviter double soumission
+
             submitBtn.disabled = true;
             submitBtn.innerHTML = 'Enregistrement...';
 
-            const formData = new FormData(e.target);
+            const formData = new FormData(form);
             const id = formData.get('id');
             const data = {
                 name: formData.get('name'),
@@ -526,60 +531,63 @@ export function initMemberFormHandlers() {
                 console.error('Erreur soumission:', error);
                 showToast('Erreur: ' + error.message, 'error');
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
             }
-        });
-    } else {
-        console.error('Formulaire membre NON trouvé !');
-    }
-
-    // Message Form
-    document.getElementById('message-form')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const messages = getMessages();
-        const id = formData.get('id');
-        const data = {
-            recipientId: formData.get('recipientId'),
-            subject: formData.get('subject'),
-            message: formData.get('message'),
-            sentAt: new Date().toISOString()
-        };
-
-        if (id) {
-            const index = messages.findIndex(m => m.id === id);
-            if (index !== -1) messages[index] = { ...messages[index], ...data };
-        } else {
-            messages.push({ id: Date.now().toString(), ...data, read: false, comments: [] });
         }
-        localStorage.setItem('gal_messages', JSON.stringify(messages));
-        window.adminMembres.closeModal('message-modal');
-        refreshPage();
-        showToast('Message envoyé', 'success');
+
+        // Gestionnaire pour le formulaire message
+        else if (e.target && e.target.id === 'message-form') {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const messages = getMessages();
+            const id = formData.get('id');
+            const data = {
+                recipientId: formData.get('recipientId'),
+                subject: formData.get('subject'),
+                message: formData.get('message'),
+                sentAt: new Date().toISOString()
+            };
+
+            if (id) {
+                const index = messages.findIndex(m => m.id === id);
+                if (index !== -1) messages[index] = { ...messages[index], ...data };
+            } else {
+                messages.push({ id: Date.now().toString(), ...data, read: false, comments: [] });
+            }
+            localStorage.setItem('gal_messages', JSON.stringify(messages));
+            window.adminMembres.closeModal('message-modal');
+            refreshPage();
+            showToast('Message envoyé', 'success');
+        }
+
+        // Gestionnaire pour le formulaire annonce
+        else if (e.target && e.target.id === 'announcement-form') {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const annonces = getAnnonces();
+            const id = formData.get('id');
+            const data = {
+                subject: formData.get('subject'),
+                message: formData.get('message'),
+                sentAt: new Date().toISOString()
+            };
+
+            if (id) {
+                const index = annonces.findIndex(a => a.id === id);
+                if (index !== -1) annonces[index] = { ...annonces[index], ...data };
+            } else {
+                annonces.push({ id: Date.now().toString(), ...data, comments: [] });
+            }
+            localStorage.setItem('gal_member_messages', JSON.stringify(annonces));
+            window.adminMembres.closeModal('announcement-modal');
+            refreshPage();
+            showToast('Annonce publiée', 'success');
+        }
     });
 
-    // Announcement Form
-    document.getElementById('announcement-form')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const annonces = getAnnonces();
-        const id = formData.get('id');
-        const data = {
-            subject: formData.get('subject'),
-            message: formData.get('message'),
-            sentAt: new Date().toISOString()
-        };
-
-        if (id) {
-            const index = annonces.findIndex(a => a.id === id);
-            if (index !== -1) annonces[index] = { ...annonces[index], ...data };
-        } else {
-            annonces.push({ id: Date.now().toString(), ...data, comments: [] });
-        }
-        localStorage.setItem('gal_member_messages', JSON.stringify(annonces));
-        window.adminMembres.closeModal('announcement-modal');
-        refreshPage();
-        showToast('Annonce publiée', 'success');
-    });
+    window.adminMembresEventsInitialized = true;
+    console.log('Gestionnaires d\'événements globaux initialisés');
 }
