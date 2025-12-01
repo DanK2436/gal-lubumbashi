@@ -197,7 +197,7 @@ function renderModals() {
                     <h3 id="modal-title">Ajouter un membre</h3>
                     <button onclick="window.adminMembres.closeModal('member-modal')">&times;</button>
                 </div>
-                <form id="member-form">
+                <form id="member-form" onsubmit="return window.adminMembres.handleMemberSubmit(event)">
                     <input type="hidden" id="member-id" name="id">
                     <div class="form-group"><label class="form-label">Nom</label><input type="text" name="name" class="form-input" required></div>
                     <div class="form-group"><label class="form-label">Email</label><input type="email" name="email" class="form-input" required></div>
@@ -396,6 +396,56 @@ window.adminMembres = {
         }
     },
 
+    // Gestionnaire explicite de soumission
+    async handleMemberSubmit(e) {
+        e.preventDefault();
+        console.log('handleMemberSubmit appelé via onsubmit');
+
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        if (submitBtn.disabled) return false;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Enregistrement...';
+
+        const formData = new FormData(form);
+        const id = formData.get('id');
+        const data = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phone: formData.get('phone')
+        };
+        const password = formData.get('password');
+        if (password) data.password = password;
+
+        console.log('Données à envoyer:', data);
+
+        try {
+            if (id) {
+                console.log('Mode update');
+                await updateMember(id, data);
+                showToast('Membre modifié', 'success');
+            } else {
+                console.log('Mode create');
+                await createMember(data);
+                showToast('Membre créé', 'success');
+            }
+            this.closeModal('member-modal');
+            await refreshPage();
+        } catch (error) {
+            console.error('Erreur soumission:', error);
+            showToast('Erreur: ' + error.message, 'error');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        }
+        return false;
+    },
+
     // Message Actions
     async showMessageModal(memberId = null) {
         // Populate members dropdown
@@ -478,7 +528,6 @@ async function refreshPage() {
     // Mettre à jour le contenu
     const html = await loadMembresManager(activeTab);
     document.getElementById('admin-main').innerHTML = html;
-    // initMemberFormHandlers n'est plus nécessaire avec la délégation globale
 }
 
 export function initMemberFormHandlers() {
@@ -490,57 +539,10 @@ export function initMemberFormHandlers() {
 // Utilisation d'un flag pour éviter les attachements multiples si le module est rechargé
 if (!window.adminMembresEventsInitialized) {
     document.addEventListener('submit', async (e) => {
-        // Gestionnaire pour le formulaire membre
-        if (e.target && e.target.id === 'member-form') {
-            e.preventDefault();
-            console.log('Soumission formulaire membre détectée (Global Delegation)');
-
-            const form = e.target;
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-
-            if (submitBtn.disabled) return; // Éviter double soumission
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = 'Enregistrement...';
-
-            const formData = new FormData(form);
-            const id = formData.get('id');
-            const data = {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                phone: formData.get('phone')
-            };
-            const password = formData.get('password');
-            if (password) data.password = password;
-
-            console.log('Données à envoyer:', data);
-
-            try {
-                if (id) {
-                    console.log('Mode update');
-                    await updateMember(id, data);
-                    showToast('Membre modifié', 'success');
-                } else {
-                    console.log('Mode create');
-                    await createMember(data);
-                    showToast('Membre créé', 'success');
-                }
-                window.adminMembres.closeModal('member-modal');
-                await refreshPage();
-            } catch (error) {
-                console.error('Erreur soumission:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                }
-            }
-        }
+        // Le formulaire membre est géré par onsubmit direct maintenant
 
         // Gestionnaire pour le formulaire message
-        else if (e.target && e.target.id === 'message-form') {
+        if (e.target && e.target.id === 'message-form') {
             e.preventDefault();
             const formData = new FormData(e.target);
             const messages = getMessages();
