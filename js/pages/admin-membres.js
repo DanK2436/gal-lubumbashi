@@ -24,6 +24,7 @@ export async function loadMembresManager(activeTab = 'members') {
     let members = [];
     try {
         members = await getMembers();
+        console.log('Membres chargés:', members.length, members);
     } catch (error) {
         console.error('Erreur chargement membres:', error);
         showToast('Erreur lors du chargement des membres', 'error');
