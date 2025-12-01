@@ -202,15 +202,29 @@
                     <label for="remember">Se souvenir de moi</label>
                 </div>
 
-                import { supabaseLogin, getMemberByEmail } from '../js/supabase-service.js';
+                <button type="submit" class="btn btn--primary btn--lg w-full">
+                    Se connecter
+                </button>
+            </form>
 
-                // Configuration
-                const form = document.getElementById('login-form');
+            <div class="login-footer">
+                <a href="../index.html">← Retour à l'accueil</a>
+                <p style="margin-top: 1rem; font-size: 0.8rem; color: #9ca3af;">v3.0 (Supabase Fix)</p>
+            </div>
+        </div>
+    </div>
 
-                if (!form) {
-                console.error('Erreur : Formulaire introuvable !');
-                } else {
-                form.addEventListener('submit', async (e) => {
+    <script type="module">
+        import { showToast } from '../js/ui.js';
+        import { supabaseLogin, getMemberByEmail } from '../js/supabase-service.js';
+
+        // Configuration
+        const form = document.getElementById('login-form');
+
+        if (!form) {
+            console.error('Erreur : Formulaire introuvable !');
+        } else {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 console.log('Tentative de connexion...');
 
@@ -225,81 +239,78 @@
                 const remember = formData.get('remember') === 'on';
 
                 try {
-                // 1. Essayer de se connecter avec Supabase Auth
-                // Note: Cela suppose que les utilisateurs sont enregistrés dans Supabase Auth
-                // Si vous utilisez une table 'members' personnalisée avec mot de passe en clair (déconseillé mais
-                possible pour migration),
-                // il faudrait vérifier dans la table 'members' directement.
+                    // 1. Essayer de se connecter avec Supabase Auth
+                    // Note: Cela suppose que les utilisateurs sont enregistrés dans Supabase Auth
+                    // Si vous utilisez une table 'members' personnalisée avec mot de passe en clair (déconseillé mais possible pour migration),
+                    // il faudrait vérifier dans la table 'members' directement.
 
-                // Approche hybride pour la migration :
-                // On vérifie d'abord dans la table 'members' si on trouve une correspondance email/password (migration
-                simple)
+                    // Approche hybride pour la migration :
+                    // On vérifie d'abord dans la table 'members' si on trouve une correspondance email/password (migration simple)
 
-                const member = await getMemberByEmail(email);
+                    const member = await getMemberByEmail(email);
 
-                let isAuthenticated = false;
-                let userData = null;
+                    let isAuthenticated = false;
+                    let userData = null;
 
-                if (member && member.password === password) {
-                // Authentification réussie via table members (legacy/migration)
-                isAuthenticated = true;
-                userData = member;
-                } else {
-                // Essai via Supabase Auth (sécurisé)
-                try {
-                const { user } = await supabaseLogin(email, password);
-                if (user) {
-                isAuthenticated = true;
-                userData = {
-                id: user.id,
-                email: user.email,
-                // Récupérer d'autres infos si nécessaire
-                };
-                // Essayer de récupérer les infos étendues du membre
-                if (member) {
-                userData = { ...userData, ...member };
-                }
-                }
-                } catch (authError) {
-                console.log('Auth Supabase échouée, et pas de correspondance dans la table members');
-                }
-                }
+                    if (member && member.password === password) {
+                        // Authentification réussie via table members (legacy/migration)
+                        isAuthenticated = true;
+                        userData = member;
+                    } else {
+                        // Essai via Supabase Auth (sécurisé)
+                        try {
+                            const { user } = await supabaseLogin(email, password);
+                            if (user) {
+                                isAuthenticated = true;
+                                userData = {
+                                    id: user.id,
+                                    email: user.email,
+                                    // Récupérer d'autres infos si nécessaire
+                                };
+                                // Essayer de récupérer les infos étendues du membre
+                                if (member) {
+                                    userData = { ...userData, ...member };
+                                }
+                            }
+                        } catch (authError) {
+                            console.log('Auth Supabase échouée, et pas de correspondance dans la table members');
+                        }
+                    }
 
-                if (isAuthenticated && userData) {
-                // Stocker les infos de session
-                const storage = remember ? localStorage : sessionStorage;
-                storage.setItem('memberToken', 'supa_' + Date.now()); // Token simulé pour compatibilité
-                localStorage.setItem('memberData', JSON.stringify(userData));
+                    if (isAuthenticated && userData) {
+                        // Stocker les infos de session
+                        const storage = remember ? localStorage : sessionStorage;
+                        storage.setItem('memberToken', 'supa_' + Date.now()); // Token simulé pour compatibilité
+                        localStorage.setItem('memberData', JSON.stringify(userData));
 
-                showToast('Connexion réussie ! Redirection...', 'success');
+                        showToast('Connexion réussie ! Redirection...', 'success');
 
-                // Rediriger vers le tableau de bord
-                setTimeout(() => {
-                window.location.href = 'pages/dashboard.html';
-                }, 1000);
-                } else {
-                console.warn('Login échoué : identifiants incorrects');
-                showToast('Email ou mot de passe incorrect', 'error');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-                }
+                        // Rediriger vers le tableau de bord
+                        setTimeout(() => {
+                            window.location.href = 'pages/dashboard.html';
+                        }, 1000);
+                    } else {
+                        console.warn('Login échoué : identifiants incorrects');
+                        showToast('Email ou mot de passe incorrect', 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                    }
                 } catch (error) {
-                console.error('Erreur de connexion:', error);
-                showToast('Erreur lors de la connexion : ' + error.message, 'error');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
+                    console.error('Erreur de connexion:', error);
+                    showToast('Erreur lors de la connexion : ' + error.message, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
                 }
-                });
-                }
+            });
+        }
 
-                // Vérifier si déjà connecté
-                const isAuthenticated = !!(localStorage.getItem('memberToken') ||
-                sessionStorage.getItem('memberToken'));
-                if (isAuthenticated) {
-                // Rediriger vers le dashboard si déjà connecté
-                window.location.href = 'pages/dashboard.html';
-                }
-                </script>
+        // Vérifier si déjà connecté
+        const isAuthenticated = !!(localStorage.getItem('memberToken') || sessionStorage.getItem('memberToken'));
+        if (isAuthenticated) {
+            // Rediriger vers le dashboard si déjà connecté
+            window.location.href = 'pages/dashboard.html';
+        }
+    </script>
 </body>
 
 </html>
