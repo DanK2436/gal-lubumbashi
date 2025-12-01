@@ -1,216 +1,70 @@
 /**
- * storage.js - Abstraction du stockage de données (localStorage)
+ * storage.js - Stockage de données avec Supabase UNIQUEMENT
  * GAL - Groupement des Artisans de Lubumbashi
  * 
- * Ce module peut être facilement remplacé par des appels API réels
+ * Ce module utilise UNIQUEMENT Supabase pour toutes les opérations
  */
 
-// Clés de stockage
+import { supabase } from './supabase-init.js';
+import {
+  getCollection,
+  getDocument,
+  addDocument,
+  updateDocument as supabaseUpdate,
+  deleteDocument as supabaseDelete,
+  queryDocuments
+} from './supabase-service.js';
+
+// Clés de stockage (pour compatibilité - langue et auth restent en localStorage)
 const STORAGE_KEYS = {
-  VIDEOS: 'gal_videos',
-  FORMATIONS: 'gal_formations',
-  MACHINES: 'gal_machines',
-  BLOG: 'gal_blog',
-  NEWSLETTER: 'gal_newsletter',
-  PAGES: 'gal_pages',
   AUTH: 'gal_auth',
   LANGUAGE: 'gal_language',
-  CHATBOT_HISTORY: 'gal_chatbot_history',
-  RESERVATIONS: 'gal_reservations',
-  FORMATION_REGISTRATIONS: 'gal_formation_registrations',
-  MEMBERS: 'gal_members'
-};
-
-// Helper pour obtenir le chemin de base correct (GitHub Pages support)
-const getBasePath = () => {
-  const path = window.location.pathname;
-
-  // Si on est dans un sous-dossier profond (membres/pages)
-  if (path.includes('/membres/pages/')) {
-    return '../../';
-  }
-
-  // Si on est dans un sous-dossier (html, admin, membres racine)
-  if (path.includes('/html/') || path.includes('/admin/') || path.includes('/membres/')) {
-    return '../';
-  }
-
-  // Si on est à la racine (index.html ou /)
-  return './';
+  CHATBOT_HISTORY: 'gal_chatbot_history'
 };
 
 /**
- * Initialise le stockage avec les données par défaut si nécessaire
+ * Initialise le stockage
  */
 export async function initStorage() {
-  const basePath = getBasePath();
-  // Charger les données depuis les fichiers JSON si le localStorage est vide
-  const loadPromises = [];
-
-  if (!localStorage.getItem(STORAGE_KEYS.VIDEOS)) {
-    loadPromises.push(
-      fetch(`${basePath}data/videos.json`)
-        .then(res => res.json())
-        .then(data => localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(data)))
-        .catch(() => localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify([])))
-    );
+  if (!supabase) {
+    console.error('❌ ERREUR : Supabase n\'est pas configuré !');
+    console.error('Configurez vos clés dans js/supabase-init.js');
+    throw new Error('Supabase non configuré');
   }
 
-  if (!localStorage.getItem(STORAGE_KEYS.FORMATIONS)) {
-    loadPromises.push(
-      fetch(`${basePath}data/formations.json`)
-        .then(res => res.json())
-        .then(data => localStorage.setItem(STORAGE_KEYS.FORMATIONS, JSON.stringify(data)))
-        .catch(() => localStorage.setItem(STORAGE_KEYS.FORMATIONS, JSON.stringify([])))
-    );
-  }
-
-  if (!localStorage.getItem(STORAGE_KEYS.MACHINES)) {
-    loadPromises.push(
-      fetch(`${basePath}data/machines.json`)
-        .then(res => res.json())
-        .then(data => localStorage.setItem(STORAGE_KEYS.MACHINES, JSON.stringify(data)))
-        .catch(() => localStorage.setItem(STORAGE_KEYS.MACHINES, JSON.stringify([])))
-    );
-  }
-
-  if (!localStorage.getItem(STORAGE_KEYS.BLOG)) {
-    loadPromises.push(
-      fetch(`${basePath}data/blog.json`)
-        .then(res => res.json())
-        .then(data => localStorage.setItem(STORAGE_KEYS.BLOG, JSON.stringify(data)))
-        .catch(() => localStorage.setItem(STORAGE_KEYS.BLOG, JSON.stringify([])))
-    );
-  }
-
-  if (!localStorage.getItem(STORAGE_KEYS.NEWSLETTER)) {
-    loadPromises.push(
-      fetch(`${basePath}data/newsletter.json`)
-        .then(res => res.json())
-        .then(data => localStorage.setItem(STORAGE_KEYS.NEWSLETTER, JSON.stringify(data)))
-        .catch(() => localStorage.setItem(STORAGE_KEYS.NEWSLETTER, JSON.stringify({ subscribers: [] })))
-    );
-  }
-
-  if (!localStorage.getItem(STORAGE_KEYS.PAGES)) {
-    loadPromises.push(
-      fetch(`${basePath}data/pages.json`)
-        .then(res => res.json())
-        .then(data => localStorage.setItem(STORAGE_KEYS.PAGES, JSON.stringify(data)))
-        .catch(() => localStorage.setItem(STORAGE_KEYS.PAGES, JSON.stringify({})))
-    );
-  }
-
-  // Initialiser les membres par défaut si nécessaire
-  if (!localStorage.getItem(STORAGE_KEYS.MEMBERS)) {
-    const defaultMember = {
-      id: 'default-member',
-      name: 'Dan Kande',
-      email: 'dankande3@gmail.com',
-      password: 'Danknd243&',
-      phone: '+243000000000',
-      dateJoined: new Date().toISOString(),
-      status: 'Actif'
-    };
-    localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify([defaultMember]));
-  }
-
-  // Attendre que toutes les promesses soient résolues
-  await Promise.all(loadPromises);
-}
-
-// ===== VIDÉOS COURTES =====
-
-export async function getVideos() {
-  const data = localStorage.getItem(STORAGE_KEYS.VIDEOS);
-  return data ? JSON.parse(data) : [];
-}
-
-export async function getVideoById(id) {
-  const videos = await getVideos();
-  return videos.find(v => v.id === id);
-}
-
-export async function createVideo(video) {
-  const videos = await getVideos();
-  const newVideo = {
-    ...video,
-    id: Date.now().toString()
-  };
-  videos.push(newVideo);
-  localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(videos));
-  return newVideo;
-}
-
-export async function updateVideo(id, updates) {
-  const videos = await getVideos();
-  const index = videos.findIndex(v => v.id === id);
-  if (index !== -1) {
-    videos[index] = { ...videos[index], ...updates };
-    localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(videos));
-    return videos[index];
-  }
-  return null;
-}
-
-export async function deleteVideo(id) {
-  const videos = await getVideos();
-  const filtered = videos.filter(v => v.id !== id);
-  localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(filtered));
-  return true;
+  console.log('✅ Utilisation de Supabase pour le stockage');
 }
 
 // ===== FORMATIONS =====
 
 export async function getFormations() {
-  const data = localStorage.getItem(STORAGE_KEYS.FORMATIONS);
-  return data ? JSON.parse(data) : [];
+  return await getCollection('formations', { orderBy: 'created_at', ascending: false });
 }
 
 export async function getFormationById(id) {
-  const formations = await getFormations();
-  return formations.find(f => f.id === id);
+  return await getDocument('formations', id);
 }
 
 export async function createFormation(formation) {
-  const formations = await getFormations();
-  const newFormation = {
-    ...formation,
-    id: Date.now().toString()
-  };
-  formations.push(newFormation);
-  localStorage.setItem(STORAGE_KEYS.FORMATIONS, JSON.stringify(formations));
-  return newFormation;
+  return await addDocument('formations', formation);
 }
 
 export async function updateFormation(id, updates) {
-  const formations = await getFormations();
-  const index = formations.findIndex(f => f.id === id);
-  if (index !== -1) {
-    formations[index] = { ...formations[index], ...updates };
-    localStorage.setItem(STORAGE_KEYS.FORMATIONS, JSON.stringify(formations));
-    return formations[index];
-  }
-  return null;
+  return await supabaseUpdate('formations', id, updates);
 }
 
 export async function deleteFormation(id) {
-  const formations = await getFormations();
-  const filtered = formations.filter(f => f.id !== id);
-  localStorage.setItem(STORAGE_KEYS.FORMATIONS, JSON.stringify(filtered));
-  return true;
+  return await supabaseDelete('formations', id);
 }
 
 // ===== MACHINES =====
 
 export async function getMachines() {
-  const data = localStorage.getItem(STORAGE_KEYS.MACHINES);
-  return data ? JSON.parse(data) : [];
+  return await getCollection('machines', { orderBy: 'name', ascending: true });
 }
 
 export async function getMachineById(id) {
-  const machines = await getMachines();
-  return machines.find(m => m.id === id);
+  return await getDocument('machines', id);
 }
 
 export async function getMachineBySlug(slug) {
@@ -219,44 +73,47 @@ export async function getMachineBySlug(slug) {
 }
 
 export async function createMachine(machine) {
-  const machines = await getMachines();
-  const newMachine = {
-    ...machine,
-    id: Date.now().toString()
-  };
-  machines.push(newMachine);
-  localStorage.setItem(STORAGE_KEYS.MACHINES, JSON.stringify(machines));
-  return newMachine;
+  return await addDocument('machines', machine);
 }
 
 export async function updateMachine(id, updates) {
-  const machines = await getMachines();
-  const index = machines.findIndex(m => m.id === id);
-  if (index !== -1) {
-    machines[index] = { ...machines[index], ...updates };
-    localStorage.setItem(STORAGE_KEYS.MACHINES, JSON.stringify(machines));
-    return machines[index];
-  }
-  return null;
+  return await supabaseUpdate('machines', id, updates);
 }
 
 export async function deleteMachine(id) {
-  const machines = await getMachines();
-  const filtered = machines.filter(m => m.id !== id);
-  localStorage.setItem(STORAGE_KEYS.MACHINES, JSON.stringify(filtered));
-  return true;
+  return await supabaseDelete('machines', id);
+}
+
+// ===== VIDÉOS =====
+
+export async function getVideos() {
+  return await getCollection('videos', { orderBy: 'created_at', ascending: false });
+}
+
+export async function getVideoById(id) {
+  return await getDocument('videos', id);
+}
+
+export async function createVideo(video) {
+  return await addDocument('videos', video);
+}
+
+export async function updateVideo(id, updates) {
+  return await supabaseUpdate('videos', id, updates);
+}
+
+export async function deleteVideo(id) {
+  return await supabaseDelete('videos', id);
 }
 
 // ===== BLOG =====
 
 export async function getBlogPosts() {
-  const data = localStorage.getItem(STORAGE_KEYS.BLOG);
-  return data ? JSON.parse(data) : [];
+  return await getCollection('blog_posts', { orderBy: 'created_at', ascending: false });
 }
 
 export async function getBlogPostById(id) {
-  const posts = await getBlogPosts();
-  return posts.find(p => p.id === id);
+  return await getDocument('blog_posts', id);
 }
 
 export async function getBlogPostBySlug(slug) {
@@ -265,65 +122,41 @@ export async function getBlogPostBySlug(slug) {
 }
 
 export async function createBlogPost(post) {
-  const posts = await getBlogPosts();
-  const newPost = {
-    ...post,
-    id: Date.now().toString(),
-    date: new Date().toISOString()
-  };
-  posts.push(newPost);
-  localStorage.setItem(STORAGE_KEYS.BLOG, JSON.stringify(posts));
-  return newPost;
+  return await addDocument('blog_posts', post);
 }
 
 export async function updateBlogPost(id, updates) {
-  const posts = await getBlogPosts();
-  const index = posts.findIndex(p => p.id === id);
-  if (index !== -1) {
-    posts[index] = { ...posts[index], ...updates };
-    localStorage.setItem(STORAGE_KEYS.BLOG, JSON.stringify(posts));
-    return posts[index];
-  }
-  return null;
+  return await supabaseUpdate('blog_posts', id, updates);
 }
 
 export async function deleteBlogPost(id) {
-  const posts = await getBlogPosts();
-  const filtered = posts.filter(p => p.id !== id);
-  localStorage.setItem(STORAGE_KEYS.BLOG, JSON.stringify(filtered));
-  return true;
+  return await supabaseDelete('blog_posts', id);
 }
 
 // ===== NEWSLETTER =====
 
 export async function getNewsletterSubscribers() {
-  const data = localStorage.getItem(STORAGE_KEYS.NEWSLETTER);
-  const parsed = data ? JSON.parse(data) : { subscribers: [] };
-  return parsed.subscribers || [];
+  return await getCollection('newsletter_subscribers', { orderBy: 'subscribed_at', ascending: false });
 }
 
 export async function addNewsletterSubscriber(email) {
-  const subscribers = await getNewsletterSubscribers();
-
-  // Vérifier si l'email existe déjà
-  if (subscribers.find(s => s.email === email)) {
-    throw new Error('Cet email est déjà inscrit');
+  try {
+    const newSub = await addDocument('newsletter_subscribers', { email });
+    return newSub;
+  } catch (error) {
+    if (error.message && error.message.includes('duplicate')) {
+      throw new Error('Cet email est déjà inscrit');
+    }
+    throw error;
   }
-
-  const newSubscriber = {
-    email,
-    dateSubscribed: new Date().toISOString()
-  };
-
-  subscribers.push(newSubscriber);
-  localStorage.setItem(STORAGE_KEYS.NEWSLETTER, JSON.stringify({ subscribers }));
-  return newSubscriber;
 }
 
 export async function removeNewsletterSubscriber(email) {
-  const subscribers = await getNewsletterSubscribers();
-  const filtered = subscribers.filter(s => s.email !== email);
-  localStorage.setItem(STORAGE_KEYS.NEWSLETTER, JSON.stringify({ subscribers: filtered }));
+  const subs = await getCollection('newsletter_subscribers');
+  const toDelete = subs.find(s => s.email === email);
+  if (toDelete) {
+    await supabaseDelete('newsletter_subscribers', toDelete.id);
+  }
   return true;
 }
 
@@ -331,7 +164,8 @@ export async function exportNewsletterCSV() {
   const subscribers = await getNewsletterSubscribers();
   let csv = 'Email,Date d\'inscription\n';
   subscribers.forEach(sub => {
-    csv += `${sub.email},${new Date(sub.dateSubscribed).toLocaleDateString('fr-FR')}\n`;
+    const date = sub.subscribed_at;
+    csv += `${sub.email},${new Date(date).toLocaleDateString('fr-FR')}\n`;
   });
   return csv;
 }
@@ -344,43 +178,117 @@ export async function saveNewsletter(email) {
 // ===== CONTACTS =====
 
 export async function saveContact(contactData) {
-  const CONTACTS_KEY = 'gal_contacts';
-  const contacts = JSON.parse(localStorage.getItem(CONTACTS_KEY) || '[]');
-
-  const newContact = {
-    ...contactData,
-    id: Date.now().toString(),
-    date: contactData.date || new Date().toISOString()
-  };
-
-  contacts.push(newContact);
-  localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts));
-  return newContact;
+  return await addDocument('contact_messages', {
+    name: contactData.name,
+    email: contactData.email,
+    subject: contactData.subject || '',
+    message: contactData.message,
+    status: 'new'
+  });
 }
 
 export async function getContacts() {
-  const CONTACTS_KEY = 'gal_contacts';
-  return JSON.parse(localStorage.getItem(CONTACTS_KEY) || '[]');
+  return await getCollection('contact_messages', { orderBy: 'created_at', ascending: false });
 }
 
-// ===== PAGES STATIQUES =====
+// ===== RÉSERVATIONS MACHINES =====
+
+export async function getReservations() {
+  return await getCollection('machine_reservations', { orderBy: 'created_at', ascending: false });
+}
+
+export async function saveReservation(reservationData) {
+  return await addDocument('machine_reservations', {
+    ...reservationData,
+    status: reservationData.status || 'pending'
+  });
+}
+
+export async function deleteReservation(id) {
+  return await supabaseDelete('machine_reservations', id);
+}
+
+export async function updateReservationStatus(id, status) {
+  return await supabaseUpdate('machine_reservations', id, { status });
+}
+
+// ===== INSCRIPTIONS FORMATIONS =====
+
+export async function getFormationRegistrations() {
+  return await getCollection('formation_reservations', { orderBy: 'created_at', ascending: false });
+}
+
+export async function saveFormationRegistration(registrationData) {
+  return await addDocument('formation_reservations', {
+    ...registrationData,
+    status: registrationData.status || 'pending'
+  });
+}
+
+export async function deleteFormationRegistration(id) {
+  return await supabaseDelete('formation_reservations', id);
+}
+
+export async function updateFormationRegistrationStatus(id, status) {
+  return await supabaseUpdate('formation_reservations', id, { status });
+}
+
+// ===== MEMBRES =====
+
+export async function getMembers() {
+  return await getCollection('members', { orderBy: 'created_at', ascending: false });
+}
+
+export async function getMemberById(id) {
+  return await getDocument('members', id);
+}
+
+export async function getMemberByEmail(email) {
+  const members = await getCollection('members');
+  return members.find(m => m.email === email);
+}
+
+export async function createMember(member) {
+  // Vérifier si l'email existe déjà
+  const existing = await getMemberByEmail(member.email);
+  if (existing) {
+    throw new Error('Cet email est déjà utilisé');
+  }
+
+  return await addDocument('members', {
+    ...member,
+    status: member.status || 'active'
+  });
+}
+
+export async function updateMember(id, updates) {
+  return await supabaseUpdate('members', id, updates);
+}
+
+export async function deleteMember(id) {
+  return await supabaseDelete('members', id);
+}
+
+// ===== PAGES STATIQUES (localStorage temporairement) =====
 
 export async function getPages() {
-  const data = localStorage.getItem(STORAGE_KEYS.PAGES);
+  // TODO: Migrer vers Supabase si nécessaire
+  const data = localStorage.getItem('gal_pages');
   return data ? JSON.parse(data) : {};
 }
 
 export async function updatePages(updates) {
+  // TODO: Migrer vers Supabase si nécessaire
   const pages = await getPages();
   const updated = { ...pages, ...updates };
-  localStorage.setItem(STORAGE_KEYS.PAGES, JSON.stringify(updated));
+  localStorage.setItem('gal_pages', JSON.stringify(updated));
   return updated;
 }
 
-// ===== AUTHENTIFICATION =====
+// ===== AUTHENTIFICATION (localStorage pour la session) =====
 
 export async function login(email, password) {
-  // Mock authentication
+  // Mock authentication - TODO: Implémenter avec Supabase Auth
   if (email === 'admin@gal-lubumbashi.com' && password === 'Admin123!') {
     const session = {
       email,
@@ -408,7 +316,7 @@ export async function isAuthenticated() {
   return session !== null;
 }
 
-// ===== CHATBOT =====
+// ===== CHATBOT (localStorage) =====
 
 export async function getChatbotHistory() {
   const data = localStorage.getItem(STORAGE_KEYS.CHATBOT_HISTORY);
@@ -436,7 +344,7 @@ export async function clearChatbotHistory() {
   return true;
 }
 
-// ===== LANGUE =====
+// ===== LANGUE (localStorage) =====
 
 export async function getLanguage() {
   return localStorage.getItem(STORAGE_KEYS.LANGUAGE) || 'fr';
@@ -445,136 +353,6 @@ export async function getLanguage() {
 export async function setLanguage(lang) {
   localStorage.setItem(STORAGE_KEYS.LANGUAGE, lang);
   return lang;
-}
-
-// ===== RÉSERVATIONS MACHINES =====
-
-export async function getReservations() {
-  const data = localStorage.getItem(STORAGE_KEYS.RESERVATIONS);
-  return data ? JSON.parse(data) : [];
-}
-
-export async function saveReservation(reservationData) {
-  const reservations = await getReservations();
-  const newReservation = {
-    ...reservationData,
-    id: Date.now().toString(),
-    date: new Date().toISOString(),
-    status: 'En attente'
-  };
-  reservations.push(newReservation);
-  localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(reservations));
-  return newReservation;
-}
-
-export async function deleteReservation(id) {
-  const reservations = await getReservations();
-  const filtered = reservations.filter(r => r.id !== id);
-  localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(filtered));
-  return true;
-}
-
-export async function updateReservationStatus(id, status) {
-  const reservations = await getReservations();
-  const index = reservations.findIndex(r => r.id === id);
-  if (index !== -1) {
-    reservations[index].status = status;
-    localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(reservations));
-    return reservations[index];
-  }
-  return null;
-}
-
-// ===== INSCRIPTIONS FORMATIONS =====
-
-export async function getFormationRegistrations() {
-  const data = localStorage.getItem(STORAGE_KEYS.FORMATION_REGISTRATIONS);
-  return data ? JSON.parse(data) : [];
-}
-
-export async function saveFormationRegistration(registrationData) {
-  const registrations = await getFormationRegistrations();
-  const newRegistration = {
-    ...registrationData,
-    id: Date.now().toString(),
-    date: new Date().toISOString(),
-    status: 'En attente'
-  };
-  registrations.push(newRegistration);
-  localStorage.setItem(STORAGE_KEYS.FORMATION_REGISTRATIONS, JSON.stringify(registrations));
-  return newRegistration;
-}
-
-export async function deleteFormationRegistration(id) {
-  const registrations = await getFormationRegistrations();
-  const filtered = registrations.filter(r => r.id !== id);
-  localStorage.setItem(STORAGE_KEYS.FORMATION_REGISTRATIONS, JSON.stringify(filtered));
-  return true;
-}
-
-export async function updateFormationRegistrationStatus(id, status) {
-  const registrations = await getFormationRegistrations();
-  const index = registrations.findIndex(r => r.id === id);
-  if (index !== -1) {
-    registrations[index].status = status;
-    localStorage.setItem(STORAGE_KEYS.FORMATION_REGISTRATIONS, JSON.stringify(registrations));
-    return registrations[index];
-  }
-  return null;
-}
-
-// ===== MEMBRES =====
-
-export async function getMembers() {
-  const data = localStorage.getItem(STORAGE_KEYS.MEMBERS);
-  return data ? JSON.parse(data) : [];
-}
-
-export async function getMemberById(id) {
-  const members = await getMembers();
-  return members.find(m => m.id === id);
-}
-
-export async function getMemberByEmail(email) {
-  const members = await getMembers();
-  return members.find(m => m.email === email);
-}
-
-export async function createMember(member) {
-  const members = await getMembers();
-
-  // Vérifier si l'email existe déjà
-  if (members.find(m => m.email === member.email)) {
-    throw new Error('Cet email est déjà utilisé');
-  }
-
-  const newMember = {
-    ...member,
-    id: Date.now().toString(),
-    dateJoined: new Date().toISOString(),
-    status: member.status || 'Actif'
-  };
-  members.push(newMember);
-  localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(members));
-  return newMember;
-}
-
-export async function updateMember(id, updates) {
-  const members = await getMembers();
-  const index = members.findIndex(m => m.id === id);
-  if (index !== -1) {
-    members[index] = { ...members[index], ...updates };
-    localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(members));
-    return members[index];
-  }
-  return null;
-}
-
-export async function deleteMember(id) {
-  const members = await getMembers();
-  const filtered = members.filter(m => m.id !== id);
-  localStorage.setItem(STORAGE_KEYS.MEMBERS, JSON.stringify(filtered));
-  return true;
 }
 
 // ===== EXPORT PAR DÉFAUT =====
@@ -606,6 +384,7 @@ export default {
   addNewsletterSubscriber,
   removeNewsletterSubscriber,
   exportNewsletterCSV,
+  saveNewsletter,
   getPages,
   updatePages,
   login,
@@ -630,5 +409,7 @@ export default {
   getMemberByEmail,
   createMember,
   updateMember,
-  deleteMember
+  deleteMember,
+  saveContact,
+  getContacts
 };

@@ -1,4 +1,19 @@
-# 🚀 Déploiement Rapide - 3 Méthodes
+# 🚀 Déploiement Rapide - GAL Lubumbashi
+
+## 🎯 Deux Options de Backend
+
+### Option A : LocalStorage + JSON (Simple, gratuit)
+- ✅ Pas de configuration backend
+- ✅ Données stockées localement dans le navigateur
+- ⚠️ Les données ne sont pas synchronisées entre appareils
+
+### Option B : Supabase (Base de données cloud)
+- ✅ Données synchronisées en temps réel
+- ✅ Authentification intégrée
+- ✅ Gratuit jusqu'à 500 Mo
+- 📖 Voir `DEPLOIEMENT_RAPIDE_SUPABASE.md` ou `SUPABASE_SETUP.md`
+
+---
 
 ## Méthode 1️⃣ : Script Automatique (RECOMMANDÉ)
 
@@ -25,7 +40,7 @@ Ouvrez PowerShell dans le dossier et exécutez :
 git add .
 
 # Créer un commit
-git commit -m "🚀 Déploiement GAL avec base de données JSON"
+git commit -m "🚀 Déploiement GAL Lubumbashi"
 
 # Pousser vers GitHub
 git push
@@ -73,6 +88,17 @@ git push
 
 ---
 
+## 🗄️ Configuration Backend (Optionnel)
+
+Pour activer **Supabase** (données synchronisées en cloud) :
+
+1. Consultez le guide rapide : `DEPLOIEMENT_RAPIDE_SUPABASE.md`
+2. Ou le guide complet : `SUPABASE_SETUP.md`
+
+**Sans backend**, le site fonctionne avec LocalStorage (données locales uniquement).
+
+---
+
 ## 🌐 Après le Déploiement
 
 1. Allez sur GitHub → Settings → Pages
@@ -94,4 +120,8 @@ https://username.github.io/repo/admin/
 
 ---
 
-**Besoin d'aide ?** → `GUIDE_DEPLOIEMENT.md`
+## 📚 Documentation
+
+- **Déploiement général** : `GUIDE_DEPLOIEMENT.md`
+- **Configuration Supabase (rapide)** : `DEPLOIEMENT_RAPIDE_SUPABASE.md`
+- **Configuration Supabase (détaillée)** : `SUPABASE_SETUP.md`
