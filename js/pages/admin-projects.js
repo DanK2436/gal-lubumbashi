@@ -1,12 +1,19 @@
 /**
  * admin-projects.js - Gestion des chantiers et conceptions
  * GAL - Groupement des Artisans de Lubumbashi
+ * Version Supabase
  */
 
 import { showToast } from '../ui.js';
+import {
+    getProjects,
+    createProject,
+    updateProject,
+    deleteProject
+} from '../storage.js';
 
-export function loadProjectsManager(type) {
-    const items = getItems(type);
+export async function loadProjectsManager(type) {
+    const items = await getProjects(type);
     const title = type === 'chantiers' ? 'Chantiers' : 'Conceptions';
     const icon = type === 'chantiers' ? '🏗️' : '📐';
     const itemLabel = type === 'chantiers' ? 'un chantier' : 'une conception';
@@ -58,7 +65,7 @@ function renderModal(type) {
                     <h3 id="modal-title">Ajouter</h3>
                     <button onclick="window.adminProjects.closeModal()">&times;</button>
                 </div>
-                <form id="project-form">
+                <form id="project-form" onsubmit="return false;">
                     <input type="hidden" id="project-id" name="id">
                     <input type="hidden" id="project-type" name="type" value="${type}">
                     
@@ -86,7 +93,7 @@ function renderModal(type) {
                         </select>
                     </div>
 
-                    <button type="submit" class="btn btn--primary w-full">Enregistrer</button>
+                    <button type="button" class="btn btn--primary w-full" onclick="window.adminProjects.handleSubmit(event)">Enregistrer</button>
                 </form>
             </div>
         </div>
@@ -100,17 +107,13 @@ function renderModal(type) {
     `;
 }
 
-function getItems(type) {
-    return JSON.parse(localStorage.getItem(`gal_${type}`) || '[]');
-}
-
 function renderRows(items, type) {
     return items.map(item => `
         <tr>
             <td><img src="${item.image}" class="thumbnail" alt="${item.title}" onerror="this.src='https://via.placeholder.com/60x40'"></td>
             <td><strong>${escapeHtml(item.title)}</strong></td>
             <td>${escapeHtml(item.description).substring(0, 50)}...</td>
-            <td>${new Date(item.createdAt).toLocaleDateString('fr-FR')}</td>
+            <td>${new Date(item.created_at || item.createdAt).toLocaleDateString('fr-FR')}</td>
             <td>
                 <button class="action-btn" onclick="window.adminProjects.editItem('${item.id}', '${type}')">✏️</button>
                 <button class="action-btn" onclick="window.adminProjects.deleteItem('${item.id}', '${type}')">🗑️</button>
@@ -120,6 +123,7 @@ function renderRows(items, type) {
 }
 
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
@@ -139,72 +143,103 @@ window.adminProjects = {
         document.getElementById('project-modal').classList.add('active');
     },
 
-    editItem(id, type) {
-        const items = getItems(type);
-        const item = items.find(i => i.id === id);
-        if (!item) return;
+    async editItem(id, type) {
+        try {
+            const items = await getProjects(type);
+            const item = items.find(i => i.id === id);
+            if (!item) return;
 
-        const form = document.getElementById('project-form');
-        document.getElementById('project-id').value = item.id;
-        document.getElementById('project-type').value = type;
-        form.title.value = item.title;
-        form.description.value = item.description;
-        form.image.value = item.image;
-        form.status.value = item.status || 'active';
+            const form = document.getElementById('project-form');
+            document.getElementById('project-id').value = item.id;
+            document.getElementById('project-type').value = type;
+            form.title.value = item.title;
+            form.description.value = item.description;
+            form.image.value = item.image;
+            form.status.value = item.status || 'active';
 
-        document.getElementById('modal-title').textContent = 'Modifier';
-        document.getElementById('project-modal').classList.add('active');
+            document.getElementById('modal-title').textContent = 'Modifier';
+            document.getElementById('project-modal').classList.add('active');
+        } catch (error) {
+            console.error(error);
+            showToast('Erreur chargement projet', 'error');
+        }
     },
 
-    deleteItem(id, type) {
+    async deleteItem(id, type) {
         if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
-        const items = getItems(type).filter(i => i.id !== id);
-        localStorage.setItem(`gal_${type}`, JSON.stringify(items));
-        refreshPage(type);
-        showToast('Élément supprimé', 'success');
+        try {
+            await deleteProject(id);
+            await refreshPage(type);
+            showToast('Élément supprimé', 'success');
+        } catch (error) {
+            console.error(error);
+            showToast('Erreur suppression: ' + error.message, 'error');
+        }
+    },
+
+    async handleSubmit(e) {
+        e.preventDefault();
+        console.log('handleSubmit appelé pour projet');
+
+        const btn = e.currentTarget || e.target;
+        const form = btn.closest('form');
+
+        if (!form || !form.checkValidity()) {
+            form?.reportValidity();
+            return;
+        }
+
+        const originalText = btn.innerHTML;
+        if (btn.disabled) return;
+
+        btn.disabled = true;
+        btn.innerHTML = 'Enregistrement...';
+
+        const formData = new FormData(form);
+        const type = formData.get('type');
+        const id = formData.get('id');
+
+        const data = {
+            title: formData.get('title'),
+            description: formData.get('description'),
+            image: formData.get('image'),
+            type: type,
+            status: formData.get('status')
+        };
+
+        console.log('Données projet à envoyer:', data);
+
+        try {
+            if (id) {
+                console.log('Mode update projet');
+                await updateProject(id, data);
+                showToast('Projet modifié', 'success');
+            } else {
+                console.log('Mode create projet');
+                await createProject(data);
+                showToast('Projet créé', 'success');
+            }
+            window.adminProjects.closeModal();
+            await refreshPage(type);
+        } catch (error) {
+            console.error('Erreur soumission projet:', error);
+            showToast('Erreur: ' + error.message, 'error');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
     }
 };
 
-function refreshPage(type) {
-    document.getElementById('admin-main').innerHTML = loadProjectsManager(type);
+async function refreshPage(type) {
+    const html = await loadProjectsManager(type);
+    document.getElementById('admin-main').innerHTML = html;
     initProjectFormHandlers();
 }
 
 export function initProjectFormHandlers() {
-    const form = document.getElementById('project-form');
-    if (form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const type = formData.get('type');
-            const id = formData.get('id');
-            const items = getItems(type);
-
-            const data = {
-                title: formData.get('title'),
-                description: formData.get('description'),
-                image: formData.get('image'),
-                status: formData.get('status'),
-                updatedAt: new Date().toISOString()
-            };
-
-            if (id) {
-                const index = items.findIndex(i => i.id === id);
-                if (index !== -1) {
-                    items[index] = { ...items[index], ...data };
-                }
-            } else {
-                items.push({
-                    id: Date.now().toString(),
-                    ...data,
-                    createdAt: new Date().toISOString()
-                });
-            }
-
-            localStorage.setItem(`gal_${type}`, JSON.stringify(items));
-            window.adminProjects.closeModal();
-            refreshPage(type);
-            showToast('Enregistré avec succès', 'success');
-        });
-    }
+    // Les gestionnaires sont maintenant globaux via window.adminProjects.handleSubmit
+    console.log('initProjectFormHandlers appelé (gestionnaires globaux actifs)');
 }

@@ -269,6 +269,39 @@ export async function deleteMember(id) {
   return await supabaseDelete('members', id);
 }
 
+// ===== PROJECTS (CHANTIERS & CONCEPTIONS) =====
+
+export async function getProjects(type = null) {
+  if (type) {
+    return await queryDocuments('projects', {
+      filters: [{ column: 'type', value: type }],
+      orderBy: 'created_at',
+      ascending: false
+    });
+  }
+  return await getCollection('projects', { orderBy: 'created_at', ascending: false });
+}
+
+export async function getProjectById(id) {
+  return await getDocument('projects', id);
+}
+
+export async function createProject(project) {
+  return await addDocument('projects', {
+    ...project,
+    status: project.status || 'active'
+  });
+}
+
+export async function updateProject(id, updates) {
+  return await supabaseUpdate('projects', id, updates);
+}
+
+export async function deleteProject(id) {
+  return await supabaseDelete('projects', id);
+}
+
+
 // ===== PAGES STATIQUES (localStorage temporairement) =====
 
 export async function getPages() {
