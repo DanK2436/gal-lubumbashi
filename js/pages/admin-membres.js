@@ -197,13 +197,13 @@ function renderModals() {
                     <h3 id="modal-title">Ajouter un membre</h3>
                     <button onclick="window.adminMembres.closeModal('member-modal')">&times;</button>
                 </div>
-                <form id="member-form" onsubmit="return window.adminMembres.handleMemberSubmit(event)">
+                <form id="member-form" onsubmit="return false;">
                     <input type="hidden" id="member-id" name="id">
                     <div class="form-group"><label class="form-label">Nom</label><input type="text" name="name" class="form-input" required></div>
                     <div class="form-group"><label class="form-label">Email</label><input type="email" name="email" class="form-input" required></div>
                     <div class="form-group"><label class="form-label">Téléphone</label><input type="tel" name="phone" class="form-input" required></div>
                     <div class="form-group"><label class="form-label">Mot de passe</label><input type="password" name="password" class="form-input" id="member-password"></div>
-                    <button type="submit" class="btn btn--primary w-full">Enregistrer</button>
+                    <button type="button" class="btn btn--primary w-full" onclick="window.adminMembres.handleMemberSubmit(event)">Enregistrer</button>
                 </form>
             </div>
         </div>
@@ -396,19 +396,31 @@ window.adminMembres = {
         }
     },
 
-    // Gestionnaire explicite de soumission
+    // Gestionnaire explicite de soumission (déclenché par le bouton)
     async handleMemberSubmit(e) {
+        // Si appelé depuis le bouton, e est l'événement click
         e.preventDefault();
-        console.log('handleMemberSubmit appelé via onsubmit');
+        console.log('handleMemberSubmit appelé via CLICK BOUTON');
 
-        const form = e.target;
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
+        const btn = e.currentTarget || e.target;
+        const form = btn.closest('form');
 
-        if (submitBtn.disabled) return false;
+        if (!form) {
+            console.error('Formulaire non trouvé !');
+            return;
+        }
 
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Enregistrement...';
+        // Validation manuelle basique
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const originalText = btn.innerHTML;
+        if (btn.disabled) return;
+
+        btn.disabled = true;
+        btn.innerHTML = 'Enregistrement...';
 
         const formData = new FormData(form);
         const id = formData.get('id');
@@ -438,12 +450,11 @@ window.adminMembres = {
             console.error('Erreur soumission:', error);
             showToast('Erreur: ' + error.message, 'error');
         } finally {
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
-        return false;
     },
 
     // Message Actions
