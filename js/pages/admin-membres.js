@@ -482,41 +482,57 @@ async function refreshPage() {
 
 export function initMemberFormHandlers() {
     // Member Form
-    document.getElementById('member-form')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Enregistrement...';
+    const memberForm = document.getElementById('member-form');
+    if (memberForm) {
+        console.log('Formulaire membre trouvé, attachement event listener');
+        // Supprimer les anciens listeners pour éviter les doublons (clone)
+        const newForm = memberForm.cloneNode(true);
+        memberForm.parentNode.replaceChild(newForm, memberForm);
 
-        const formData = new FormData(e.target);
-        const id = formData.get('id');
-        const data = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            phone: formData.get('phone')
-        };
-        const password = formData.get('password');
-        if (password) data.password = password;
+        newForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('Soumission formulaire membre détectée');
 
-        try {
-            if (id) {
-                await updateMember(id, data);
-                showToast('Membre modifié', 'success');
-            } else {
-                await createMember(data);
-                showToast('Membre créé', 'success');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Enregistrement...';
+
+            const formData = new FormData(e.target);
+            const id = formData.get('id');
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone')
+            };
+            const password = formData.get('password');
+            if (password) data.password = password;
+
+            console.log('Données à envoyer:', data);
+
+            try {
+                if (id) {
+                    console.log('Mode update');
+                    await updateMember(id, data);
+                    showToast('Membre modifié', 'success');
+                } else {
+                    console.log('Mode create');
+                    await createMember(data);
+                    showToast('Membre créé', 'success');
+                }
+                window.adminMembres.closeModal('member-modal');
+                await refreshPage();
+            } catch (error) {
+                console.error('Erreur soumission:', error);
+                showToast('Erreur: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             }
-            window.adminMembres.closeModal('member-modal');
-            await refreshPage();
-        } catch (error) {
-            console.error(error);
-            showToast('Erreur: ' + error.message, 'error');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-        }
-    });
+        });
+    } else {
+        console.error('Formulaire membre NON trouvé !');
+    }
 
     // Message Form
     document.getElementById('message-form')?.addEventListener('submit', (e) => {
