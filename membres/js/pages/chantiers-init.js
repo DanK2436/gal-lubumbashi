@@ -2,7 +2,7 @@
  * chantiers-init.js - Initialisation de la page chantiers
  */
 
-import { getProjects } from '../../js/storage.js';
+import { getProjects } from '../../../js/storage.js';
 
 // Fonctions d'auth inline (pour éviter problèmes CORS file://)
 function isAuthenticated() {

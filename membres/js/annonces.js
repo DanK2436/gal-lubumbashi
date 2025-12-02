@@ -71,8 +71,8 @@ function createAnnonceCard(annonce) {
                 </div>
             </div>
             <div class="annonce-body">
-                <h3 class="annonce-title">${escapeHtml(annonce.subject)}</h3>
-                <p class="annonce-message">${escapeHtml(annonce.message).replace(/\n/g, '<br>')}</p>
+                <h3 class="annonce-title">${escapeHtml(annonce.title || annonce.subject)}</h3>
+                <p class="annonce-message">${escapeHtml(annonce.content || annonce.message).replace(/\n/g, '<br>')}</p>
             </div>
         </div>
     `;

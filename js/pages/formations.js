@@ -203,7 +203,7 @@ export function init() {
                 userPhone: formData.get('phone'),
                 message: formData.get('message') || '',
                 date: new Date().toISOString(),
-                status: 'En attente'
+                status: 'pending'
             };
 
             console.log('📝 Tentative d\'inscription:', registrationData);

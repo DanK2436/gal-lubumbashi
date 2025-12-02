@@ -2,7 +2,7 @@
  * conceptions-init.js - Initialisation de la page conceptions
  */
 
-import { getProjects } from '../../js/storage.js';
+import { getProjects } from '../../../js/storage.js';
 
 // Fonctions d'auth inline (pour éviter problèmes CORS file://)
 function isAuthenticated() {
