@@ -5,6 +5,7 @@
 
 import { getCurrentMember } from './auth.js';
 import { showToast } from '../../js/ui.js';
+import { getMessagesByRecipient, updateMessage, getMessages } from '../../js/storage.js';
 
 /**
  * Charger et afficher les messages
@@ -15,23 +16,40 @@ export function init() {
 }
 
 /**
- * Charger les messages depuis le localStorage
+ * Charger les messages depuis Supabase
  */
-function loadMessages() {
+async function loadMessages() {
     const currentMember = getCurrentMember();
     if (!currentMember) return;
 
-    const allMessages = JSON.parse(localStorage.getItem('gal_messages') || '[]');
     const container = document.getElementById('messages-list');
-
     if (!container) return;
 
-    // Filtrer les messages pour ce membre
-    const memberMessages = allMessages.filter(msg =>
-        msg.recipientId === currentMember.id || msg.recipientId === 'all'
-    );
+    try {
+        // Récupérer les messages personnels
+        const personalMessages = await getMessagesByRecipient(currentMember.id);
 
-    if (memberMessages.length === 0) {
+        // Récupérer les messages globaux ('all')
+        // Note: getMessagesByRecipient ne gère qu'un seul ID, donc on utilise une astuce ou une autre requête
+        // Si getMessagesByRecipient utilise queryDocuments avec filters, on peut l'utiliser pour 'all' aussi
+        const globalMessages = await getMessagesByRecipient('all');
+
+        // Fusionner et trier
+        const allMessages = [...(personalMessages || []), ...(globalMessages || [])];
+        allMessages.sort((a, b) => new Date(b.sent_at || b.sentAt) - new Date(a.sent_at || a.sentAt));
+
+        renderMessages(allMessages);
+    } catch (error) {
+        console.error('Erreur chargement messages:', error);
+        container.innerHTML = '<div class="error-state">Erreur de chargement des messages</div>';
+    }
+}
+
+function renderMessages(messages) {
+    const container = document.getElementById('messages-list');
+    if (!container) return;
+
+    if (messages.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <span class="empty-state__icon">💬</span>
@@ -42,10 +60,7 @@ function loadMessages() {
         return;
     }
 
-    // Trier par date (plus récent en premier)
-    memberMessages.sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt));
-
-    container.innerHTML = memberMessages.map(message => createMessageCard(message)).join('');
+    container.innerHTML = messages.map(message => createMessageCard(message)).join('');
 
     // Initialiser les gestionnaires d'événements pour les commentaires
     initCommentHandlers();
@@ -55,11 +70,11 @@ function loadMessages() {
  * Créer une carte de message
  */
 function createMessageCard(message) {
-    const date = formatDate(message.sentAt);
-    const isNew = isRecent(message.sentAt, 3); // Nouveau si moins de 3 jours
+    const sentAt = message.sent_at || message.sentAt;
+    const date = formatDate(sentAt);
+    const isNew = isRecent(sentAt, 3); // Nouveau si moins de 3 jours
     const isRead = message.read || false;
     const comments = message.comments || [];
-    const currentMember = getCurrentMember();
 
     return `
         <div class="message-card ${isNew && !isRead ? 'message-card--new' : ''} ${!isRead ? 'message-card--unread' : ''}" data-message-id="${message.id}">
@@ -136,7 +151,11 @@ function initCommentHandlers() {
     const addCommentButtons = document.querySelectorAll('.add-comment-btn');
 
     addCommentButtons.forEach(button => {
-        button.addEventListener('click', function () {
+        // Cloner le bouton pour éviter les écouteurs multiples si réinitialisé
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+
+        newButton.addEventListener('click', function () {
             const messageId = this.dataset.messageId;
             const textarea = document.querySelector(`textarea[data-message-id="${messageId}"]`);
             const commentText = textarea.value.trim();
@@ -155,62 +174,72 @@ function initCommentHandlers() {
 /**
  * Ajouter un commentaire à un message
  */
-function addComment(messageId, commentText) {
+async function addComment(messageId, commentText) {
     const currentMember = getCurrentMember();
     if (!currentMember) return;
 
-    const allMessages = JSON.parse(localStorage.getItem('gal_messages') || '[]');
-    const message = allMessages.find(m => m.id === messageId);
+    try {
+        // Récupérer le message actuel pour avoir les commentaires existants
+        // Idéalement on devrait avoir une fonction getMessageById mais on peut le trouver dans le DOM ou recharger
+        // Pour faire simple et sûr, on recharge les messages après update, mais pour l'update on a besoin de l'objet actuel
+        // Supabase update écrase le champ, donc il faut récupérer d'abord.
 
-    if (!message) {
-        showToast('Message introuvable', 'error');
-        return;
+        // Note: Dans une vraie app, on aurait une table séparée pour les commentaires.
+        // Ici les commentaires sont dans un champ JSONB ou array du message.
+
+        // On va recharger tous les messages pour trouver celui-ci (pas optimal mais simple avec l'API actuelle)
+        const personalMessages = await getMessagesByRecipient(currentMember.id);
+        const globalMessages = await getMessagesByRecipient('all');
+        const allMessages = [...(personalMessages || []), ...(globalMessages || [])];
+
+        const message = allMessages.find(m => m.id === messageId);
+
+        if (!message) {
+            showToast('Message introuvable', 'error');
+            return;
+        }
+
+        const comments = message.comments || [];
+
+        const newComment = {
+            id: Date.now().toString(),
+            memberId: currentMember.id,
+            memberName: currentMember.name,
+            text: commentText,
+            createdAt: new Date().toISOString()
+        };
+
+        comments.push(newComment);
+
+        await updateMessage(messageId, { comments: comments });
+
+        showToast('Commentaire ajouté avec succès', 'success');
+        loadMessages(); // Recharger pour afficher
+
+    } catch (error) {
+        console.error('Erreur ajout commentaire:', error);
+        showToast('Erreur lors de l\'ajout du commentaire', 'error');
     }
-
-    // Initialiser le tableau de commentaires si nécessaire
-    if (!message.comments) {
-        message.comments = [];
-    }
-
-    // Créer le nouveau commentaire
-    const newComment = {
-        id: Date.now().toString(),
-        memberId: currentMember.id,
-        memberName: currentMember.name,
-        text: commentText,
-        createdAt: new Date().toISOString()
-    };
-
-    // Ajouter le commentaire
-    message.comments.push(newComment);
-
-    // Sauvegarder
-    localStorage.setItem('gal_messages', JSON.stringify(allMessages));
-
-    // Recharger les messages
-    loadMessages();
-
-    showToast('Commentaire ajouté avec succès', 'success');
 }
 
 /**
  * Marquer un message comme lu
  */
-window.markAsRead = function (messageId) {
-    const allMessages = JSON.parse(localStorage.getItem('gal_messages') || '[]');
-    const message = allMessages.find(m => m.id === messageId);
-
-    if (message) {
-        message.read = true;
-        localStorage.setItem('gal_messages', JSON.stringify(allMessages));
+window.markAsRead = async function (messageId) {
+    try {
+        await updateMessage(messageId, { read: true });
         loadMessages();
+        showToast('Message marqué comme lu', 'success');
+    } catch (error) {
+        console.error('Erreur marquage message:', error);
+        showToast('Erreur lors de la mise à jour', 'error');
     }
 };
 
 /**
  * Vérifier les nouveaux messages et afficher notification
  */
-function checkForNewMessages() {
+async function checkForNewMessages() {
     const currentMember = getCurrentMember();
     if (!currentMember) return;
 
@@ -218,15 +247,21 @@ function checkForNewMessages() {
     const now = new Date().getTime();
 
     if (lastCheck) {
-        const allMessages = JSON.parse(localStorage.getItem('gal_messages') || '[]');
-        const newMessages = allMessages.filter(msg =>
-            (msg.recipientId === currentMember.id || msg.recipientId === 'all') &&
-            new Date(msg.sentAt).getTime() > parseInt(lastCheck)
-        );
+        try {
+            const personalMessages = await getMessagesByRecipient(currentMember.id);
+            const globalMessages = await getMessagesByRecipient('all');
+            const allMessages = [...(personalMessages || []), ...(globalMessages || [])];
 
-        if (newMessages.length > 0) {
-            playNotificationSound();
-            showToast(`Vous avez ${newMessages.length} nouveau(x) message(s)`, 'info');
+            const newMessages = allMessages.filter(msg =>
+                new Date(msg.sent_at || msg.sentAt).getTime() > parseInt(lastCheck)
+            );
+
+            if (newMessages.length > 0) {
+                playNotificationSound();
+                showToast(`Vous avez ${newMessages.length} nouveau(x) message(s)`, 'info');
+            }
+        } catch (error) {
+            console.error('Erreur vérification nouveaux messages:', error);
         }
     }
 
@@ -245,6 +280,7 @@ function playNotificationSound() {
  * Formater une date
  */
 function formatDate(dateString) {
+    if (!dateString) return '';
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now - date);
@@ -274,6 +310,7 @@ function formatDate(dateString) {
  * Vérifier si un message est récent
  */
 function isRecent(dateString, days) {
+    if (!dateString) return false;
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now - date);
@@ -285,6 +322,7 @@ function isRecent(dateString, days) {
  * Échapper le HTML
  */
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;

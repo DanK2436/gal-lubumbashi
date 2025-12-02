@@ -5,6 +5,7 @@
 
 import { getCurrentMember } from './auth.js';
 import { showToast } from '../../js/ui.js';
+import { getAnnouncements } from '../../js/storage.js';
 
 /**
  * Charger et afficher les annonces
@@ -15,15 +16,27 @@ export function init() {
 }
 
 /**
- * Charger les annonces depuis le localStorage
+ * Charger les annonces depuis Supabase
  */
-function loadAnnonces() {
-    const annonces = JSON.parse(localStorage.getItem('gal_member_messages') || '[]');
+async function loadAnnonces() {
+    try {
+        const annonces = await getAnnouncements();
+        renderAnnonces(annonces);
+    } catch (error) {
+        console.error('Erreur chargement annonces:', error);
+        const container = document.getElementById('annonces-list');
+        if (container) {
+            container.innerHTML = '<div class="error-state">Erreur de chargement des annonces</div>';
+        }
+    }
+}
+
+function renderAnnonces(annonces) {
     const container = document.getElementById('annonces-list');
 
     if (!container) return;
 
-    if (annonces.length === 0) {
+    if (!annonces || annonces.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <span class="empty-state__icon">📢</span>
@@ -35,7 +48,7 @@ function loadAnnonces() {
     }
 
     // Trier par date (plus récent en premier)
-    annonces.sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt));
+    annonces.sort((a, b) => new Date(b.sent_at || b.sentAt) - new Date(a.sent_at || a.sentAt));
 
     container.innerHTML = annonces.map(annonce => createAnnonceCard(annonce)).join('');
 }
@@ -44,11 +57,12 @@ function loadAnnonces() {
  * Créer une carte d'annonce
  */
 function createAnnonceCard(annonce) {
-    const date = formatDate(annonce.sentAt);
-    const isNew = isRecent(annonce.sentAt, 7);
+    const sentAt = annonce.sent_at || annonce.sentAt;
+    const date = formatDate(sentAt);
+    const isNew = isRecent(sentAt, 7);
 
     return `
-        <div class="annonce-card ${isNew ? 'annonce-card--new' : ''}" data-annonce-id="${annonce.id || Date.now()}">
+        <div class="annonce-card ${isNew ? 'annonce-card--new' : ''}" data-annonce-id="${annonce.id}">
             <div class="annonce-header">
                 <div class="annonce-meta">
                     <span class="annonce-icon">📢</span>
@@ -67,7 +81,7 @@ function createAnnonceCard(annonce) {
 /**
  * Vérifier les nouvelles annonces et afficher notification
  */
-function checkForNewAnnouncements() {
+async function checkForNewAnnouncements() {
     const currentMember = getCurrentMember();
     if (!currentMember) return;
 
@@ -75,14 +89,18 @@ function checkForNewAnnouncements() {
     const now = new Date().getTime();
 
     if (lastCheck) {
-        const annonces = JSON.parse(localStorage.getItem('gal_member_messages') || '[]');
-        const newAnnonces = annonces.filter(annonce =>
-            new Date(annonce.sentAt).getTime() > parseInt(lastCheck)
-        );
+        try {
+            const annonces = await getAnnouncements();
+            const newAnnonces = annonces.filter(annonce =>
+                new Date(annonce.sent_at || annonce.sentAt).getTime() > parseInt(lastCheck)
+            );
 
-        if (newAnnonces.length > 0) {
-            playNotificationSound();
-            showToast(`${newAnnonces.length} nouvelle(s) annonce(s)`, 'info');
+            if (newAnnonces.length > 0) {
+                playNotificationSound();
+                showToast(`${newAnnonces.length} nouvelle(s) annonce(s)`, 'info');
+            }
+        } catch (error) {
+            console.error('Erreur vérification nouvelles annonces:', error);
         }
     }
 
@@ -101,6 +119,7 @@ function playNotificationSound() {
  * Formater une date
  */
 function formatDate(dateString) {
+    if (!dateString) return '';
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now - date);
@@ -125,6 +144,7 @@ function formatDate(dateString) {
  * Vérifier si une annonce est récente
  */
 function isRecent(dateString, days) {
+    if (!dateString) return false;
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now - date);
@@ -136,6 +156,7 @@ function isRecent(dateString, days) {
  * Échapper le HTML
  */
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;

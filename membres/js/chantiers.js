@@ -2,13 +2,29 @@
  * chantiers.js - Affichage des chantiers pour les membres
  */
 
+import { getProjects } from '../../js/storage.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     loadChantiers();
 });
 
-function loadChantiers() {
-    const chantiers = JSON.parse(localStorage.getItem('gal_chantiers') || '[]')
-        .filter(c => c.status === 'active');
+async function loadChantiers() {
+    try {
+        const chantiers = await getProjects('chantiers');
+        // Filtrer uniquement les actifs si nécessaire, mais getProjects retourne tout
+        // On garde le filtrage client pour l'instant si l'API retourne tout
+        const activeChantiers = chantiers.filter(c => c.status === 'active');
+        renderChantiers(activeChantiers);
+    } catch (error) {
+        console.error('Erreur chargement chantiers:', error);
+        const container = document.getElementById('chantiers-list');
+        if (container) {
+            container.innerHTML = '<div class="error-state">Erreur de chargement des chantiers</div>';
+        }
+    }
+}
+
+function renderChantiers(chantiers) {
 
     const container = document.getElementById('chantiers-list');
     if (!container) return;
@@ -32,7 +48,7 @@ function loadChantiers() {
                 <h3>${escapeHtml(chantier.title)}</h3>
                 <p>${escapeHtml(chantier.description)}</p>
                 <div class="chantier-footer">
-                    <span class="date">Publié le ${new Date(chantier.createdAt).toLocaleDateString('fr-FR')}</span>
+                    <span class="date">Publié le ${new Date(chantier.created_at || chantier.createdAt).toLocaleDateString('fr-FR')}</span>
                     <button class="btn btn--sm btn--outline">Voir détails</button>
                 </div>
             </div>
