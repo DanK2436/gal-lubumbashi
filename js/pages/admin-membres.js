@@ -9,12 +9,16 @@ import {
     getMembers,
     createMember,
     updateMember,
-    deleteMember
+    deleteMember,
+    getMessages,
+    createMessage,
+    updateMessage,
+    deleteMessage,
+    getAnnouncements,
+    createAnnouncement,
+    updateAnnouncement,
+    deleteAnnouncement
 } from '../storage.js';
-
-// Fonctions temporaires pour messages/annonces (restent en localStorage pour l'instant)
-function getMessages() { return JSON.parse(localStorage.getItem('gal_messages') || '[]'); }
-function getAnnonces() { return JSON.parse(localStorage.getItem('gal_member_messages') || '[]'); }
 
 /**
  * Charger et afficher la page de gestion des membres
@@ -22,16 +26,24 @@ function getAnnonces() { return JSON.parse(localStorage.getItem('gal_member_mess
 export async function loadMembresManager(activeTab = 'members') {
     // Charger les données (async pour Supabase)
     let members = [];
+    let messages = [];
+    let annonces = [];
+
     try {
         members = await getMembers();
-        console.log('Membres chargés:', members.length, members);
+        console.log('Membres chargés:', members.length);
     } catch (error) {
         console.error('Erreur chargement membres:', error);
         showToast('Erreur lors du chargement des membres', 'error');
     }
 
-    const messages = getMessages();
-    const annonces = getAnnonces();
+    try {
+        messages = await getMessages();
+        annonces = await getAnnouncements();
+        console.log('Messages/Annonces chargés:', messages.length, annonces.length);
+    } catch (error) {
+        console.error('Erreur chargement messages/annonces:', error);
+    }
 
     const html = `
         <div class="members-manager">
@@ -288,12 +300,12 @@ function renderMembersRows(members) {
 
 function renderMessagesRows(messages, members) {
     return messages.map(m => {
-        const member = members.find(mem => mem.id === m.recipientId);
+        const member = members.find(mem => mem.id === m.recipient_id || mem.id === m.recipientId);
         const recipientName = member ? member.name : 'Membre inconnu';
         const commentCount = m.comments ? m.comments.length : 0;
         return `
             <tr>
-                <td>${formatDate(m.sentAt)}</td>
+                <td>${formatDate(m.sent_at || m.sentAt)}</td>
                 <td>${escapeHtml(recipientName)}</td>
                 <td>${escapeHtml(m.subject)}</td>
                 <td>${escapeHtml(m.message).substring(0, 50)}...</td>
@@ -310,7 +322,7 @@ function renderMessagesRows(messages, members) {
 function renderAnnoncesRows(annonces) {
     return annonces.map(a => `
         <tr>
-            <td>${formatDate(a.sentAt)}</td>
+            <td>${formatDate(a.sent_at || a.sentAt)}</td>
             <td>${escapeHtml(a.subject)}</td>
             <td>${escapeHtml(a.message).substring(0, 50)}...</td>
             <td>
@@ -479,11 +491,12 @@ window.adminMembres = {
         }
     },
     async editMessage(id) {
-        const msg = getMessages().find(m => m.id === id);
-        if (!msg) return;
-
-        // Populate members dropdown
         try {
+            const messages = await getMessages();
+            const msg = messages.find(m => m.id === id);
+            if (!msg) return;
+
+            // Populate members dropdown
             const members = await getMembers();
             const select = document.getElementById('message-recipient');
             select.innerHTML = '<option value="">Sélectionner un membre</option>' +
@@ -491,21 +504,26 @@ window.adminMembres = {
 
             const form = document.getElementById('message-form');
             document.getElementById('message-id').value = msg.id;
-            select.value = msg.recipientId;
+            select.value = msg.recipient_id || msg.recipientId;
             form.subject.value = msg.subject;
             form.message.value = msg.message;
             document.getElementById('message-modal-title').textContent = 'Modifier le message';
             document.getElementById('message-modal').classList.add('active');
         } catch (error) {
             console.error(error);
+            showToast('Erreur chargement message', 'error');
         }
     },
-    deleteMessage(id) {
+    async deleteMessage(id) {
         if (!confirm('Supprimer ce message ?')) return;
-        const messages = getMessages().filter(m => m.id !== id);
-        localStorage.setItem('gal_messages', JSON.stringify(messages));
-        refreshPage();
-        showToast('Message supprimé', 'success');
+        try {
+            await deleteMessage(id);
+            await refreshPage();
+            showToast('Message supprimé', 'success');
+        } catch (error) {
+            console.error(error);
+            showToast('Erreur suppression: ' + error.message, 'error');
+        }
     },
 
     // Announcement Actions
@@ -514,22 +532,32 @@ window.adminMembres = {
         document.getElementById('announcement-modal-title').textContent = 'Nouvelle annonce';
         document.getElementById('announcement-modal').classList.add('active');
     },
-    editAnnouncement(id) {
-        const ann = getAnnonces().find(a => a.id === id);
-        if (!ann) return;
-        const form = document.getElementById('announcement-form');
-        document.getElementById('announcement-id').value = ann.id;
-        form.subject.value = ann.subject;
-        form.message.value = ann.message;
-        document.getElementById('announcement-modal-title').textContent = 'Modifier l\'annonce';
-        document.getElementById('announcement-modal').classList.add('active');
+    async editAnnouncement(id) {
+        try {
+            const annonces = await getAnnouncements();
+            const ann = annonces.find(a => a.id === id);
+            if (!ann) return;
+            const form = document.getElementById('announcement-form');
+            document.getElementById('announcement-id').value = ann.id;
+            form.subject.value = ann.subject;
+            form.message.value = ann.message;
+            document.getElementById('announcement-modal-title').textContent = 'Modifier l\'annonce';
+            document.getElementById('announcement-modal').classList.add('active');
+        } catch (error) {
+            console.error(error);
+            showToast('Erreur chargement annonce', 'error');
+        }
     },
-    deleteAnnouncement(id) {
+    async deleteAnnouncement(id) {
         if (!confirm('Supprimer cette annonce ?')) return;
-        const annonces = getAnnonces().filter(a => String(a.id) !== String(id));
-        localStorage.setItem('gal_member_messages', JSON.stringify(annonces));
-        refreshPage();
-        showToast('Annonce supprimée', 'success');
+        try {
+            await deleteAnnouncement(id);
+            await refreshPage();
+            showToast('Annonce supprimée', 'success');
+        } catch (error) {
+            console.error(error);
+            showToast('Erreur suppression: ' + error.message, 'error');
+        }
     }
 };
 
@@ -556,49 +584,55 @@ if (!window.adminMembresEventsInitialized) {
         if (e.target && e.target.id === 'message-form') {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const messages = getMessages();
             const id = formData.get('id');
             const data = {
-                recipientId: formData.get('recipientId'),
+                recipient_id: formData.get('recipientId'),
                 subject: formData.get('subject'),
                 message: formData.get('message'),
-                sentAt: new Date().toISOString()
+                sent_at: new Date().toISOString()
             };
 
-            if (id) {
-                const index = messages.findIndex(m => m.id === id);
-                if (index !== -1) messages[index] = { ...messages[index], ...data };
-            } else {
-                messages.push({ id: Date.now().toString(), ...data, read: false, comments: [] });
+            try {
+                if (id) {
+                    await updateMessage(id, data);
+                    showToast('Message modifié', 'success');
+                } else {
+                    await createMessage(data);
+                    showToast('Message envoyé', 'success');
+                }
+                window.adminMembres.closeModal('message-modal');
+                await refreshPage();
+            } catch (error) {
+                console.error('Erreur soumission message:', error);
+                showToast('Erreur: ' + error.message, 'error');
             }
-            localStorage.setItem('gal_messages', JSON.stringify(messages));
-            window.adminMembres.closeModal('message-modal');
-            refreshPage();
-            showToast('Message envoyé', 'success');
         }
 
         // Gestionnaire pour le formulaire annonce
         else if (e.target && e.target.id === 'announcement-form') {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const annonces = getAnnonces();
             const id = formData.get('id');
             const data = {
                 subject: formData.get('subject'),
                 message: formData.get('message'),
-                sentAt: new Date().toISOString()
+                sent_at: new Date().toISOString()
             };
 
-            if (id) {
-                const index = annonces.findIndex(a => a.id === id);
-                if (index !== -1) annonces[index] = { ...annonces[index], ...data };
-            } else {
-                annonces.push({ id: Date.now().toString(), ...data, comments: [] });
+            try {
+                if (id) {
+                    await updateAnnouncement(id, data);
+                    showToast('Annonce modifiée', 'success');
+                } else {
+                    await createAnnouncement(data);
+                    showToast('Annonce publiée', 'success');
+                }
+                window.adminMembres.closeModal('announcement-modal');
+                await refreshPage();
+            } catch (error) {
+                console.error('Erreur soumission annonce:', error);
+                showToast('Erreur: ' + error.message, 'error');
             }
-            localStorage.setItem('gal_member_messages', JSON.stringify(annonces));
-            window.adminMembres.closeModal('announcement-modal');
-            refreshPage();
-            showToast('Annonce publiée', 'success');
         }
     });
 

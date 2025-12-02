@@ -18,8 +18,7 @@ import {
 // Clés de stockage (pour compatibilité - langue et auth restent en localStorage)
 const STORAGE_KEYS = {
   AUTH: 'gal_auth',
-  LANGUAGE: 'gal_language',
-  CHATBOT_HISTORY: 'gal_chatbot_history'
+  LANGUAGE: 'gal_language'
 };
 
 /**
@@ -456,33 +455,7 @@ export async function isAuthenticated() {
   return session !== null;
 }
 
-// ===== CHATBOT (localStorage) =====
 
-export async function getChatbotHistory() {
-  const data = localStorage.getItem(STORAGE_KEYS.CHATBOT_HISTORY);
-  return data ? JSON.parse(data) : [];
-}
-
-export async function saveChatbotMessage(message) {
-  const history = await getChatbotHistory();
-  history.push({
-    ...message,
-    timestamp: new Date().toISOString()
-  });
-
-  // Garder seulement les 50 derniers messages
-  if (history.length > 50) {
-    history.shift();
-  }
-
-  localStorage.setItem(STORAGE_KEYS.CHATBOT_HISTORY, JSON.stringify(history));
-  return message;
-}
-
-export async function clearChatbotHistory() {
-  localStorage.setItem(STORAGE_KEYS.CHATBOT_HISTORY, JSON.stringify([]));
-  return true;
-}
 
 // ===== LANGUE (localStorage) =====
 
@@ -531,9 +504,7 @@ export default {
   logout,
   getSession,
   isAuthenticated,
-  getChatbotHistory,
-  saveChatbotMessage,
-  clearChatbotHistory,
+
   getLanguage,
   setLanguage,
   getReservations,
