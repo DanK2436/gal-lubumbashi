@@ -539,8 +539,8 @@ window.adminMembres = {
             if (!ann) return;
             const form = document.getElementById('announcement-form');
             document.getElementById('announcement-id').value = ann.id;
-            form.subject.value = ann.title || ann.subject;
-            form.message.value = ann.content || ann.message;
+            form.subject.value = ann.title || ann.subject || '';
+            form.message.value = ann.content || ann.message || '';
             document.getElementById('announcement-modal-title').textContent = 'Modifier l\'annonce';
             document.getElementById('announcement-modal').classList.add('active');
         } catch (error) {

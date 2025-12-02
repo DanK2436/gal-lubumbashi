@@ -59,7 +59,7 @@ function displayAnnonces(annonces) {
     list.innerHTML = annonces.map(annonce => `
         <div class="annonce-card annonce-card--${annonce.priority}">
             <div class="annonce-card__header">
-                <h3 class="annonce-card__title">${annonce.title}</h3>
+                <h3 class="annonce-card__title">${annonce.title || annonce.subject || ''}</h3>
                 <span class="annonce-card__priority annonce-card__priority--${annonce.priority}">
                     ${getPriorityIcon(annonce.priority)} ${annonce.priority}
                 </span>
