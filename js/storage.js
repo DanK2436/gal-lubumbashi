@@ -310,11 +310,18 @@ export async function getMessageById(id) {
 }
 
 export async function getMessagesByRecipient(recipientId) {
-  return await queryDocuments('messages', {
-    filters: [{ column: 'recipient_id', value: recipientId }],
-    orderBy: 'sent_at',
-    ascending: false
-  });
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .eq('recipient_id', recipientId)
+    .order('sent_at', { ascending: false });
+
+  if (error) {
+    console.error('Erreur getMessagesByRecipient:', error);
+    return [];
+  }
+  return data;
 }
 
 export async function createMessage(message) {
@@ -361,14 +368,24 @@ export async function deleteAnnouncement(id) {
 // ===== CHATBOT CONVERSATIONS =====
 
 export async function getChatbotConversations(userId = null) {
+  if (!supabase) return [];
+
+  let query = supabase
+    .from('chatbot_conversations')
+    .select('*')
+    .order('updated_at', { ascending: false });
+
   if (userId) {
-    return await queryDocuments('chatbot_conversations', {
-      filters: [{ column: 'user_id', value: userId }],
-      orderBy: 'updated_at',
-      ascending: false
-    });
+    query = query.eq('user_id', userId);
   }
-  return await getCollection('chatbot_conversations', { orderBy: 'updated_at', ascending: false });
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('Erreur getChatbotConversations:', error);
+    return [];
+  }
+  return data;
 }
 export async function updateChatbotConversation(id, updates) {
   return await supabaseUpdate('chatbot_conversations', id, {
