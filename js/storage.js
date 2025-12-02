@@ -180,6 +180,7 @@ export async function saveContact(contactData) {
   return await addDocument('contact_messages', {
     name: contactData.name,
     email: contactData.email,
+    phone: contactData.phone,
     subject: contactData.subject || '',
     message: contactData.message,
     status: 'new'
