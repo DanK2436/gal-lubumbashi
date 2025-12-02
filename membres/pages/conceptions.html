@@ -65,24 +65,7 @@
         </div>
     </main>
 
-    <script type="module" src="../js/conceptions.js"></script>
-    <script type="module">
-        import { getCurrentMember, logout } from '../js/auth.js';
-
-        const member = getCurrentMember();
-        if (!member) {
-            window.location.href = '../login.html';
-        } else {
-            document.getElementById('member-name').textContent = member.name;
-            document.getElementById('member-email').textContent = member.email;
-            const initial = member.name.charAt(0).toUpperCase();
-            document.getElementById('member-avatar').textContent = initial;
-        }
-
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            logout();
-        });
-    </script>
+    <script type="module" src="../js/pages/conceptions-init.js"></script>
     <script src="../js/menu.js"></script>
 </body>
 
