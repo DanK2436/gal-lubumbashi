@@ -22,19 +22,24 @@ Toutes les fonctionnalités ont été migrées de `localStorage` vers Supabase.
 | **Chantiers/Conceptions** | `projects` | ✅ | ✅ FONCTIONNE |
 | **Messages Privés** | `messages` | ✅ | ✅ FONCTIONNE |
 | **Annonces** | `announcements` | ✅ | ✅ FONCTIONNE |
-| **Chatbot** | `chatbot_conversations` | ✅ | ✅ FONCTIONNE |
+| **Chatbot Conversations** | `chatbot_conversations` | ✅ | ✅ FONCTIONNE |
+| **Chatbot Knowledge** | `chatbot_knowledge` | ✅ | ✅ DYNAMIQUE |
 
 ### 3. Scripts SQL Exécutés
 ✅ `supabase-tables.sql` - Tables principales
 ✅ `supabase-projects-table.sql` - Table projects
 ✅ `supabase-messages-chatbot-tables.sql` - Tables messages, announcements, chatbot_conversations
+✅ `supabase-chatbot-knowledge.sql` - Base de connaissances du chatbot
 
 ---
 
 ## 📝 Notes Techniques
 
-### Chatbot
-Le chatbot crée désormais une nouvelle conversation (`chatbot_conversations`) au début de chaque session et sauvegarde tous les échanges en temps réel.
+### Chatbot 🤖
+- **Conversations** : Stockées dans `chatbot_conversations`. Une nouvelle session est créée à chaque visite.
+- **Connaissances** : Stockées dans `chatbot_knowledge`. Le chatbot charge ces données au démarrage.
+  - Vous pouvez ajouter/modifier les réponses directement dans la table Supabase.
+  - Structure : `tag`, `patterns` (JSON array), `responses` (JSON array).
 
 ### Messages & Annonces
 L'interface d'administration (`admin-membres.js`) charge et gère désormais ces données via Supabase.
@@ -45,4 +50,4 @@ Le code mort lié à `localStorage` a été supprimé de `js/storage.js`.
 ---
 
 **Dernière mise à jour** : 2025-12-02
-**Status Global** : ✅ 100% TERMINÉ
+**Status Global** : ✅ 100% TERMINÉ & OPTIMISÉ

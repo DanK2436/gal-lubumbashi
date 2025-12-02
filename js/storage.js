@@ -371,18 +371,6 @@ export async function getChatbotConversations(userId = null) {
   }
   return await getCollection('chatbot_conversations', { orderBy: 'updated_at', ascending: false });
 }
-
-export async function getChatbotConversationById(id) {
-  return await getDocument('chatbot_conversations', id);
-}
-
-export async function createChatbotConversation(conversation) {
-  return await addDocument('chatbot_conversations', {
-    user_id: conversation.user_id || null,
-    messages: conversation.messages || []
-  });
-}
-
 export async function updateChatbotConversation(id, updates) {
   return await supabaseUpdate('chatbot_conversations', id, {
     ...updates,
@@ -407,6 +395,11 @@ export async function addMessageToConversation(conversationId, message) {
 
   return await updateChatbotConversation(conversationId, { messages });
 }
+
+export async function getChatbotKnowledge() {
+  return await getCollection('chatbot_knowledge');
+}
+
 
 // ===== PAGES STATIQUES (localStorage temporairement) =====
 
