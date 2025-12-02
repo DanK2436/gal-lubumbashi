@@ -3,6 +3,7 @@
  */
 
 import { isAuthenticated, getCurrentMember, logout } from '../auth.js';
+import { getAnnouncements } from '../../../js/storage.js';
 
 let allAnnonces = [];
 
@@ -34,8 +35,6 @@ function initAnnonces() {
     // Gérer le filtre
     document.getElementById('filter-priority').addEventListener('change', filterAnnonces);
 }
-
-import { getAnnouncements } from '../../../js/storage.js';
 
 function loadAnnonces() {
     getAnnouncements().then(annonces => {
