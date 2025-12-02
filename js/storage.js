@@ -272,11 +272,10 @@ export async function deleteMember(id) {
 
 export async function getProjects(type = null) {
   if (type) {
-    return await queryDocuments('projects', {
-      filters: [{ column: 'type', value: type }],
-      orderBy: 'created_at',
-      ascending: false
-    });
+    // queryDocuments prend (tableName, column, operator, value)
+    const results = await queryDocuments('projects', 'type', 'eq', type);
+    // Trier manuellement par date de création
+    return results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   }
   return await getCollection('projects', { orderBy: 'created_at', ascending: false });
 }

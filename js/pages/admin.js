@@ -85,11 +85,11 @@ async function loadPage(page) {
             initMemberFormHandlers();
             break;
         case 'chantiers':
-            main.innerHTML = loadProjectsManager('chantiers');
+            main.innerHTML = await loadProjectsManager('chantiers');
             initProjectFormHandlers();
             break;
         case 'conceptions':
-            main.innerHTML = loadProjectsManager('conceptions');
+            main.innerHTML = await loadProjectsManager('conceptions');
             initProjectFormHandlers();
             break;
     }
