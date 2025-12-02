@@ -825,12 +825,12 @@ export async function loadReservationsManager() {
                     <tbody>
                         ${reservations.map(res => `
                             <tr>
-                                <td>${new Date(res.date).toLocaleDateString('fr-FR')}</td>
-                                <td><strong>${res.userName}</strong></td>
-                                <td>${res.machineName}</td>
+                              <td>${new Date(res.reservation_date || res.created_at).toLocaleDateString('fr-FR')}</td>
+                               <td><strong>${res.user_name || 'N/A'}</strong></td>
+                               <td>${res.machine_name || 'N/A'}</td>
                                 <td>
-                                    <div>${res.userEmail}</div>
-                                    <div class="text-sm text-muted">${res.userPhone}</div>
+                                  <div>${res.user_email || 'N/A'}</div>
+<div class="text-sm text-muted">${res.user_phone || 'N/A'}</div>
                                 </td>
                                 <td>
                                     <span class="badge badge--${res.status === 'Confirmé' ? 'success' : res.status === 'En attente' ? 'warning' : 'primary'}">
@@ -887,15 +887,14 @@ export async function deleteReservationItem(id) {
         showToast('Réservation supprimée avec succès !');
         refreshCurrentPage();
     }
-}
 
-/**
- * Charge et affiche la liste des inscriptions aux formations
- */
-export async function loadFormationRegistrationsManager() {
-    const registrations = await getFormationRegistrations();
+    /**
+     * Charge et affiche la liste des inscriptions aux formations
+     */
+    export async function loadFormationRegistrationsManager() {
+        const registrations = await getFormationRegistrations();
 
-    return `
+        return `
         <div class="admin-card">
             <div class="d-flex justify-between align-center mb-6">
                 <h2>Inscriptions aux Formations (${registrations.length})</h2>
@@ -917,12 +916,12 @@ export async function loadFormationRegistrationsManager() {
                     <tbody>
                         ${registrations.map(reg => `
                             <tr>
-                                <td>${new Date(reg.date).toLocaleDateString('fr-FR')}</td>
-                                <td><strong>${reg.userName}</strong></td>
-                                <td>${reg.formationTitle}</td>
+                                <td>${new Date(reg.created_at).toLocaleDateString('fr-FR')}</td>
+                                <td><strong>${reg.name || 'N/A'}</strong></td>
+                                <td>${reg.formation_title || 'N/A'}</td>
                                 <td>
-                                    <div>${reg.userEmail}</div>
-                                    <div class="text-sm text-muted">${reg.userPhone}</div>
+                                    <div>${reg.email || 'N/A'}</div>
+                                    <div class="text-sm text-muted">${reg.phone || 'N/A'}</div>
                                 </td>
                                 <td><span class="badge badge--info">${reg.level || 'Non spécifié'}</span></td>
                                 <td>
@@ -958,204 +957,204 @@ export async function loadFormationRegistrationsManager() {
             </div>
         </div>
     `;
-}
+    }
 
-/**
- * Confirme une inscription à une formation
- */
-export async function confirmFormationRegistrationItem(id) {
-    if (confirm('Voulez-vous confirmer cette inscription ?')) {
-        await updateFormationRegistrationStatus(id, 'Confirmé');
-        showToast('Inscription confirmée !');
+    /**
+     * Confirme une inscription à une formation
+     */
+    export async function confirmFormationRegistrationItem(id) {
+        if (confirm('Voulez-vous confirmer cette inscription ?')) {
+            await updateFormationRegistrationStatus(id, 'Confirmé');
+            showToast('Inscription confirmée !');
+            refreshCurrentPage();
+        }
+    }
+
+    /**
+     * Supprime une inscription à une formation
+     */
+    export async function deleteFormationRegistrationItem(id) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cette inscription ?')) {
+            await deleteFormationRegistration(id);
+            showToast('Inscription supprimée avec succès !');
+            refreshCurrentPage();
+        }
+    }
+
+    /**
+     * Affiche le formulaire de blog
+    
+     */
+    export function showBlogForm(postId = null) {
+        const modal = document.getElementById('blog-form-modal');
+        const form = document.getElementById('blog-form');
+        const title = document.getElementById('blog-form-title');
+
+        modal.classList.add('active');
+
+        if (postId) {
+            title.textContent = 'Modifier l\'article';
+            getBlogPosts().then(posts => {
+                const post = posts.find(p => p.id === postId);
+                if (post) {
+                    document.getElementById('blog-id').value = post.id;
+                    document.getElementById('blog-title').value = post.title;
+                    document.getElementById('blog-category').value = post.category;
+                    document.getElementById('blog-author').value = post.author;
+                    document.getElementById('blog-excerpt').value = post.excerpt;
+                    document.getElementById('blog-content').value = post.content;
+                    document.getElementById('blog-image').value = post.image;
+                    document.getElementById('blog-tags').value = post.tags ? post.tags.join(', ') : '';
+                }
+            });
+        } else {
+            title.textContent = 'Nouvel article';
+            form.reset();
+            document.getElementById('blog-id').value = '';
+        }
+    }
+
+    /**
+     * Sauvegarde un article de blog
+     */
+    export async function saveBlogPost(formData) {
+        const postId = formData.get('id');
+        const tags = formData.get('tags');
+
+        const postData = {
+            title: formData.get('title'),
+            slug: generateSlug(formData.get('title')),
+            category: formData.get('category'),
+            author: formData.get('author'),
+            excerpt: formData.get('excerpt'),
+            content: formData.get('content'),
+            image: formData.get('image'),
+            tags: tags ? tags.split(',').map(t => t.trim()) : []
+        };
+
+        if (postId) {
+            await updateBlogPost(postId, postData);
+            showToast('Article modifié avec succès !');
+        } else {
+            await createBlogPost(postData);
+            showToast('Article publié avec succès !');
+        }
+
+        closeModal();
         refreshCurrentPage();
     }
-}
 
-/**
- * Supprime une inscription à une formation
- */
-export async function deleteFormationRegistrationItem(id) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette inscription ?')) {
-        await deleteFormationRegistration(id);
-        showToast('Inscription supprimée avec succès !');
-        refreshCurrentPage();
+    /**
+     * Supprime un article de blog
+     */
+    export async function deleteBlogPostItem(postId) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+            await deleteBlogPost(postId);
+            showToast('Article supprimé avec succès !');
+            refreshCurrentPage();
+        }
     }
-}
 
-/**
- * Affiche le formulaire de blog
-
- */
-export function showBlogForm(postId = null) {
-    const modal = document.getElementById('blog-form-modal');
-    const form = document.getElementById('blog-form');
-    const title = document.getElementById('blog-form-title');
-
-    modal.classList.add('active');
-
-    if (postId) {
-        title.textContent = 'Modifier l\'article';
-        getBlogPosts().then(posts => {
-            const post = posts.find(p => p.id === postId);
-            if (post) {
-                document.getElementById('blog-id').value = post.id;
-                document.getElementById('blog-title').value = post.title;
-                document.getElementById('blog-category').value = post.category;
-                document.getElementById('blog-author').value = post.author;
-                document.getElementById('blog-excerpt').value = post.excerpt;
-                document.getElementById('blog-content').value = post.content;
-                document.getElementById('blog-image').value = post.image;
-                document.getElementById('blog-tags').value = post.tags ? post.tags.join(', ') : '';
-            }
+    /**
+     * Ferme tous les modaux
+     */
+    export function closeModal() {
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.style.display = 'none';
+            modal.classList.remove('modal--active');
+            modal.classList.remove('active');
         });
-    } else {
-        title.textContent = 'Nouvel article';
-        form.reset();
-        document.getElementById('blog-id').value = '';
     }
-}
 
-/**
- * Sauvegarde un article de blog
- */
-export async function saveBlogPost(formData) {
-    const postId = formData.get('id');
-    const tags = formData.get('tags');
+    function refreshCurrentPage() {
+        const activeLink = document.querySelector('.nav-link.active');
+        if (activeLink) {
+            activeLink.click();
+        }
+    }
 
-    const postData = {
-        title: formData.get('title'),
-        slug: generateSlug(formData.get('title')),
-        category: formData.get('category'),
-        author: formData.get('author'),
-        excerpt: formData.get('excerpt'),
-        content: formData.get('content'),
-        image: formData.get('image'),
-        tags: tags ? tags.split(',').map(t => t.trim()) : []
+    // Export global pour utilisation dans le HTML
+    window.adminModule = {
+        loadVideosManager,
+        showVideoForm,
+        editVideo: (id) => showVideoForm(id),
+        deleteVideo: deleteVideoItem,
+
+        loadFormationsManager,
+        showFormationForm,
+        editFormation: (id) => showFormationForm(id),
+        deleteFormation: deleteFormationItem,
+
+        loadMachinesManager,
+        showMachineForm,
+        editMachine: (id) => showMachineForm(id),
+        deleteMachine: deleteMachineItem,
+
+        loadBlogManager,
+        showBlogForm,
+        editBlogPost: (id) => showBlogForm(id),
+        deleteBlogPost: deleteBlogPostItem,
+
+        closeModal
     };
 
-    if (postId) {
-        await updateBlogPost(postId, postData);
-        showToast('Article modifié avec succès !');
-    } else {
-        await createBlogPost(postData);
-        showToast('Article publié avec succès !');
-    }
+    // Gestionnaires des formulaires via délégation d'événements
+    document.addEventListener('submit', async (e) => {
+        const formId = e.target.id;
 
-    closeModal();
-    refreshCurrentPage();
-}
+        // Video form
+        if (formId === 'video-form') {
+            e.preventDefault();
+            const data = new FormData();
+            data.append('id', document.getElementById('video-id').value);
+            data.append('title', document.getElementById('video-title').value);
+            data.append('category', document.getElementById('video-category').value);
+            data.append('url', document.getElementById('video-url').value);
+            data.append('thumbnail', document.getElementById('video-thumbnail').value);
+            data.append('duration', document.getElementById('video-duration').value);
+            await saveVideo(data);
+        }
 
-/**
- * Supprime un article de blog
- */
-export async function deleteBlogPostItem(postId) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
-        await deleteBlogPost(postId);
-        showToast('Article supprimé avec succès !');
-        refreshCurrentPage();
-    }
-}
+        // Formation form
+        else if (formId === 'formation-form') {
+            e.preventDefault();
+            const data = new FormData();
+            data.append('id', document.getElementById('formation-id').value);
+            data.append('title', document.getElementById('formation-title').value);
+            data.append('description', document.getElementById('formation-description').value);
+            data.append('level', document.getElementById('formation-level').value);
+            data.append('duration', document.getElementById('formation-duration').value);
+            data.append('price', document.getElementById('formation-price').value);
+            data.append('modules', document.getElementById('formation-modules').value);
+            await saveFormation(data);
+        }
 
-/**
- * Ferme tous les modaux
- */
-export function closeModal() {
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.style.display = 'none';
-        modal.classList.remove('modal--active');
-        modal.classList.remove('active');
+        // Machine form
+        else if (formId === 'machine-form') {
+            e.preventDefault();
+            const data = new FormData();
+            data.append('id', document.getElementById('machine-id').value);
+            data.append('name', document.getElementById('machine-name').value);
+            data.append('category', document.getElementById('machine-category').value);
+            data.append('image', document.getElementById('machine-image').value);
+            data.append('price', document.getElementById('machine-price').value);
+            data.append('status', document.getElementById('machine-status').value);
+            data.append('specs', document.getElementById('machine-specs').value);
+            await saveMachine(data);
+        }
+
+        // Blog form
+        else if (formId === 'blog-form') {
+            e.preventDefault();
+            const data = new FormData();
+            data.append('id', document.getElementById('blog-id').value);
+            data.append('title', document.getElementById('blog-title').value);
+            data.append('category', document.getElementById('blog-category').value);
+            data.append('author', document.getElementById('blog-author').value);
+            data.append('excerpt', document.getElementById('blog-excerpt').value);
+            data.append('content', document.getElementById('blog-content').value);
+            data.append('image', document.getElementById('blog-image').value);
+            data.append('tags', document.getElementById('blog-tags').value);
+            await saveBlogPost(data);
+        }
     });
-}
-
-function refreshCurrentPage() {
-    const activeLink = document.querySelector('.nav-link.active');
-    if (activeLink) {
-        activeLink.click();
-    }
-}
-
-// Export global pour utilisation dans le HTML
-window.adminModule = {
-    loadVideosManager,
-    showVideoForm,
-    editVideo: (id) => showVideoForm(id),
-    deleteVideo: deleteVideoItem,
-
-    loadFormationsManager,
-    showFormationForm,
-    editFormation: (id) => showFormationForm(id),
-    deleteFormation: deleteFormationItem,
-
-    loadMachinesManager,
-    showMachineForm,
-    editMachine: (id) => showMachineForm(id),
-    deleteMachine: deleteMachineItem,
-
-    loadBlogManager,
-    showBlogForm,
-    editBlogPost: (id) => showBlogForm(id),
-    deleteBlogPost: deleteBlogPostItem,
-
-    closeModal
-};
-
-// Gestionnaires des formulaires via délégation d'événements
-document.addEventListener('submit', async (e) => {
-    const formId = e.target.id;
-
-    // Video form
-    if (formId === 'video-form') {
-        e.preventDefault();
-        const data = new FormData();
-        data.append('id', document.getElementById('video-id').value);
-        data.append('title', document.getElementById('video-title').value);
-        data.append('category', document.getElementById('video-category').value);
-        data.append('url', document.getElementById('video-url').value);
-        data.append('thumbnail', document.getElementById('video-thumbnail').value);
-        data.append('duration', document.getElementById('video-duration').value);
-        await saveVideo(data);
-    }
-
-    // Formation form
-    else if (formId === 'formation-form') {
-        e.preventDefault();
-        const data = new FormData();
-        data.append('id', document.getElementById('formation-id').value);
-        data.append('title', document.getElementById('formation-title').value);
-        data.append('description', document.getElementById('formation-description').value);
-        data.append('level', document.getElementById('formation-level').value);
-        data.append('duration', document.getElementById('formation-duration').value);
-        data.append('price', document.getElementById('formation-price').value);
-        data.append('modules', document.getElementById('formation-modules').value);
-        await saveFormation(data);
-    }
-
-    // Machine form
-    else if (formId === 'machine-form') {
-        e.preventDefault();
-        const data = new FormData();
-        data.append('id', document.getElementById('machine-id').value);
-        data.append('name', document.getElementById('machine-name').value);
-        data.append('category', document.getElementById('machine-category').value);
-        data.append('image', document.getElementById('machine-image').value);
-        data.append('price', document.getElementById('machine-price').value);
-        data.append('status', document.getElementById('machine-status').value);
-        data.append('specs', document.getElementById('machine-specs').value);
-        await saveMachine(data);
-    }
-
-    // Blog form
-    else if (formId === 'blog-form') {
-        e.preventDefault();
-        const data = new FormData();
-        data.append('id', document.getElementById('blog-id').value);
-        data.append('title', document.getElementById('blog-title').value);
-        data.append('category', document.getElementById('blog-category').value);
-        data.append('author', document.getElementById('blog-author').value);
-        data.append('excerpt', document.getElementById('blog-excerpt').value);
-        data.append('content', document.getElementById('blog-content').value);
-        data.append('image', document.getElementById('blog-image').value);
-        data.append('tags', document.getElementById('blog-tags').value);
-        await saveBlogPost(data);
-    }
-});
