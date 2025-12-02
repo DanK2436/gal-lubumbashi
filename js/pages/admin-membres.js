@@ -227,7 +227,7 @@ function renderModals() {
                     <h3 id="message-modal-title">Envoyer un message</h3>
                     <button onclick="window.adminMembres.closeModal('message-modal')">&times;</button>
                 </div>
-                <form id="message-form">
+                <form id="message-form" onsubmit="return false;">
                     <input type="hidden" id="message-id" name="id">
                     <div class="form-group">
                         <label class="form-label">Destinataire</label>
@@ -243,7 +243,7 @@ function renderModals() {
                         <label class="form-label">Message</label>
                         <textarea name="message" class="form-input" rows="5" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn--primary w-full">Envoyer</button>
+                    <button type="button" class="btn btn--primary w-full" onclick="window.adminMembres.handleMessageSubmit(event)">Envoyer</button>
                 </form>
             </div>
         </div>
@@ -255,7 +255,7 @@ function renderModals() {
                     <h3 id="announcement-modal-title">Annonce générale</h3>
                     <button onclick="window.adminMembres.closeModal('announcement-modal')">&times;</button>
                 </div>
-                <form id="announcement-form">
+                <form id="announcement-form" onsubmit="return false;">
                     <input type="hidden" id="announcement-id" name="id">
                     <div class="form-group">
                         <label class="form-label">Sujet</label>
@@ -265,7 +265,7 @@ function renderModals() {
                         <label class="form-label">Message</label>
                         <textarea name="message" class="form-input" rows="5" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn--primary w-full">Publier l'annonce</button>
+                    <button type="button" class="btn btn--primary w-full" onclick="window.adminMembres.handleAnnouncementSubmit(event)">Publier l'annonce</button>
                 </form>
             </div>
         </div>
@@ -558,6 +558,104 @@ window.adminMembres = {
             console.error(error);
             showToast('Erreur suppression: ' + error.message, 'error');
         }
+    },
+
+
+    // Gestionnaires de soumission explicites
+    async handleMessageSubmit(e) {
+        e.preventDefault();
+        console.log('📨 handleMessageSubmit appelé');
+
+        const btn = e.currentTarget || e.target;
+        const form = btn.closest('form');
+
+        if (!form || !form.checkValidity()) {
+            if (form) form.reportValidity();
+            return;
+        }
+
+        const originalText = btn.innerHTML;
+        if (btn.disabled) return;
+        btn.disabled = true;
+        btn.innerHTML = 'Envoi...';
+
+        const formData = new FormData(form);
+        const id = formData.get('id');
+        const recipientId = formData.get('recipientId');
+
+        const data = {
+            recipient_id: recipientId,
+            subject: formData.get('subject'),
+            message: formData.get('message'),
+            sent_at: new Date().toISOString()
+        };
+
+        try {
+            if (id) {
+                await updateMessage(id, data);
+                showToast('Message modifié', 'success');
+            } else {
+                await createMessage(data);
+                showToast('Message envoyé', 'success');
+            }
+            this.closeModal('message-modal');
+            await refreshPage();
+        } catch (error) {
+            console.error('Erreur soumission message:', error);
+            showToast('Erreur: ' + error.message, 'error');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+    },
+
+    async handleAnnouncementSubmit(e) {
+        e.preventDefault();
+        console.log('📢 handleAnnouncementSubmit appelé');
+
+        const btn = e.currentTarget || e.target;
+        const form = btn.closest('form');
+
+        if (!form || !form.checkValidity()) {
+            if (form) form.reportValidity();
+            return;
+        }
+
+        const originalText = btn.innerHTML;
+        if (btn.disabled) return;
+        btn.disabled = true;
+        btn.innerHTML = 'Publication...';
+
+        const formData = new FormData(form);
+        const id = formData.get('id');
+
+        const data = {
+            subject: formData.get('subject'),
+            message: formData.get('message'),
+            sent_at: new Date().toISOString()
+        };
+
+        try {
+            if (id) {
+                await updateAnnouncement(id, data);
+                showToast('Annonce modifiée', 'success');
+            } else {
+                await createAnnouncement(data);
+                showToast('Annonce publiée', 'success');
+            }
+            this.closeModal('announcement-modal');
+            await refreshPage();
+        } catch (error) {
+            console.error('Erreur soumission annonce:', error);
+            showToast('Erreur: ' + error.message, 'error');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
     }
 };
 
@@ -577,89 +675,10 @@ export function initMemberFormHandlers() {
 // Initialisation des gestionnaires globaux (une seule fois)
 // Utilisation d'un flag pour éviter les attachements multiples si le module est rechargé
 if (!window.adminMembresEventsInitialized) {
-    document.addEventListener('submit', async (e) => {
-        // Le formulaire membre est géré par onsubmit direct maintenant
-
-        // Gestionnaire pour le formulaire message
-        if (e.target && e.target.id === 'message-form') {
-            e.preventDefault();
-            console.log('📨 Soumission formulaire message détectée');
-
-            const formData = new FormData(e.target);
-            const id = formData.get('id');
-            const recipientId = formData.get('recipientId');
-
-            console.log('Données du formulaire:', {
-                id,
-                recipientId,
-                subject: formData.get('subject'),
-                message: formData.get('message')
-            });
-
-            const data = {
-                recipient_id: recipientId,
-                subject: formData.get('subject'),
-                message: formData.get('message'),
-                sent_at: new Date().toISOString()
-            };
-
-            try {
-                if (id) {
-                    console.log('Mode édition - ID:', id);
-                    await updateMessage(id, data);
-                    showToast('Message modifié', 'success');
-                } else {
-                    console.log('Mode création - Données:', data);
-                    await createMessage(data);
-                    showToast('Message envoyé', 'success');
-                }
-                window.adminMembres.closeModal('message-modal');
-                await refreshPage();
-            } catch (error) {
-                console.error('Erreur soumission message:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            }
-        }
-
-        // Gestionnaire pour le formulaire annonce
-        else if (e.target && e.target.id === 'announcement-form') {
-            e.preventDefault();
-            console.log('📢 Soumission formulaire annonce détectée');
-
-            const formData = new FormData(e.target);
-            const id = formData.get('id');
-
-            console.log('Données du formulaire:', {
-                id,
-                subject: formData.get('subject'),
-                message: formData.get('message')
-            });
-
-            const data = {
-                subject: formData.get('subject'),
-                message: formData.get('message'),
-                sent_at: new Date().toISOString()
-            };
-
-            try {
-                if (id) {
-                    console.log('Mode édition - ID:', id);
-                    await updateAnnouncement(id, data);
-                    showToast('Annonce modifiée', 'success');
-                } else {
-                    console.log('Mode création - Données:', data);
-                    await createAnnouncement(data);
-                    showToast('Annonce publiée', 'success');
-                }
-                window.adminMembres.closeModal('announcement-modal');
-                await refreshPage();
-            } catch (error) {
-                console.error('Erreur soumission annonce:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            }
-        }
-    });
+    // Les formulaires sont maintenant gérés par des gestionnaires explicites (handleMemberSubmit, handleMessageSubmit, etc.)
+    // attachés via onclick sur les boutons de soumission.
+    // Cela évite les problèmes de rechargement de page et de propagation d'événements.
 
     window.adminMembresEventsInitialized = true;
-    console.log('Gestionnaires d\'événements globaux initialisés');
+    console.log('Gestionnaires d\'événements globaux initialisés (Mode explicite)');
 }

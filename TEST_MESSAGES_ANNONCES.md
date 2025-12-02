@@ -6,13 +6,13 @@ Les formulaires de messages et d'annonces provoquaient un rafraîchissement de p
 ## 🔧 Correctifs appliqués
 
 ### 1. **Formulaire Messages** (`message-form`)
-- Suppression de `onsubmit="return false;"` qui bloquait l'événement
-- Gestionnaire global d'événements capture maintenant l'événement `submit`
-- Appel de `preventDefault()` dans le gestionnaire pour empêcher le rechargement
+- Utilisation de `onsubmit="return false;"` pour bloquer la soumission standard
+- Bouton "Envoyer" de type `button` avec `onclick="window.adminMembres.handleMessageSubmit(event)"`
+- Gestion explicite de la soumission via une fonction dédiée
 - Ajout de logs de débogage pour tracer la soumission
 
 ### 2. **Formulaire Annonces** (`announcement-form`)
-- Mêmes corrections que pour les messages
+- Mêmes corrections que pour les messages : `onsubmit="return false;"` et gestionnaire `onclick` explicite
 - Logs de débogage ajoutés
 
 ## 📋 Comment tester
