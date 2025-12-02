@@ -186,9 +186,17 @@ export function init() {
         modalDiv.querySelector('#reservation-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
+
+            // Validation basique
+            if (!id) {
+                console.error('❌ ID de formation manquant');
+                showToast('❌ Erreur interne : ID de formation manquant.', 'error');
+                return;
+            }
+
             const registrationData = {
                 formationId: id,
-                formationTitle: formation.title,
+                formationTitle: formation.title || 'Formation sans titre',
                 level: formation.level || 'Non spécifié',
                 userName: formData.get('fullName'),
                 userEmail: formData.get('email'),
@@ -198,14 +206,18 @@ export function init() {
                 status: 'En attente'
             };
 
+            console.log('📝 Tentative d\'inscription:', registrationData);
+
             try {
                 await saveFormationRegistration(registrationData);
-                console.log('✅ Inscription sauvegardée:', registrationData);
+                console.log('✅ Inscription sauvegardée avec succès');
                 showToast(`🎉 Merci ${registrationData.userName}! Votre demande d'inscription pour "${formation.title}" a été envoyée avec succès. Nous vous contacterons bientôt.`, 'success', 6000);
                 closeModal();
             } catch (error) {
                 console.error('❌ Erreur lors de la sauvegarde:', error);
-                showToast('❌ Une erreur est survenue. Veuillez réessayer.', 'error', 4000);
+                // Afficher le message d'erreur spécifique si disponible
+                const errorMessage = error.message || 'Une erreur est survenue. Veuillez réessayer.';
+                showToast(`❌ Erreur : ${errorMessage}`, 'error', 5000);
             }
         });
     };
