@@ -35,11 +35,15 @@ function initAnnonces() {
     document.getElementById('filter-priority').addEventListener('change', filterAnnonces);
 }
 
+import { getAnnouncements } from '../../../js/storage.js';
+
 function loadAnnonces() {
-    allAnnonces = JSON.parse(localStorage.getItem('gal_annonces') || '[]');
-    // Trier par date (plus récent en premier)
-    allAnnonces.sort((a, b) => new Date(b.date) - new Date(a.date));
-    displayAnnonces(allAnnonces);
+    getAnnouncements().then(annonces => {
+        allAnnonces = annonces;
+        // Trier par date (plus récent en premier)
+        allAnnonces.sort((a, b) => new Date(b.sent_at) - new Date(a.sent_at));
+        displayAnnonces(allAnnonces);
+    }).catch(console.error);
 }
 
 function displayAnnonces(annonces) {
@@ -61,9 +65,9 @@ function displayAnnonces(annonces) {
                     ${getPriorityIcon(annonce.priority)} ${annonce.priority}
                 </span>
             </div>
-            <div class="annonce-card__message">${annonce.message}</div>
+            <div class="annonce-card__message">${annonce.content}</div>
             <div class="annonce-card__meta">
-                <span>📅 ${formatDate(annonce.date)}</span>
+                <span>📅 ${formatDate(annonce.sent_at)}</span>
                 ${annonce.author ? `<span>👤 ${annonce.author}</span>` : ''}
             </div>
         </div>

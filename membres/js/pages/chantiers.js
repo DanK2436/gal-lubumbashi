@@ -4,6 +4,7 @@
 
 import { isAuthenticated, getCurrentMember, logout } from '../auth.js';
 import { showToast } from '../../../js/ui.js';
+import { getProjects } from '../../../js/storage.js';
 
 let allChantiers = [];
 
@@ -44,8 +45,10 @@ function initChantiers() {
 }
 
 function loadChantiers() {
-    allChantiers = JSON.parse(localStorage.getItem('gal_chantiers') || '[]');
-    displayChantiers(allChantiers);
+    getProjects('chantier').then(chantiers => {
+        allChantiers = chantiers;
+        displayChantiers(allChantiers);
+    }).catch(console.error);
 }
 
 function displayChantiers(chantiers) {
@@ -71,7 +74,7 @@ function displayChantiers(chantiers) {
                     <span>📍</span> ${chantier.location}
                 </div>
                 <div class="chantier-card__meta-item">
-                    <span>📅</span> ${formatDate(chantier.date)}
+                    <span>📅</span> ${formatDate(chantier.created_at)}
                 </div>
                 ${chantier.budget ? `
                 <div class="chantier-card__meta-item">
@@ -145,7 +148,7 @@ function showChantierDetails(id) {
                 </div>
                 <div class="detail-item">
                     <strong>📅 Date de début</strong>
-                    <span>${formatDate(chantier.date)}</span>
+                    <span>${formatDate(chantier.created_at)}</span>
                 </div>
                 ${chantier.budget ? `
                 <div class="detail-item">

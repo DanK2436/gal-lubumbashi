@@ -3,6 +3,7 @@
  */
 
 import { isAuthenticated, getCurrentMember, logout } from '../auth.js';
+import { getProjects } from '../../../js/storage.js';
 
 let allConceptions = [];
 
@@ -37,8 +38,10 @@ function initConceptions() {
 }
 
 function loadConceptions() {
-    allConceptions = JSON.parse(localStorage.getItem('gal_conceptions') || '[]');
-    displayConceptions(allConceptions);
+    getProjects('conception').then(conceptions => {
+        allConceptions = conceptions;
+        displayConceptions(allConceptions);
+    }).catch(console.error);
 }
 
 function displayConceptions(conceptions) {
@@ -64,8 +67,8 @@ function displayConceptions(conceptions) {
                 <h3 class="conception-card__title">${conception.title}</h3>
                 <p class="conception-card__description">${truncateText(conception.description, 100)}</p>
                 <div class="conception-card__meta">
-                    <span class="conception-card__category">📁 ${conception.category}</span>
-                    <span class="conception-card__date">${formatDate(conception.date)}</span>
+                    <span class="conception-card__category">📁 ${conception.category || 'Général'}</span>
+                    <span class="conception-card__date">${formatDate(conception.created_at)}</span>
                 </div>
             </div>
         </div>

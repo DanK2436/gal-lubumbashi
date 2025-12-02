@@ -88,7 +88,7 @@ function createMessageCard(message) {
             </div>
             <div class="message-body">
                 <h3 class="message-title">${escapeHtml(message.subject)}</h3>
-                <p class="message-content">${escapeHtml(message.message).replace(/\n/g, '<br>')}</p>
+                <p class="message-content">${escapeHtml(message.content || message.message).replace(/\n/g, '<br>')}</p>
             </div>
             
             <!-- Section Commentaires -->
