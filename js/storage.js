@@ -198,10 +198,17 @@ export async function getReservations() {
 }
 
 export async function saveReservation(reservationData) {
-  return await addDocument('machine_reservations', {
-    ...reservationData,
+  // Mapping frontend (camelCase) -> DB (snake_case)
+  const dbData = {
+    machine_id: reservationData.machineId,
+    machine_name: reservationData.machineName,
+    user_name: reservationData.userName,
+    user_email: reservationData.userEmail,
+    user_phone: reservationData.userPhone,
+    reservation_date: reservationData.reservationDate,
     status: reservationData.status || 'pending'
-  });
+  };
+  return await addDocument('machine_reservations', dbData);
 }
 
 export async function deleteReservation(id) {
@@ -219,10 +226,18 @@ export async function getFormationRegistrations() {
 }
 
 export async function saveFormationRegistration(registrationData) {
-  return await addDocument('formation_reservations', {
-    ...registrationData,
+  // Mapping frontend (camelCase) -> DB (snake_case)
+  const dbData = {
+    formation_id: registrationData.formationId,
+    formation_title: registrationData.formationTitle,
+    level: registrationData.level,
+    name: registrationData.userName, // userName -> name
+    email: registrationData.userEmail, // userEmail -> email
+    phone: registrationData.userPhone, // userPhone -> phone
+    message: registrationData.message,
     status: registrationData.status || 'pending'
-  });
+  };
+  return await addDocument('formation_reservations', dbData);
 }
 
 export async function deleteFormationRegistration(id) {
@@ -286,14 +301,26 @@ export async function getProjectById(id) {
 }
 
 export async function createProject(project) {
-  return await addDocument('projects', {
+  // Mapping frontend -> DB
+  // Assurer que le type est au singulier pour la contrainte CHECK
+  let type = project.type;
+  if (type === 'chantiers') type = 'chantier';
+  if (type === 'conceptions') type = 'conception';
+
+  const dbData = {
     ...project,
+    type: type,
     status: project.status || 'active'
-  });
+  };
+  return await addDocument('projects', dbData);
 }
 
 export async function updateProject(id, updates) {
-  return await supabaseUpdate('projects', id, updates);
+  // Mapping pour update
+  const dbUpdates = { ...updates };
+  if (dbUpdates.type === 'chantiers') dbUpdates.type = 'chantier';
+  if (dbUpdates.type === 'conceptions') dbUpdates.type = 'conception';
+  return await supabaseUpdate('projects', id, dbUpdates);
 }
 
 export async function deleteProject(id) {
@@ -326,15 +353,31 @@ export async function getMessagesByRecipient(recipientId) {
 }
 
 export async function createMessage(message) {
-  return await addDocument('messages', {
-    ...message,
+  // Mapping frontend -> DB
+  const dbData = {
+    recipient_id: message.recipient_id || message.recipientId,
+    subject: message.subject,
+    content: message.content || message.message, // message -> content
+    sender: message.sender || 'Admin',
     read: false,
-    comments: message.comments || []
-  });
+    comments: message.comments || [],
+    sent_at: message.sent_at || new Date().toISOString()
+  };
+  return await addDocument('messages', dbData);
 }
 
 export async function updateMessage(id, updates) {
-  return await supabaseUpdate('messages', id, updates);
+  // Mapping pour update
+  const dbUpdates = { ...updates };
+  if (dbUpdates.message) {
+    dbUpdates.content = dbUpdates.message;
+    delete dbUpdates.message;
+  }
+  if (dbUpdates.recipientId) {
+    dbUpdates.recipient_id = dbUpdates.recipientId;
+    delete dbUpdates.recipientId;
+  }
+  return await supabaseUpdate('messages', id, dbUpdates);
 }
 
 export async function deleteMessage(id) {
@@ -352,14 +395,30 @@ export async function getAnnouncementById(id) {
 }
 
 export async function createAnnouncement(announcement) {
-  return await addDocument('announcements', {
-    ...announcement,
-    comments: announcement.comments || []
-  });
+  // Mapping frontend -> DB
+  const dbData = {
+    title: announcement.title || announcement.subject, // subject -> title
+    content: announcement.content || announcement.message, // message -> content
+    sender: announcement.sender || 'Admin',
+    priority: announcement.priority || 'normal',
+    comments: announcement.comments || [],
+    sent_at: announcement.sent_at || new Date().toISOString()
+  };
+  return await addDocument('announcements', dbData);
 }
 
 export async function updateAnnouncement(id, updates) {
-  return await supabaseUpdate('announcements', id, updates);
+  // Mapping pour update
+  const dbUpdates = { ...updates };
+  if (dbUpdates.subject) {
+    dbUpdates.title = dbUpdates.subject;
+    delete dbUpdates.subject;
+  }
+  if (dbUpdates.message) {
+    dbUpdates.content = dbUpdates.message;
+    delete dbUpdates.message;
+  }
+  return await supabaseUpdate('announcements', id, dbUpdates);
 }
 
 export async function deleteAnnouncement(id) {
