@@ -288,8 +288,13 @@ export async function deleteMember(id) {
 
 export async function getProjects(type = null) {
   if (type) {
+    // Convertir le type au singulier pour correspondre au schéma DB
+    let dbType = type;
+    if (type === 'chantiers') dbType = 'chantier';
+    if (type === 'conceptions') dbType = 'conception';
+
     // queryDocuments prend (tableName, column, operator, value)
-    const results = await queryDocuments('projects', 'type', 'eq', type);
+    const results = await queryDocuments('projects', 'type', 'eq', dbType);
     // Trier manuellement par date de création
     return results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   }
@@ -591,5 +596,27 @@ export default {
   updateMember,
   deleteMember,
   saveContact,
-  getContacts
+  getContacts,
+
+  // Projects (Chantiers & Conceptions)
+  getProjects,
+  getProjectById,
+  createProject,
+  updateProject,
+  deleteProject,
+
+  // Messages
+  getMessages,
+  getMessageById,
+  getMessagesByRecipient,
+  createMessage,
+  updateMessage,
+  deleteMessage,
+
+  // Announcements
+  getAnnouncements,
+  getAnnouncementById,
+  createAnnouncement,
+  updateAnnouncement,
+  deleteAnnouncement
 };

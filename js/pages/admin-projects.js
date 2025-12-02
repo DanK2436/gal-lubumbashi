@@ -93,7 +93,7 @@ function renderModal(type) {
                         </select>
                     </div>
 
-                    <button type="button" class="btn btn--primary w-full" onclick="window.adminProjects.handleSubmit(event)">Enregistrer</button>
+                    <button type="button" class="btn btn--primary w-full" onclick="window.adminProjects.handleSubmit(this)">Enregistrer</button>
                 </form>
             </div>
         </div>
@@ -177,11 +177,10 @@ window.adminProjects = {
         }
     },
 
-    async handleSubmit(e) {
-        e.preventDefault();
+    async handleSubmit(btn) {
         console.log('handleSubmit appelé pour projet');
 
-        const btn = e.currentTarget || e.target;
+        if (!btn) return;
         const form = btn.closest('form');
 
         if (!form || !form.checkValidity()) {
