@@ -583,10 +583,21 @@ if (!window.adminMembresEventsInitialized) {
         // Gestionnaire pour le formulaire message
         if (e.target && e.target.id === 'message-form') {
             e.preventDefault();
+            console.log('📨 Soumission formulaire message détectée');
+
             const formData = new FormData(e.target);
             const id = formData.get('id');
+            const recipientId = formData.get('recipientId');
+
+            console.log('Données du formulaire:', {
+                id,
+                recipientId,
+                subject: formData.get('subject'),
+                message: formData.get('message')
+            });
+
             const data = {
-                recipient_id: formData.get('recipientId'),
+                recipient_id: recipientId,
                 subject: formData.get('subject'),
                 message: formData.get('message'),
                 sent_at: new Date().toISOString()
@@ -594,9 +605,11 @@ if (!window.adminMembresEventsInitialized) {
 
             try {
                 if (id) {
+                    console.log('Mode édition - ID:', id);
                     await updateMessage(id, data);
                     showToast('Message modifié', 'success');
                 } else {
+                    console.log('Mode création - Données:', data);
                     await createMessage(data);
                     showToast('Message envoyé', 'success');
                 }
@@ -611,8 +624,17 @@ if (!window.adminMembresEventsInitialized) {
         // Gestionnaire pour le formulaire annonce
         else if (e.target && e.target.id === 'announcement-form') {
             e.preventDefault();
+            console.log('📢 Soumission formulaire annonce détectée');
+
             const formData = new FormData(e.target);
             const id = formData.get('id');
+
+            console.log('Données du formulaire:', {
+                id,
+                subject: formData.get('subject'),
+                message: formData.get('message')
+            });
+
             const data = {
                 subject: formData.get('subject'),
                 message: formData.get('message'),
@@ -621,9 +643,11 @@ if (!window.adminMembresEventsInitialized) {
 
             try {
                 if (id) {
+                    console.log('Mode édition - ID:', id);
                     await updateAnnouncement(id, data);
                     showToast('Annonce modifiée', 'success');
                 } else {
+                    console.log('Mode création - Données:', data);
                     await createAnnouncement(data);
                     showToast('Annonce publiée', 'success');
                 }
