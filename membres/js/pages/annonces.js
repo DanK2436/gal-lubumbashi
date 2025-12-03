@@ -64,7 +64,7 @@ function displayAnnonces(annonces) {
                     ${getPriorityIcon(annonce.priority)} ${annonce.priority}
                 </span>
             </div>
-            <div class="annonce-card__message">${annonce.content}</div>
+            <div class="annonce-card__message">${annonce.content || annonce.message || ''}</div>
             <div class="annonce-card__meta">
                 <span>📅 ${formatDate(annonce.sent_at)}</span>
                 ${annonce.author ? `<span>👤 ${annonce.author}</span>` : ''}

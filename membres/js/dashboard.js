@@ -164,10 +164,10 @@ function loadRecentAnnonces(annonces) {
     container.innerHTML = recent.map(annonce => `
         <div class="content-item">
             <div class="content-item__header">
-                <h3 class="content-item__title">${escapeHtml(annonce.subject)}</h3>
+                <h3 class="content-item__title">${escapeHtml(annonce.title || annonce.subject || '')}</h3>
                 <span class="badge badge--primary">Annonce</span>
             </div>
-            <p class="content-item__description">${escapeHtml(annonce.message)}</p>
+            <p class="content-item__description">${escapeHtml(annonce.content || annonce.message || '')}</p>
             <div class="content-item__meta">
                 <span>📅 ${formatDate(annonce.sent_at || annonce.sentAt)}</span>
             </div>
