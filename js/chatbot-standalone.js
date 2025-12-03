@@ -1,5 +1,3 @@
-import { getCollection } from './supabase-service.js';
-
 /**
  * Chatbot intelligent GAL - Version ultra-réaliste
  * Connecté à la FAQ et avec une personnalité humaine
@@ -225,6 +223,9 @@ const emotionalResponses = {
 // Charger les connaissances depuis Supabase
 async function loadKnowledgeFromSupabase() {
     try {
+        // Import dynamique pour éviter les erreurs de module dans les scripts classiques
+        const { getCollection } = await import('./supabase-service.js');
+
         const data = await getCollection('chatbot_knowledge');
         if (data && data.length > 0) {
             console.log('🧠 Connaissances chargées depuis Supabase:', data.length, 'entrées');
@@ -593,13 +594,14 @@ function injectChatbotHTML() {
 async function initChatbotStandalone() {
     console.log('🤖 Initialisation du chatbot humain GAL (Dan Kande)...');
 
-    // Charger les connaissances depuis Supabase
-    await loadKnowledgeFromSupabase();
-
-    // Injecter le HTML si nécessaire
+    // 1. Injecter le HTML immédiatement pour que le bouton apparaisse
     if (!document.getElementById('assistant-button')) {
         injectChatbotHTML();
     }
+
+    // 2. Charger les connaissances en arrière-plan
+    // On n'attend pas (await) pour ne pas bloquer l'affichage si le réseau est lent
+    loadKnowledgeFromSupabase().catch(err => console.warn('Erreur chargement connaissances:', err));
 
     const assistantButton = document.getElementById('assistant-button');
     const closeAssistant = document.getElementById('close-assistant');
