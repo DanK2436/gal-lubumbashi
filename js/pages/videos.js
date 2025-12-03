@@ -69,7 +69,12 @@ function getYouTubeEmbedUrl(url, autoplay = false) {
     params.push('rel=0');              // Don't show related videos
     params.push('modestbranding=1');   // Minimal YouTube branding
     params.push('enablejsapi=1');      // Enable JavaScript API for better control
-    params.push('origin=' + window.location.origin); // Set origin for security
+    params.push('playsinline=1');      // Play inline on mobile
+
+    // Only add origin if not on file protocol to avoid issues
+    if (window.location.protocol !== 'file:') {
+        params.push('origin=' + window.location.origin);
+    }
 
     if (params.length > 0) {
         embedUrl += '?' + params.join('&');
@@ -89,7 +94,7 @@ function createVideoCard(video) {
         <div class="relative aspect-video bg-gray-900 overflow-hidden mb-4 rounded-lg shadow-lg">
             <img src="${thumbnailUrl}" alt="${video.title}"
                 class="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
-                onerror="this.onerror=null; this.src='https://placehold.co/800x450/ef4444/ffffff?text=Video+Non+Disponible';">
+                onerror="if(this.src.includes('maxresdefault')) { this.src = this.src.replace('maxresdefault', 'hqdefault'); } else { this.onerror=null; this.src='https://placehold.co/800x450/ef4444/ffffff?text=Video+Non+Disponible'; }">
             
             <!-- Play button overlay -->
             <div class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
