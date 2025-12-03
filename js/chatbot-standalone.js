@@ -1,10 +1,13 @@
+import { getCollection } from './supabase-service.js';
+
 /**
  * Chatbot intelligent GAL - Version ultra-réaliste
  * Connecté à la FAQ et avec une personnalité humaine
  */
 
 // Import des questions FAQ (simulé depuis i18n)
-const faqData = {
+// Ces données servent de fallback si Supabase n'est pas disponible
+let faqData = {
     adhesion: {
         q1: {
             keywords: ['membre', 'adhésion', 'adhérer', 'rejoindre', 'inscription', 'devenir membre', 'inscrire', 'rejoindre le groupe'],
@@ -219,6 +222,46 @@ const emotionalResponses = {
     ]
 };
 
+// Charger les connaissances depuis Supabase
+async function loadKnowledgeFromSupabase() {
+    try {
+        const data = await getCollection('chatbot_knowledge');
+        if (data && data.length > 0) {
+            console.log('🧠 Connaissances chargées depuis Supabase:', data.length, 'entrées');
+
+            // Convertir les données Supabase au format faqData
+            // On crée une catégorie 'supabase' pour y mettre tout ce qui vient de la DB
+            if (!faqData.supabase) faqData.supabase = {};
+
+            data.forEach(item => {
+                // Parsing des JSON si nécessaire
+                let keywords = item.patterns;
+                let answers = item.responses;
+
+                if (typeof keywords === 'string') {
+                    try { keywords = JSON.parse(keywords); } catch (e) { keywords = [keywords]; }
+                }
+
+                if (typeof answers === 'string') {
+                    try { answers = JSON.parse(answers); } catch (e) { answers = [answers]; }
+                }
+
+                // On prend une réponse au hasard si plusieurs sont disponibles
+                const answer = Array.isArray(answers) ? answers[0] : answers;
+
+                faqData.supabase[item.tag] = {
+                    keywords: Array.isArray(keywords) ? keywords : [keywords],
+                    question: item.tag, // On utilise le tag comme question par défaut
+                    answer: answer,
+                    answers: Array.isArray(answers) ? answers : [answer] // On garde toutes les réponses possibles
+                };
+            });
+        }
+    } catch (error) {
+        console.warn('⚠️ Impossible de charger les connaissances depuis Supabase, utilisation du fallback local.', error);
+    }
+}
+
 // Recherche intelligente dans la FAQ
 function searchFAQ(message) {
     const lowerMessage = message.toLowerCase()
@@ -409,8 +452,15 @@ function generateHumanResponse(intent) {
             // Réponse FAQ
             if (intent.type === 'faq' && intent.data) {
                 const agreement = humanExpressions.agreement[Math.floor(Math.random() * humanExpressions.agreement.length)];
+
+                // Si on a plusieurs réponses possibles (depuis Supabase), on en choisit une au hasard
+                let answerText = intent.data.answer;
+                if (intent.data.answers && intent.data.answers.length > 0) {
+                    answerText = intent.data.answers[Math.floor(Math.random() * intent.data.answers.length)];
+                }
+
                 response += `${agreement} ${intent.data.question}\n\n`;
-                response += intent.data.answer;
+                response += answerText;
 
                 const closing = humanExpressions.closing[Math.floor(Math.random() * humanExpressions.closing.length)];
                 response += `\n\n${closing}`;
@@ -540,8 +590,11 @@ function injectChatbotHTML() {
 }
 
 // Initialisation du chatbot
-function initChatbotStandalone() {
+async function initChatbotStandalone() {
     console.log('🤖 Initialisation du chatbot humain GAL (Dan Kande)...');
+
+    // Charger les connaissances depuis Supabase
+    await loadKnowledgeFromSupabase();
 
     // Injecter le HTML si nécessaire
     if (!document.getElementById('assistant-button')) {
