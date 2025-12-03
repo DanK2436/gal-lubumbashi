@@ -7,7 +7,7 @@
 const faqData = {
     adhesion: {
         q1: {
-            keywords: ['membre', 'adhésion', 'adhérer', 'rejoindre', 'inscription', 'devenir membre', 'comment', 'inscrire'],
+            keywords: ['membre', 'adhésion', 'adhérer', 'rejoindre', 'inscription', 'devenir membre', 'inscrire', 'rejoindre le groupe'],
             question: "Comment devenir membre de GAL ?",
             answer: "Pour devenir membre de GAL, vous devez être un artisan actif dans la région de Lubumbashi. Contactez-nous via le formulaire de contact ou WhatsApp pour démarrer le processus d'adhésion. Nous vous guiderons à travers les étapes nécessaires."
         },
@@ -56,9 +56,9 @@ const faqData = {
             answer: "Nous proposons principalement des machines neuves avec garantie constructeur. Nous avons également une sélection de machines d'occasion révisées et certifiées à prix réduit."
         },
         q9: {
-            keywords: ['paiement', 'crédit', 'facilité', 'échelonné', 'mensualité'],
-            question: "Proposez-vous des facilités de paiement ?",
-            answer: "Oui, nous proposons des solutions de paiement échelonné pour l'achat de machines. Les modalités sont définies au cas par cas en fonction du montant et de votre profil. Contactez-nous pour discuter des options."
+            keywords: ['paiement', 'crédit', 'facilité', 'échelonné', 'mensualité', 'acheter', 'achat', 'payer'],
+            question: "Comment acheter une machine ?",
+            answer: "Pour acheter une machine, vous pouvez consulter notre catalogue en ligne. Une fois votre choix fait, contactez-nous pour établir un devis. Nous proposons des facilités de paiement échelonné selon votre profil."
         },
         q10: {
             keywords: ['voir', 'tester', 'essayer', 'showroom', 'visite'],
@@ -101,6 +101,16 @@ const faqData = {
             keywords: ['chatbot', 'bot', 'assistant', 'répondre', 'questions', 'automatique', 'ia'],
             question: "Le chatbot peut-il répondre à toutes mes questions ?",
             answer: "Notre chatbot peut répondre aux questions courantes 24h/24 et 7j/7. Pour des demandes plus spécifiques, nous vous invitons à contacter directement notre équipe via WhatsApp ou le formulaire de contact."
+        },
+        q19: {
+            keywords: ['vidéo', 'tutoriel', 'voir', 'regarder', 'youtube', 'chaine'],
+            question: "Comment voir vos vidéos ?",
+            answer: "Vous pouvez retrouver toutes nos vidéos, tutoriels et démonstrations sur notre page 'Vidéos' du site ou directement sur notre chaîne YouTube. C'est un excellent moyen de voir nos machines en action !"
+        },
+        q20: {
+            keywords: ['suivre formation', 'inscrire formation', 'participer formation', 'apprendre'],
+            question: "Comment suivre une formation ?",
+            answer: "Pour suivre une formation, consultez notre catalogue de formations, choisissez celle qui vous intéresse et contactez-nous pour connaître les prochaines dates de session et les modalités d'inscription."
         }
     },
     privacy: {
@@ -238,7 +248,7 @@ function searchFAQ(message) {
         });
     });
 
-    return bestScore > 3 ? bestMatch : null;
+    return bestScore > 2 ? bestMatch : null;
 }
 
 // Recherche de produits (Formations ou Machines)
@@ -295,6 +305,16 @@ function detectIntent(message) {
     // Horaires
     if (/(horaire|ouvert|heure|quand|disponible|fermé)/.test(lowerMessage)) {
         return 'horaires';
+    }
+
+    // Vidéos
+    if (/(vidéo|video|youtube|regarder|voir)/.test(lowerMessage)) {
+        // On laisse la FAQ gérer si c'est une question spécifique, sinon on renvoie vers la page vidéo
+        const faqMatch = searchFAQ(message);
+        if (faqMatch && faqMatch.question.includes('vidéo')) {
+            return { type: 'faq', data: faqMatch };
+        }
+        return 'videos_link';
     }
 
     // Rechercher dans la FAQ
@@ -367,6 +387,12 @@ function generateHumanResponse(intent) {
             response += "• **Lundi - Vendredi** : 8h - 17h\n";
             response += "• **Week-end** : Fermé\n\n";
             response += "Pour toute urgence, vous pouvez nous laisser un message sur WhatsApp. 📱";
+            break;
+
+        case 'videos_link':
+            response += "Vous cherchez nos vidéos ? 🎥\n\n";
+            response += "Vous pouvez consulter notre galerie vidéo complète sur la page 'Vidéos' de notre site. Vous y trouverez des démonstrations de machines et des tutoriels.\n\n";
+            response += "Souhaitez-vous que je vous envoie le lien vers notre chaîne YouTube ?";
             break;
 
         case 'default':
