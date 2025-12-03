@@ -46,12 +46,19 @@ async function handleNewsletterSubmit(e) {
         showToast('🎉 Merci pour votre abonnement ! Vous recevrez nos dernières nouvelles.', 'success');
         emailInput.value = '';
     } catch (error) {
-        console.error('❌ Erreur newsletter:', error);
+        console.error('❌ Erreur newsletter détaillée:', error);
+
+        // Afficher l'erreur exacte pour le débogage
+        if (error.code) {
+            console.error(`Code erreur Supabase: ${error.code}, Message: ${error.message}, Details: ${error.details}`);
+        }
+
         // If error is "email already exists", show a friendly message
-        if (error.message && error.message.includes('déjà inscrit')) {
+        if (error.message && (error.message.includes('duplicate') || error.message.includes('déjà inscrit'))) {
             showToast('Vous êtes déjà abonné à notre newsletter !', 'info');
         } else {
-            showToast(error.message || 'Une erreur est survenue', 'error');
+            // Afficher le message d'erreur réel pour aider au diagnostic
+            showToast(`Erreur: ${error.message || 'Problème de connexion'}`, 'error');
         }
     }
 }
