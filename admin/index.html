@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - GAL</title>
+    <link rel="icon" type="image/png" href="../public/images/favicon.jpg">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+
+<body class="admin-body">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../public/logo-gal-official.jpg" alt="GAL Logo" class="sidebar-logo">
+                <div class="sidebar-brand">
+                    <h2>GAL Admin</h2>
+                    <p>Panneau de contrôle</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#dashboard" class="nav-link active">
+                            <span class="nav-icon">📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#videos" class="nav-link">
+                            <span class="nav-icon">🎬</span>
+                            <span>Vidéos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#formations" class="nav-link">
+                            <span class="nav-icon">📚</span>
+                            <span>Formations</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#machines" class="nav-link">
+                            <span class="nav-icon">🛠️</span>
+                            <span>Machines</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#chantiers" class="nav-link">
+                            <span class="nav-icon">🏗️</span>
+                            <span>Chantiers</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#conceptions" class="nav-link">
+                            <span class="nav-icon">📐</span>
+                            <span>Conceptions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#blog" class="nav-link">
+                            <span class="nav-icon">📝</span>
+                            <span>Blog</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#inscriptions-formations" class="nav-link">
+                            <span class="nav-icon">🎓</span>
+                            <span>Certifications</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#reservations" class="nav-link">
+                            <span class="nav-icon">📅</span>
+                            <span>Réservations</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#newsletter" class="nav-link">
+                            <span class="nav-icon">📧</span>
+                            <span>Newsletter</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contacts" class="nav-link">
+                            <span class="nav-icon">✉️</span>
+                            <span>Contacts</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#messages" class="nav-link">
+                            <span class="nav-icon">💬</span>
+                            <span>Messages Chat</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#annonces" class="nav-link">
+                            <span class="nav-icon">📢</span>
+                            <span>Annonces</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#membres" class="nav-link">
+                            <span class="nav-icon">👥</span>
+                            <span>Membres</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="admin-btn admin-btn--outline w-full" id="logout-btn">
+                    <span>🚪</span> Déconnexion
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-wrapper">
+            <header class="admin-header">
+                <div class="header-left">
+                    <button class="toggle-sidebar" id="toggle-sidebar">☰</button>
+                    <div class="breadcrumb">
+                        <span id="breadcrumb-current">Dashboard</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <span class="user-name">Admin</span>
+                            <span class="user-role" id="admin-email">admin@gal.cd</span>
+                        </div>
+                        <div class="user-avatar"
+                            style="width: 40px; height: 40px; border-radius: 50%; background: var(--admin-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                            A
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="admin-main" id="admin-main">
+                <div class="p-8 text-center text-muted">
+                    <div class="spinner">Chargement du dashboard...</div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay"
+        style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:950;">
+    </div>
+
+    <script type="module">
+        import { init } from '../js/pages/admin.js';
+
+        // Mobile menu toggle
+        const toggleBtn = document.getElementById('toggle-sidebar');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobile-overlay');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('active');
+            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+        }
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', toggleMenu);
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', toggleMenu);
+        }
+
+        // Close menu on nav link click (mobile)
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    toggleMenu();
+                }
+                document.getElementById('breadcrumb-current').textContent = link.querySelector('span:last-child').textContent;
+            });
+        });
+
+        // Initialize admin page
+        init();
+    </script>
+</body>
+
+</html>

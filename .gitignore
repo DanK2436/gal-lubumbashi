@@ -1,0 +1,51 @@
+# Fichiers système Windows
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Fichiers système macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Fichiers de backup et temporaires
+*.backup
+*.bak
+*~
+*.swp
+*.swo
+.tmp
+tmp/
+temp/
+
+# Documentation interne (.gemini)
+.gemini/
+
+# Node modules (si utilisé)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Logs
+*.log
+logs/
+
+# Environnement
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Fichiers de test
+test/
+*.test.js
+
+# ⚠️ IMPORTANT : Ne pas ignorer data/ ni les JSON !
+# Les fichiers JSON sont la base de données et DOIVENT être déployés
+# !data/
+# !data/*.json

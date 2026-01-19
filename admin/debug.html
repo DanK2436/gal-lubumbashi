@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Debug - GAL</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body {
+            padding: 2rem;
+            font-family: monospace;
+        }
+
+        .debug-section {
+            margin-bottom: 2rem;
+            border: 1px solid #ccc;
+            padding: 1rem;
+        }
+
+        .debug-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Outils de Débogage Admin</h1>
+
+    <div class="debug-section">
+        <div class="debug-title">Actions Rapides</div>
+        <button onclick="clearStorage()">Vider LocalStorage</button>
+        <button onclick="refreshData()">Rafraîchir les données</button>
+        <button onclick="window.location.href='/admin/'">Retour Admin</button>
+    </div>
+
+    <div class="debug-section">
+        <div class="debug-title">Contenu LocalStorage</div>
+        <div id="storage-content">Chargement...</div>
+    </div>
+
+    <script type="module">
+        import { getMachines, getVideos, getFormations, getBlogPosts, getNewsletterSubscribers, getContacts } from '/js/storage.js';
+
+        window.clearStorage = () => {
+            if (confirm('Êtes-vous sûr de vouloir tout effacer ?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        };
+
+        window.refreshData = async () => {
+            await renderStorage();
+        };
+
+        async function renderStorage() {
+            const content = document.getElementById('storage-content');
+            let html = '';
+
+            const keys = Object.keys(localStorage);
+            for (const key of keys) {
+                try {
+                    const value = JSON.parse(localStorage.getItem(key));
+                    html += `<h3>${key}</h3>`;
+                    html += `<pre>${JSON.stringify(value, null, 2)}</pre>`;
+                } catch (e) {
+                    html += `<h3>${key}</h3>`;
+                    html += `<pre>${localStorage.getItem(key)}</pre>`;
+                }
+            }
+
+            if (keys.length === 0) {
+                html = '<p>LocalStorage est vide.</p>';
+            }
+
+            content.innerHTML = html;
+        }
+
+        renderStorage();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chantiers - Espace Membres GAL</title>
+    <link rel="icon" type="image/png" href="public/images/favicon.jpg">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/components.css">
+    <link rel="stylesheet" href="../../css/utilities.css">
+    <link rel="stylesheet" href="../../css/member.css">
+</head>
+
+<body>
+    <header class="member-top-header">
+        <div class="member-brand">
+            <a href="../../index.html">
+                <img src="../../public/logo-gal-official.jpg" alt="GAL Logo" class="member-brand__logo">
+            </a>
+            <div class="member-brand__info">
+                <h1>Espace Membres</h1>
+                <p>Bienvenue dans votre espace personnel</p>
+            </div>
+        </div>
+        <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
+        <div class="member-user-section">
+            <div class="member-user-avatar" id="member-avatar">M</div>
+            <div class="member-user-info">
+                <span class="member-user-name" id="member-name">Membre</span>
+                <span class="member-user-email" id="member-email">email@example.com</span>
+            </div>
+            <button class="btn btn--sm btn--outline logout-btn" id="logout-btn">Déconnexion</button>
+        </div>
+    </header>
+
+    <nav class="member-nav-container">
+        <ul class="member-nav">
+            <li class="member-nav__item"><a href="dashboard.html" class="member-nav__link"><span
+                        class="member-nav__icon">📊</span> Tableau de bord</a></li>
+            <li class="member-nav__item"><a href="chantiers.html" class="member-nav__link active"><span
+                        class="member-nav__icon">🏗️</span> Chantiers</a></li>
+            <li class="member-nav__item"><a href="conceptions.html" class="member-nav__link"><span
+                        class="member-nav__icon">📐</span> Conceptions</a></li>
+            <li class="member-nav__item"><a href="annonces.html" class="member-nav__link"><span
+                        class="member-nav__icon">📢</span> Annonces</a></li>
+            <li class="member-nav__item"><a href="messages.html" class="member-nav__link"><span
+                        class="member-nav__icon">💬</span> Messages</a></li>
+            <li class="member-nav__item"><a href="roi.html" class="member-nav__link"><span
+                        class="member-nav__icon">📜</span> Règlement</a></li>
+        </ul>
+    </nav>
+
+    <main class="member-main">
+        <div class="page-header">
+            <h2 class="text-3xl font-bold mb-2">🏗️ Chantiers</h2>
+            <p class="text-muted">Découvrez les opportunités de chantiers disponibles</p>
+        </div>
+
+        <div id="chantiers-list" class="content-grid">
+            <div class="empty-state">
+                <span class="empty-state__icon">🏗️</span>
+                <h3>Aucun chantier disponible</h3>
+                <p>Les nouveaux chantiers apparaîtront ici</p>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initMemberPage } from '../js/member-common.js';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initMemberPage();
+        });
+    </script>
+    <script type="module" src="../js/pages/chantiers-init.js"></script>
+</body>
+
+</html>
