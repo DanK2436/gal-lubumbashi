@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "images": {
         "general": [
@@ -28,4 +29,36 @@
             "/public/formations/videos/cours-1.mp4"
         ]
     }
+=======
+{
+    "images": {
+        "general": [
+            "/public/images/logo-gal.png",
+            "/public/logo-gal-official.jpg",
+            "/public/images/favicon.png"
+        ],
+        "machines": [
+            "/public/machines/decoupe-laser.jpg",
+            "/public/machines/tour-cn**c.jpg",
+            "/public/machines/presse-hydraulique.jpg"
+        ],
+        "formations": [
+            "/public/formations/electricite.jpg",
+            "/public/formations/plomberie.jpg",
+            "/public/formations/menuiserie.jpg"
+        ],
+        "blog": [
+            "/public/blog/article-1.jpg",
+            "/public/blog/article-2.jpg"
+        ]
+    },
+    "videos": {
+        "general": [
+            "/public/videos/presentation.mp4"
+        ],
+        "formations": [
+            "/public/formations/videos/cours-1.mp4"
+        ]
+    }
+>>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef
 }

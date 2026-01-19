@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -314,4 +315,322 @@
     </script>
 </body>
 
+=======
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Espace Membres GAL</title>
+    <link rel="icon" type="image/png" href="public/images/favicon.jpg">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: var(--font-sans);
+        }
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1" /></svg>');
+            opacity: 0.3;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-logo {
+            max-width: 150px;
+            height: auto;
+            display: block;
+            margin: 0 auto 1.5rem;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-header h1 {
+            font-size: 1.75rem;
+            color: var(--color-text);
+            margin: 0 0 0.5rem;
+        }
+
+        .login-header p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: var(--color-text);
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--color-gray-300);
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-checkbox input {
+            width: 1.1rem;
+            height: 1.1rem;
+            cursor: pointer;
+        }
+
+        .form-checkbox label {
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.95rem;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--color-gray-200);
+        }
+
+        .login-footer a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid;
+        }
+
+        .alert--info {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+
+        .alert--info strong {
+            font-weight: 700;
+        }
+
+        @media (max-width: 640px) {
+            .login-page {
+                padding: 1rem;
+            }
+
+            .login-container {
+                padding: 1.5rem;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .login-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <img src="../public/logo-gal-official.jpg" alt="Logo GAL" class="login-logo">
+
+            <div class="login-header">
+                <h1>Connexion Membres</h1>
+                <p>Accédez à votre espace personnel</p>
+            </div>
+
+            <div class="alert alert--info">
+                <strong>ℹ️ Information</strong><br>
+                Votre compte doit être créé par un administrateur. Si vous n'avez pas encore de compte, contactez-nous.
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email" class="form-label">Adresse email *</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="votre.email@example.com"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Mot de passe *</label>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="••••••••"
+                        required>
+                </div>
+
+                <div class="form-checkbox">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Se souvenir de moi</label>
+                </div>
+
+                <button type="submit" class="btn btn--primary btn--lg w-full">
+                    Se connecter
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <a href="../index.html">← Retour à l'accueil</a>
+                <p style="margin-top: 1rem; font-size: 0.8rem; color: #9ca3af;">v3.0 (Supabase Fix)</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { showToast } from '../js/ui.js';
+        import { supabaseLogin, getMemberByEmail } from '../js/supabase-service.js';
+
+        // Configuration
+        const form = document.getElementById('login-form');
+
+        if (!form) {
+            console.error('Erreur : Formulaire introuvable !');
+        } else {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log('Tentative de connexion...');
+
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Connexion...';
+
+                const formData = new FormData(form);
+                const email = formData.get('email');
+                const password = formData.get('password');
+                const remember = formData.get('remember') === 'on';
+
+                try {
+                    // 1. Essayer de se connecter avec Supabase Auth
+                    // Note: Cela suppose que les utilisateurs sont enregistrés dans Supabase Auth
+                    // Si vous utilisez une table 'members' personnalisée avec mot de passe en clair (déconseillé mais possible pour migration),
+                    // il faudrait vérifier dans la table 'members' directement.
+
+                    // Approche hybride pour la migration :
+                    // On vérifie d'abord dans la table 'members' si on trouve une correspondance email/password (migration simple)
+
+                    const member = await getMemberByEmail(email);
+
+                    let isAuthenticated = false;
+                    let userData = null;
+
+                    if (member && member.password === password) {
+                        // Authentification réussie via table members (legacy/migration)
+                        isAuthenticated = true;
+                        userData = member;
+                    } else {
+                        // Essai via Supabase Auth (sécurisé)
+                        try {
+                            const { user } = await supabaseLogin(email, password);
+                            if (user) {
+                                isAuthenticated = true;
+                                userData = {
+                                    id: user.id,
+                                    email: user.email,
+                                    // Récupérer d'autres infos si nécessaire
+                                };
+                                // Essayer de récupérer les infos étendues du membre
+                                if (member) {
+                                    userData = { ...userData, ...member };
+                                }
+                            }
+                        } catch (authError) {
+                            console.log('Auth Supabase échouée, et pas de correspondance dans la table members');
+                        }
+                    }
+
+                    if (isAuthenticated && userData) {
+                        // Stocker les infos de session
+                        const storage = remember ? localStorage : sessionStorage;
+                        storage.setItem('memberToken', 'supa_' + Date.now()); // Token simulé pour compatibilité
+                        localStorage.setItem('memberData', JSON.stringify(userData));
+
+                        showToast('Connexion réussie ! Redirection...', 'success');
+
+                        // Rediriger vers le tableau de bord
+                        setTimeout(() => {
+                            window.location.href = 'pages/dashboard.html';
+                        }, 1000);
+                    } else {
+                        console.warn('Login échoué : identifiants incorrects');
+                        showToast('Email ou mot de passe incorrect', 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                    }
+                } catch (error) {
+                    console.error('Erreur de connexion:', error);
+                    showToast('Erreur lors de la connexion : ' + error.message, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                }
+            });
+        }
+
+        // Vérifier si déjà connecté
+        const isAuthenticated = !!(localStorage.getItem('memberToken') || sessionStorage.getItem('memberToken'));
+        if (isAuthenticated) {
+            // Rediriger vers le dashboard si déjà connecté
+            window.location.href = 'pages/dashboard.html';
+        }
+    </script>
+</body>
+
+>>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef
 </html>

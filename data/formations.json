@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [
     {
         "id": "1",
@@ -53,4 +54,61 @@
         "preview": "/public/images/formations/formation6-preview.jpg",
         "description": "Apprenez à gérer efficacement un chantier de construction, de la planification à la livraison."
     }
+=======
+[
+    {
+        "id": "1",
+        "title": "Formation complète en électricité industrielle",
+        "theme": "Électricité",
+        "url": "https://example.com/formation1.mp4",
+        "lengthSeconds": 7200,
+        "preview": "/public/images/formations/formation1-preview.jpg",
+        "description": "Apprenez les fondamentaux de l'électricité industrielle, de l'installation aux normes de sécurité. Formation complète avec certification."
+    },
+    {
+        "id": "2",
+        "title": "Soudure et métallurgie avancée",
+        "theme": "Métallurgie",
+        "url": "https://example.com/formation2.mp4",
+        "lengthSeconds": 9000,
+        "preview": "/public/images/formations/formation2-preview.jpg",
+        "description": "Maîtrisez les techniques de soudure TIG, MIG et arc électrique. Formation pratique avec mise en situation réelle."
+    },
+    {
+        "id": "3",
+        "title": "Menuiserie et ébénisterie professionnelle",
+        "theme": "Menuiserie",
+        "url": "https://example.com/formation3.mp4",
+        "lengthSeconds": 8400,
+        "preview": "/public/images/formations/formation3-preview.jpg",
+        "description": "De la conception à la réalisation, apprenez l'art de la menuiserie moderne et traditionnelle."
+    },
+    {
+        "id": "4",
+        "title": "Plomberie et installation sanitaire",
+        "theme": "Plomberie",
+        "url": "https://example.com/formation4.mp4",
+        "lengthSeconds": 6600,
+        "preview": "/public/images/formations/formation4-preview.jpg",
+        "description": "Formation complète sur les systèmes de plomberie, sanitaires et évacuation des eaux."
+    },
+    {
+        "id": "5",
+        "title": "Mécanique automobile - Niveau professionnel",
+        "theme": "Mécanique",
+        "url": "https://example.com/formation5.mp4",
+        "lengthSeconds": 10800,
+        "preview": "/public/images/formations/formation5-preview.jpg",
+        "description": "Diagnostic, réparation et entretien de tous types de véhicules. Formation certifiante reconnue."
+    },
+    {
+        "id": "6",
+        "title": "Gestion de chantier et construction",
+        "theme": "Construction",
+        "url": "https://example.com/formation6.mp4",
+        "lengthSeconds": 7800,
+        "preview": "/public/images/formations/formation6-preview.jpg",
+        "description": "Apprenez à gérer efficacement un chantier de construction, de la planification à la livraison."
+    }
+>>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef
 ]

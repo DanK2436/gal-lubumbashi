@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 # Redirect all routes to index.html for SPA routing
 /*    /index.html   200
+=======
+# Redirect all routes to index.html for SPA routing
+/*    /index.html   200
+>>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef

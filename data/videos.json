@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [
   {
     "id": "1",
@@ -48,3 +49,55 @@
     "thumbnail": "/public/images/videos/video6-thumb.jpg"
   }
 ]
+=======
+[
+  {
+    "id": "1",
+    "title": "Installation de système électrique",
+    "category": "Électricité",
+    "url": "https://example.com/video1.mp4",
+    "durationSeconds": 95,
+    "thumbnail": "/public/images/videos/video1-thumb.jpg"
+  },
+  {
+    "id": "2",
+    "title": "Soudure de structures métalliques",
+    "category": "Métallurgie",
+    "url": "https://example.com/video2.mp4",
+    "durationSeconds": 110,
+    "thumbnail": "/public/images/videos/video2-thumb.jpg"
+  },
+  {
+    "id": "3",
+    "title": "Menuiserie - Fabrication de portes",
+    "category": "Menuiserie",
+    "url": "https://example.com/video3.mp4",
+    "durationSeconds": 120,
+    "thumbnail": "/public/images/videos/video3-thumb.jpg"
+  },
+  {
+    "id": "4",
+    "title": "Installation de système de plomberie",
+    "category": "Plomberie",
+    "url": "https://example.com/video4.mp4",
+    "durationSeconds": 85,
+    "thumbnail": "/public/images/videos/video4-thumb.jpg"
+  },
+  {
+    "id": "5",
+    "title": "Rénovation de bâtiment commercial",
+    "category": "Construction",
+    "url": "https://example.com/video5.mp4",
+    "durationSeconds": 115,
+    "thumbnail": "/public/images/videos/video5-thumb.jpg"
+  },
+  {
+    "id": "6",
+    "title": "Mécanique automobile - Diagnostic",
+    "category": "Mécanique",
+    "url": "https://example.com/video6.mp4",
+    "durationSeconds": 100,
+    "thumbnail": "/public/images/videos/video6-thumb.jpg"
+  }
+]
+>>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef

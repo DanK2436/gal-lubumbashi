@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [
     {
         "id": "1",
@@ -83,4 +84,91 @@
         ],
         "date": "2024-03-10T13:20:00Z"
     }
+=======
+[
+    {
+        "id": "1",
+        "title": "Les tendances 2024 dans l'artisanat industriel",
+        "slug": "tendances-2024-artisanat-industriel",
+        "cover": "/public/images/blog/trends-2024.jpg",
+        "excerpt": "Découvrez les nouvelles technologies et méthodes qui transforment le secteur de l'artisanat industriel en 2024.",
+        "content": "<h2>Introduction</h2><p>L'artisanat industriel connaît une révolution technologique majeure en 2024...</p><h2>Les nouvelles technologies</h2><p>L'automatisation et l'intelligence artificielle transforment les ateliers...</p><h2>Conclusion</h2><p>L'avenir de l'artisanat est prometteur avec ces innovations...</p>",
+        "tags": [
+            "Technologie",
+            "Industrie",
+            "Innovation"
+        ],
+        "date": "2024-01-15T10:00:00Z"
+    },
+    {
+        "id": "2",
+        "title": "Comment choisir la bonne machine pour votre atelier",
+        "slug": "choisir-machine-atelier",
+        "cover": "/public/images/blog/choose-machine.jpg",
+        "excerpt": "Guide complet pour sélectionner l'équipement adapté à vos besoins et à votre budget.",
+        "content": "<h2>Évaluer vos besoins</h2><p>Avant tout achat, il est crucial de bien définir vos besoins...</p><h2>Budget et financement</h2><p>Planifiez votre investissement avec soin...</p>",
+        "tags": [
+            "Machines",
+            "Conseils",
+            "Guide"
+        ],
+        "date": "2024-02-01T14:30:00Z"
+    },
+    {
+        "id": "3",
+        "title": "Formation professionnelle : Un investissement rentable",
+        "slug": "formation-investissement-rentable",
+        "cover": "/public/images/blog/training-investment.jpg",
+        "excerpt": "Pourquoi investir dans la formation de vos équipes est crucial pour la croissance de votre entreprise.",
+        "content": "<h2>Les avantages de la formation</h2><p>Former vos employés améliore la productivité et la qualité...</p><h2>ROI de la formation</h2><p>Les statistiques montrent un retour sur investissement impressionnant...</p>",
+        "tags": [
+            "Formation",
+            "Entreprise",
+            "Productivité"
+        ],
+        "date": "2024-02-10T09:15:00Z"
+    },
+    {
+        "id": "4",
+        "title": "Maintenance préventive : Prolongez la vie de vos machines",
+        "slug": "maintenance-preventive-machines",
+        "cover": "/public/images/blog/preventive-maintenance.jpg",
+        "excerpt": "Les meilleures pratiques pour entretenir votre équipement et éviter les pannes coûteuses.",
+        "content": "<h2>Qu'est-ce que la maintenance préventive ?</h2><p>Un programme de maintenance régulier peut économiser des milliers de dollars...</p><h2>Planning de maintenance</h2><p>Créez un calendrier adapté à chaque machine...</p>",
+        "tags": [
+            "Maintenance",
+            "Machines",
+            "Conseils"
+        ],
+        "date": "2024-02-20T11:00:00Z"
+    },
+    {
+        "id": "5",
+        "title": "Sécurité en atelier : Les règles essentielles",
+        "slug": "securite-atelier-regles",
+        "cover": "/public/images/blog/workshop-safety.jpg",
+        "excerpt": "Un guide complet des normes de sécurité à respecter dans un atelier industriel.",
+        "content": "<h2>Équipements de protection</h2><p>Le port des EPI est obligatoire et vital...</p><h2>Procédures de sécurité</h2><p>Chaque machine nécessite des précautions spécifiques...</p>",
+        "tags": [
+            "Sécurité",
+            "Atelier",
+            "Normes"
+        ],
+        "date": "2024-03-01T08:45:00Z"
+    },
+    {
+        "id": "6",
+        "title": "L'électrification des ateliers au Congo",
+        "slug": "electrification-ateliers-congo",
+        "cover": "/public/images/blog/electrification-congo.jpg",
+        "excerpt": "Comment les artisans congolais se tournent vers des solutions d'énergie durables et fiables.",
+        "content": "<h2>Les défis énergétiques</h2><p>L'accès à l'électricité stable reste un défi majeur...</p><h2>Solutions alternatives</h2><p>Les générateurs solaires et diesels offrent des alternatives viables...</p>",
+        "tags": [
+            "Énergie",
+            "Congo",
+            "Développement"
+        ],
+        "date": "2024-03-10T13:20:00Z"
+    }
+>>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef
 ]

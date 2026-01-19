@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -194,4 +195,351 @@
     </script>
 </body>
 
+=======
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - GAL</title>
+    <link rel="icon" type="image/png" href="public/images/favicon.jpg">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: var(--font-sans);
+            background: #f5f7fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .admin-sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid rgba(220, 38, 38, 0.1);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-logo {
+            height: 40px;
+            width: auto;
+            border-radius: 6px;
+        }
+
+        .sidebar-brand h1 {
+            font-size: 1.1rem;
+            margin: 0;
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .sidebar-brand p {
+            font-size: 0.75rem;
+            margin: 0;
+            color: var(--color-text-muted);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
+        }
+
+        .nav-item {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(220, 38, 38, 0.05);
+            color: var(--color-text);
+        }
+
+        .nav-link.active {
+            color: var(--color-primary);
+            background: rgba(220, 38, 38, 0.05);
+            border-left-color: var(--color-primary);
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Main Content Area */
+        .admin-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-user-info {
+            text-align: right;
+            margin-right: 1rem;
+        }
+
+        .admin-user-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: block;
+        }
+
+        .admin-user-email {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        .admin-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .admin-card h2 {
+            margin: 0 0 1rem;
+            font-size: 1.5rem;
+            color: var(--color-text);
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            color: var(--color-primary);
+        }
+
+        .logout-btn:hover {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: var(--color-primary);
+        }
+
+        @media (max-width: 768px) {
+            .admin-wrapper {
+                flex-direction: column;
+            }
+
+            .admin-sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+            }
+
+            .sidebar-nav {
+                display: none;
+            }
+
+            .sidebar-nav.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="d-flex align-center gap-2">
+                    <img src="../public/logo-gal-official.jpg" alt="GAL Logo" class="sidebar-logo">
+                    <div class="sidebar-brand">
+                        <h1>GAL Admin</h1>
+                        <p>Panneau de contrôle</p>
+                    </div>
+                </div>
+                <button id="admin-mobile-menu-btn" class="btn btn--sm btn--ghost md:hidden" style="display: none;">
+                    ☰
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list" style="padding: 0; margin: 0;">
+                    <li class="nav-item">
+                        <a href="#dashboard" class="nav-link active">
+                            <span class="nav-icon">📊</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#videos" class="nav-link">
+                            <span class="nav-icon">🎬</span>
+                            Vidéos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#formations" class="nav-link">
+                            <span class="nav-icon">📚</span>
+                            Formations
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#machines" class="nav-link">
+                            <span class="nav-icon">🛠️</span>
+                            Machines
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#chantiers" class="nav-link">
+                            <span class="nav-icon">🏗️</span>
+                            Chantiers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#conceptions" class="nav-link">
+                            <span class="nav-icon">📐</span>
+                            Conceptions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#blog" class="nav-link">
+                            <span class="nav-icon">📝</span>
+                            Blog
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#inscriptions-formations" class="nav-link">
+                            <span class="nav-icon">🎓</span>
+                            Inscriptions Formations
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#reservations" class="nav-link">
+                            <span class="nav-icon">📅</span>
+                            Réservations Machines
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#newsletter" class="nav-link">
+                            <span class="nav-icon">📧</span>
+                            Newsletter
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contacts" class="nav-link">
+                            <span class="nav-icon">✉️</span>
+                            Contacts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#messages" class="nav-link">
+                            <span class="nav-icon">💬</span>
+                            Messages
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#annonces" class="nav-link">
+                            <span class="nav-icon">📢</span>
+                            Annonces
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#membres" class="nav-link">
+                            <span class="nav-icon">👥</span>
+                            Membres
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn btn--sm btn--outline w-full logout-btn" id="logout-btn">
+                    Déconnexion
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="admin-content">
+            <div class="top-bar">
+                <div class="admin-user-info">
+                    <span class="admin-user-name">Admin</span>
+                    <span class="admin-user-email" id="admin-email">admin@gal.cd</span>
+                </div>
+            </div>
+
+            <main class="admin-main" id="admin-main">
+                <p class="mt-4 text-muted">Chargement...</p>
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        import { init } from '../js/pages/admin.js';
+        init();
+
+        // Mobile menu toggle
+        const mobileBtn = document.getElementById('admin-mobile-menu-btn');
+        const sidebarNav = document.querySelector('.sidebar-nav');
+        if (mobileBtn) {
+            mobileBtn.style.display = 'block';
+            mobileBtn.addEventListener('click', () => {
+                sidebarNav.classList.toggle('active');
+            });
+        }
+    </script>
+</body>
+
+>>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef
 </html>

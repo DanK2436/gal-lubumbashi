@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # robots.txt pour GAL - Groupement des Artisans de Lubumbashi
 
 User-agent: *
@@ -19,3 +20,26 @@ Allow: /pages/
 
 # Crawl-delay pour éviter la surcharge
 Crawl-delay: 1
+=======
+# robots.txt pour GAL - Groupement des Artisans de Lubumbashi
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.gal-lubumbashi.com/sitemap.xml
+
+# Bloquer l'accès aux fichiers de configuration
+Disallow: /data/
+Disallow: /.git/
+Disallow: /node_modules/
+
+# Permettre l'accès aux ressources
+Allow: /css/
+Allow: /js/
+Allow: /public/
+Allow: /pages/
+
+# Crawl-delay pour éviter la surcharge
+Crawl-delay: 1
+>>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef

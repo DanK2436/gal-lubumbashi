@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "name": "gal-web",
     "private": true,
@@ -14,4 +15,22 @@
     ],
     "author": "GAL",
     "license": "MIT"
+=======
+{
+    "name": "gal-web",
+    "private": true,
+    "version": "1.0.0",
+    "description": "Groupement des Artisans de Lubumbashi - Site Web",
+    "scripts": {
+        "dev": "npx http-server -p 3000 -o",
+        "start": "npx http-server -p 3000"
+    },
+    "keywords": [
+        "artisanat",
+        "lubumbashi",
+        "GAL"
+    ],
+    "author": "GAL",
+    "license": "MIT"
+>>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef
 }
