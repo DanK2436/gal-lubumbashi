@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { getSession, logout, getVideos, getFormations, getMachines, getBlogPosts, getNewsletterSubscribers, getContacts, initStorage, getReservations, getFormationRegistrations } from '../storage.js';
 import {
     loadVideosManager, loadFormationsManager, loadMachinesManager, loadBlogManager,
@@ -13,10 +12,14 @@ import {
 } from '../admin.js';
 import { loadMembresManager, initMemberFormHandlers } from './admin-membres.js';
 import { loadProjectsManager, initProjectFormHandlers } from './admin-projects.js';
-import { createMediaPicker, initMediaPickers, getMediaValue } from '../media-picker.js';
+import { initMediaPickers } from '../media-picker.js';
 import { sanitizeHTML } from '../ui.js';
 
-// Check auth
+let dashboardChartInstance = null;
+
+/**
+ * Check authentication
+ */
 async function checkAuth() {
     const session = await getSession();
     if (!session) {
@@ -28,301 +31,356 @@ async function checkAuth() {
     return true;
 }
 
-// Load page
+/**
+ * Main page loader
+ */
 async function loadPage(page) {
     const main = document.getElementById('admin-main');
-
     if (!main) return;
 
-    switch (page) {
-        case 'dashboard':
-            main.innerHTML = await loadDashboard();
-            // Quick actions handlers
-            main.querySelectorAll('[data-action]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const action = btn.dataset.action;
-                    const link = document.querySelector(`.nav-link[href="#${action}"]`);
-                    if (link) link.click();
-                });
-            });
-            break;
-        case 'videos':
-            main.innerHTML = await loadVideosManager();
-            initFormHandlers();
-            break;
-        case 'formations':
-            main.innerHTML = await loadFormationsManager();
-            initFormHandlers();
-            break;
-        case 'machines':
-            main.innerHTML = await loadMachinesManager();
-            initFormHandlers();
-            break;
-        case 'reservations':
-            main.innerHTML = await loadReservationsManager();
-            break;
-        case 'inscriptions-formations':
-            main.innerHTML = await loadFormationRegistrationsManager();
-            break;
-        case 'blog':
-            main.innerHTML = await loadBlogManager();
-            initFormHandlers();
-            break;
-        case 'newsletter':
-            await loadNewsletter();
-            break;
-        case 'contacts':
-            await loadContacts();
-            break;
-        case 'membres':
-            main.innerHTML = await loadMembresManager('members');
-            initMemberFormHandlers();
-            break;
-        case 'messages':
-            main.innerHTML = await loadMembresManager('messages');
-            initMemberFormHandlers();
-            break;
-        case 'annonces':
-            main.innerHTML = await loadMembresManager('annonces');
-            initMemberFormHandlers();
-            break;
-        case 'chantiers':
-            main.innerHTML = await loadProjectsManager('chantiers');
-            initProjectFormHandlers();
-            break;
-        case 'conceptions':
-            main.innerHTML = await loadProjectsManager('conceptions');
-            initProjectFormHandlers();
-            break;
+    // Update Sidebar Active State
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + page) {
+            link.classList.add('active');
+        }
+    });
+
+    // Update Breadcrumb
+    const pageName = document.querySelector(`.nav-link[href="#${page}"] span:last-child`)?.textContent || 'Tableau de bord';
+    const breadcrumbEl = document.getElementById('breadcrumb-current');
+    if (breadcrumbEl) breadcrumbEl.textContent = pageName;
+
+    // Show loading state with skeleton
+    main.innerHTML = getSkeletonLoader();
+
+    try {
+        // Destroy chart instance if leaving dashboard
+        if (dashboardChartInstance && page !== 'dashboard') {
+            dashboardChartInstance.destroy();
+            dashboardChartInstance = null;
+        }
+
+        switch (page) {
+            case 'dashboard':
+                main.innerHTML = await renderDashboard();
+                initDashboardHandlers();
+                initDashboardChart(); // Initialize chart
+                break;
+            case 'videos':
+                main.innerHTML = await loadVideosManager();
+                initMainFormHandlers();
+                break;
+            case 'formations':
+                main.innerHTML = await loadFormationsManager();
+                initMainFormHandlers();
+                break;
+            case 'machines':
+                main.innerHTML = await loadMachinesManager();
+                initMainFormHandlers();
+                break;
+            case 'reservations':
+                main.innerHTML = await loadReservationsManager();
+                break;
+            case 'inscriptions-formations':
+                main.innerHTML = await loadFormationRegistrationsManager();
+                break;
+            case 'blog':
+                main.innerHTML = await loadBlogManager();
+                initMainFormHandlers();
+                break;
+            case 'newsletter':
+                main.innerHTML = await renderNewsletter();
+                break;
+            case 'contacts':
+                main.innerHTML = await renderContacts();
+                break;
+            case 'membres':
+                main.innerHTML = await loadMembresManager('members');
+                initMemberFormHandlers();
+                break;
+            case 'messages':
+                main.innerHTML = await loadMembresManager('messages');
+                initMemberFormHandlers();
+                break;
+            case 'annonces':
+                main.innerHTML = await loadMembresManager('annonces');
+                initMemberFormHandlers();
+                break;
+            case 'chantiers':
+                main.innerHTML = await loadProjectsManager('chantiers');
+                initProjectFormHandlers();
+                break;
+            case 'conceptions':
+                main.innerHTML = await loadProjectsManager('conceptions');
+                initProjectFormHandlers();
+                break;
+            default:
+                main.innerHTML = await renderDashboard();
+                initDashboardHandlers();
+                initDashboardChart();
+        }
+    } catch (error) {
+        console.error(`Error loading page ${page}:`, error);
+        main.innerHTML = renderErrorState(error.message);
     }
 }
 
-// Load dashboard
-async function loadDashboard() {
-    const videos = await getVideos();
-    const formations = await getFormations();
-    const machines = await getMachines();
-    const posts = await getBlogPosts();
-    const subscribers = await getNewsletterSubscribers();
-    const contacts = await getContacts();
-    const reservations = await getReservations();
-    const registrations = await getFormationRegistrations();
+function getSkeletonLoader() {
+    return `
+        <div class="animate-pulse space-y-4 p-4">
+            <div class="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="h-32 bg-gray-200 rounded-xl"></div>
+                <div class="h-32 bg-gray-200 rounded-xl"></div>
+                <div class="h-32 bg-gray-200 rounded-xl"></div>
+                <div class="h-32 bg-gray-200 rounded-xl"></div>
+            </div>
+            <div class="h-64 bg-gray-200 rounded-xl w-full"></div>
+        </div>
+    `;
+}
+
+/**
+ * Dashboard Renderer (Premium Version)
+ */
+async function renderDashboard() {
+    const [videos, formations, machines, posts, subscribers, contacts, reservations, registrations] = await Promise.all([
+        getVideos(), getFormations(), getMachines(), getBlogPosts(),
+        getNewsletterSubscribers(), getContacts(), getReservations(), getFormationRegistrations()
+    ]);
+
+    const pendingReservations = reservations.filter(r => r.status === 'En attente').length;
+    const pendingRegistrations = registrations.filter(r => r.status === 'En attente').length;
+    const totalContent = videos.length + formations.length + machines.length + posts.length;
+
+    // Attach data to window for chart initialization
+    window.dashboardData = {
+        labels: ['Vidéos', 'Formations', 'Machines', 'Articles'],
+        data: [videos.length, formations.length, machines.length, posts.length]
+    };
 
     return `
-        <div class="page-header">
-            <h1 class="page-title">Tableau de bord</h1>
-            <p class="page-subtitle">Bienvenue dans votre espace d'administration GAL. Voici un aperçu de l'activité.</p>
+        <div class="page-header flex justify-between items-end">
+            <div>
+                <h1 class="page-title">Vue d'ensemble</h1>
+                <p class="page-subtitle">Monitoring et statistiques de la plateforme GAL.</p>
+            </div>
+            <div class="text-right hidden md:block">
+                <div class="text-sm font-semibold text-muted">Aujourd'hui</div>
+                <div class="text-xl font-bold text-primary">${new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+            </div>
         </div>
 
+        <!-- Stats Cards Row -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon stat-icon--primary">🎬</div>
-                <div class="stat-content">
-                    <div class="stat-value">${videos.length}</div>
-                    <div class="stat-label">Vidéos publiées</div>
-                </div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon stat-icon--success">📚</div>
-                <div class="stat-content">
-                    <div class="stat-value">${formations.length}</div>
-                    <div class="stat-label">Catalogue Formations</div>
-                </div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon stat-icon--warning">🛠️</div>
-                <div class="stat-content">
-                    <div class="stat-value">${machines.length}</div>
-                    <div class="stat-label">Parc Machines</div>
-                </div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon stat-icon--info">📝</div>
-                <div class="stat-content">
-                    <div class="stat-value">${posts.length}</div>
-                    <div class="stat-label">Articles Blog</div>
-                </div>
-            </div>
+            ${renderStatCard('ri-movie-2-line', videos.length, 'Vidéos en ligne', 'stat-icon--primary', '+2 cette semaine')}
+            ${renderStatCard('ri-graduation-cap-line', formations.length, 'Formations actives', 'stat-icon--success', 'Certification reconnue')}
+            ${renderStatCard('ri-settings-4-line', machines.length, 'Machines catalogue', 'stat-icon--warning', 'Disponibles')}
+            ${renderStatCard('ri-article-line', posts.length, 'Articles publiés', 'stat-icon--info', 'Blog éducatif')}
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+        <!-- Main Dashboard Content Grid -->
+        <div class="dashboard-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+            
+            <!-- Chart Section -->
             <div class="admin-card">
                 <div class="card-header">
-                    <h2 class="card-title">🎓 Inscriptions Formations</h2>
-                    <a href="#inscriptions-formations" class="admin-btn admin-btn--outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Voir tout</a>
+                    <h2 class="card-title">Répartition du Contenu</h2>
+                    <select class="admin-form-select" style="width: auto; padding: 0.25rem 2rem 0.25rem 0.75rem;">
+                        <option>Cette année</option>
+                        <option>Ce mois</option>
+                    </select>
                 </div>
-                <div style="display: flex; align-items: baseline; gap: 1rem;">
-                    <div class="stat-value" style="font-size: 2.5rem; color: var(--admin-primary);">${registrations.length}</div>
-                    <div style="color: var(--admin-text-muted); font-size: 0.875rem;">Total inscriptions</div>
-                </div>
-                <div style="margin-top: 1rem; padding: 0.75rem; background: #fff7ed; border-radius: 8px; border-left: 4px solid #f59e0b;">
-                    <span style="font-weight: 600; color: #9a3412;">${registrations.filter(r => r.status === 'En attente').length} en attente</span>
-                    <p style="margin: 0; font-size: 0.8125rem; color: #9a3412;">Demandes nécéssitant une validation immédiate.</p>
-                </div>
-                <div style="margin-top: 1.5rem;">
-                    <button class="admin-btn admin-btn--primary w-full" data-action="inscriptions-formations" style="justify-content: center;">
-                        Gérer les inscriptions
-                    </button>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="contentChart"></canvas>
                 </div>
             </div>
 
-            <div class="admin-card">
-                <div class="card-header">
-                    <h2 class="card-title">📅 Réservations Machines</h2>
-                    <a href="#reservations" class="admin-btn admin-btn--outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Voir tout</a>
+            <!-- Activity Feed / Actions -->
+            <div class="flex flex-col gap-6">
+                <!-- Notifications Panel -->
+                <div class="admin-card flex-1">
+                    <div class="card-header">
+                        <h2 class="card-title">À traiter</h2>
+                    </div>
+                    
+                    <div class="activity-list space-y-4">
+                        ${pendingRegistrations > 0 ? `
+                            <div class="activity-item p-3 rounded-lg bg-orange-50 border border-orange-100 flex items-start gap-3">
+                                <i class="ri-alert-line text-orange-500 mt-1"></i>
+                                <div>
+                                    <div class="font-bold text-orange-800">${pendingRegistrations} Inscription(s)</div>
+                                    <div class="text-sm text-orange-600 mb-2">En attente de validation</div>
+                                    <button class="admin-btn admin-btn--outline btn-xs bg-white" data-action="inscriptions-formations">Gérer</button>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${pendingReservations > 0 ? `
+                            <div class="activity-item p-3 rounded-lg bg-blue-50 border border-blue-100 flex items-start gap-3">
+                                <i class="ri-calendar-event-line text-blue-500 mt-1"></i>
+                                <div>
+                                    <div class="font-bold text-blue-800">${pendingReservations} Réservation(s)</div>
+                                    <div class="text-sm text-blue-600 mb-2">Machines demandées</div>
+                                    <button class="admin-btn admin-btn--outline btn-xs bg-white" data-action="reservations">Gérer</button>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${pendingRegistrations === 0 && pendingReservations === 0 ? `
+                            <div class="text-center py-8 text-muted">
+                                <i class="ri-check-double-line text-4xl text-green-500 mb-2 block"></i>
+                                Tout est à jour !
+                            </div>
+                        ` : ''}
+                    </div>
                 </div>
-                <div style="display: flex; align-items: baseline; gap: 1rem;">
-                    <div class="stat-value" style="font-size: 2.5rem; color: var(--admin-primary);">${reservations.length}</div>
-                    <div style="color: var(--admin-text-muted); font-size: 0.875rem;">Total réservations</div>
-                </div>
-                <div style="margin-top: 1rem; padding: 0.75rem; background: #fff7ed; border-radius: 8px; border-left: 4px solid #f59e0b;">
-                    <span style="font-weight: 600; color: #9a3412;">${reservations.filter(r => r.status === 'En attente').length} en attente</span>
-                    <p style="margin: 0; font-size: 0.8125rem; color: #9a3412;">Réservations de machines à confirmer.</p>
-                </div>
-                <div style="margin-top: 1.5rem;">
-                    <button class="admin-btn admin-btn--primary w-full" data-action="reservations" style="justify-content: center;">
-                        Gérer les réservations
-                    </button>
+
+                <!-- Quick Actions -->
+                <div class="admin-card">
+                    <h2 class="card-title mb-4">Actions Rapides</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="admin-btn admin-btn--primary w-full justify-center text-sm" data-action="videos"><i class="ri-add-line"></i> Vidéo</button>
+                        <button class="admin-btn admin-btn--primary w-full justify-center text-sm" data-action="formations"><i class="ri-add-line"></i> Formation</button>
+                        <button class="admin-btn admin-btn--primary w-full justify-center text-sm" data-action="machines"><i class="ri-add-line"></i> Machine</button>
+                        <button class="admin-btn admin-btn--primary w-full justify-center text-sm" data-action="blog"><i class="ri-add-line"></i> Article</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <!-- Secondary Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="admin-card">
-                <h2 class="card-title" style="margin-bottom: 1rem;">📧 Audience Newsletter</h2>
-                <div class="stat-value">${subscribers.length}</div>
-                <p style="color: var(--admin-text-muted); font-size: 0.875rem;">Artisans et partenaires abonnés</p>
-                <div style="margin-top: 1.5rem;">
-                    <button class="admin-btn admin-btn--outline w-full" data-action="newsletter" style="justify-content: center;">
-                        Exporter la liste
-                    </button>
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <div class="text-muted text-sm uppercase tracking-wider font-bold">Audience Newsletter</div>
+                        <div class="text-3xl font-bold mt-1">${subscribers.length}</div>
+                    </div>
+                    <div class="p-3 bg-indigo-50 rounded-full text-indigo-600">
+                        <i class="ri-mail-send-line text-2xl"></i>
+                    </div>
                 </div>
+                <div class="w-full bg-gray-100 rounded-full h-2 mb-2">
+                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 70%"></div>
+                </div>
+                <div class="text-xs text-muted flex justify-between">
+                    <span>Taux d'ouverture est.</span>
+                    <span class="font-bold">~ 24%</span>
+                </div>
+                <button class="admin-btn admin-btn--outline w-full justify-center mt-4" data-action="newsletter">
+                    Voir les abonnés
+                </button>
             </div>
             
             <div class="admin-card">
-                <h2 class="card-title" style="margin-bottom: 1rem;">✉️ Messages de Contact</h2>
-                <div class="stat-value">${contacts.length}</div>
-                <p style="color: var(--admin-text-muted); font-size: 0.875rem;">Messages reçus via le formulaire</p>
-                <div style="margin-top: 1.5rem;">
-                    <button class="admin-btn admin-btn--outline w-full" data-action="contacts" style="justify-content: center;">
-                        Lire les messages
-                    </button>
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <div class="text-muted text-sm uppercase tracking-wider font-bold">Messages Contact</div>
+                        <div class="text-3xl font-bold mt-1">${contacts.length}</div>
+                    </div>
+                    <div class="p-3 bg-pink-50 rounded-full text-pink-600">
+                        <i class="ri-message-3-line text-2xl"></i>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="admin-card">
-            <h2 class="card-title" style="margin-bottom: 1.5rem;">⚡ Actions rapides</h2>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <button class="admin-btn admin-btn--primary" data-action="videos">
-                    <span>🎬</span> Ajouter une vidéo
-                </button>
-                <button class="admin-btn admin-btn--primary" data-action="formations">
-                    <span>📚</span> Ajouter une formation
-                </button>
-                <button class="admin-btn admin-btn--primary" data-action="machines">
-                    <span>🛠️</span> Ajouter une machine
-                </button>
-                <button class="admin-btn admin-btn--primary" data-action="blog">
-                    <span>📝</span> Nouvel article
+                <div class="w-full bg-gray-100 rounded-full h-2 mb-2">
+                    <div class="bg-pink-600 h-2 rounded-full" style="width: ${Math.min(contacts.length * 2, 100)}%"></div>
+                </div>
+                <div class="text-xs text-muted flex justify-between">
+                    <span>Dernier message</span>
+                    <span class="font-bold">Aujourd'hui</span>
+                </div>
+                <button class="admin-btn admin-btn--outline w-full justify-center mt-4" data-action="contacts">
+                    Messagerie
                 </button>
             </div>
         </div>
     `;
 }
 
-// Initialize form handlers
-function initFormHandlers() {
-    setTimeout(() => {
-        const videoForm = document.getElementById('video-form');
-        if (videoForm) {
-            const newVideoForm = videoForm.cloneNode(true);
-            videoForm.parentNode.replaceChild(newVideoForm, videoForm);
+/**
+ * Initialize Chart.js
+ */
+function initDashboardChart() {
+    const canvas = document.getElementById('contentChart');
+    if (!canvas || !window.dashboardData || !window.Chart) return;
 
-            newVideoForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData();
-                formData.append('id', document.getElementById('video-id').value);
-                formData.append('title', document.getElementById('video-title').value);
-                formData.append('category', document.getElementById('video-category').value);
-                formData.append('url', document.getElementById('video-url').value);
-                formData.append('thumbnail', document.getElementById('video-thumbnail').value);
-                formData.append('duration', document.getElementById('video-duration').value);
-                await saveVideo(formData);
-            });
+    const ctx = canvas.getContext('2d');
+
+    // Custom Chart.js Design
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#64748b';
+
+    dashboardChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: window.dashboardData.labels,
+            datasets: [{
+                label: 'Nombre d\'éléments',
+                data: window.dashboardData.data,
+                backgroundColor: [
+                    'rgba(220, 38, 38, 0.8)',
+                    'rgba(16, 185, 129, 0.8)',
+                    'rgba(245, 158, 11, 0.8)',
+                    'rgba(59, 130, 246, 0.8)'
+                ],
+                borderRadius: 8,
+                barThickness: 40,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false,
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f1f5f9' },
+                    border: { display: false }
+                },
+                x: {
+                    grid: { display: false },
+                    border: { display: false }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'easeOutQuart'
+            }
         }
-
-        const formationForm = document.getElementById('formation-form');
-        if (formationForm) {
-            const newFormationForm = formationForm.cloneNode(true);
-            formationForm.parentNode.replaceChild(newFormationForm, formationForm);
-
-            newFormationForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData();
-                formData.append('id', document.getElementById('formation-id').value);
-                formData.append('title', document.getElementById('formation-title').value);
-                formData.append('description', document.getElementById('formation-description').value);
-                formData.append('level', document.getElementById('formation-level').value);
-                formData.append('duration', document.getElementById('formation-duration').value);
-                formData.append('price', document.getElementById('formation-price').value);
-                formData.append('image', document.getElementById('formation-image').value);
-                formData.append('modules', document.getElementById('formation-modules').value);
-                await saveFormation(formData);
-            });
-        }
-
-        const machineForm = document.getElementById('machine-form');
-        if (machineForm) {
-            const newMachineForm = machineForm.cloneNode(true);
-            machineForm.parentNode.replaceChild(newMachineForm, machineForm);
-
-            newMachineForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData();
-                formData.append('id', document.getElementById('machine-id').value);
-                formData.append('name', document.getElementById('machine-name').value);
-                formData.append('category', document.getElementById('machine-category').value);
-                formData.append('image', document.getElementById('machine-image').value);
-                formData.append('price', document.getElementById('machine-price').value);
-                formData.append('status', document.getElementById('machine-status').value);
-                formData.append('specs', document.getElementById('machine-specs').value);
-                await saveMachine(formData);
-            });
-        }
-
-        const blogForm = document.getElementById('blog-form');
-        if (blogForm) {
-            const newBlogForm = blogForm.cloneNode(true);
-            blogForm.parentNode.replaceChild(newBlogForm, blogForm);
-
-            newBlogForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData();
-                formData.append('id', document.getElementById('blog-id').value);
-                formData.append('title', document.getElementById('blog-title').value);
-                formData.append('category', document.getElementById('blog-category').value);
-                formData.append('author', document.getElementById('blog-author').value);
-                formData.append('excerpt', document.getElementById('blog-excerpt').value);
-                formData.append('content', document.getElementById('blog-content').value);
-                formData.append('image', document.getElementById('blog-image').value);
-                formData.append('tags', document.getElementById('blog-tags').value);
-                await saveBlogPost(formData);
-            });
-        }
-    }, 100);
+    });
 }
 
-// Load newsletter
-async function loadNewsletter() {
-    const subscribers = await getNewsletterSubscribers();
-    const main = document.getElementById('admin-main');
-    if (!main) return;
+function renderStatCard(iconClass, value, label, colorClass, footerText) {
+    return `
+        <div class="stat-card">
+            <div class="stat-icon ${colorClass}">
+                <i class="${iconClass}"></i>
+            </div>
+            <div class="stat-content w-full">
+                <div class="stat-value">${value}</div>
+                <div class="stat-label">${label}</div>
+                ${footerText ? `<div class="mt-2 text-xs text-muted flex items-center gap-1"><i class="ri-arrow-up-line text-success"></i> ${footerText}</div>` : ''}
+            </div>
+        </div>
+    `;
+}
 
-    main.innerHTML = `
+/**
+ * Newsletter Renderer
+ */
+async function renderNewsletter() {
+    const subscribers = await getNewsletterSubscribers();
+    return `
         <div class="page-header">
             <h1 class="page-title">Newsletter</h1>
             <p class="page-subtitle">Gérez la liste des abonnés à votre lettre d'information.</p>
@@ -331,6 +389,7 @@ async function loadNewsletter() {
         <div class="admin-card">
             <div class="card-header">
                 <h2 class="card-title">Abonnés (${subscribers.length})</h2>
+                <button class="admin-btn admin-btn--outline btn-sm"><i class="ri-download-line"></i> Exporter CSV</button>
             </div>
 
             <div class="table-container">
@@ -339,22 +398,26 @@ async function loadNewsletter() {
                         <tr>
                             <th>Email</th>
                             <th>Date d'inscription</th>
+                            <th>Statut</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${subscribers.map(sub => `
+                        ${subscribers.length > 0 ? subscribers.map(sub => `
                             <tr>
-                                <td><span style="font-weight: 500;">${sanitizeHTML(sub.email)}</span></td>
-                                <td><span style="color: var(--admin-text-muted); font-size: 0.8125rem;">${new Date(sub.dateSubscribed || sub.created_at).toLocaleDateString('fr-FR')}</span></td>
-                            </tr>
-                        `).join('')}
-                        ${subscribers.length === 0 ? `
-                            <tr>
-                                <td colspan="2" style="text-align: center; padding: 3rem; color: var(--admin-text-muted);">
-                                    Aucun abonné pour le moment.
+                                <td class="font-medium">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                                            <i class="ri-user-line"></i>
+                                        </div>
+                                        ${sanitizeHTML(sub.email)}
+                                    </div>
                                 </td>
+                                <td class="text-muted">${new Date(sub.dateSubscribed || sub.created_at).toLocaleDateString('fr-FR')}</td>
+                                <td><span class="badge badge--success">Actif</span></td>
                             </tr>
-                        ` : ''}
+                        `).join('') : `
+                            <tr><td colspan="3" class="text-center p-12 text-muted">Aucun abonné pour le moment.</td></tr>
+                        `}
                     </tbody>
                 </table>
             </div>
@@ -362,21 +425,20 @@ async function loadNewsletter() {
     `;
 }
 
-// Load contacts
-async function loadContacts() {
+/**
+ * Contacts Renderer
+ */
+async function renderContacts() {
     const contacts = await getContacts();
-    const main = document.getElementById('admin-main');
-    if (!main) return;
-
-    main.innerHTML = `
+    return `
         <div class="page-header">
-            <h1 class="page-title">Messages</h1>
-            <p class="page-subtitle">Consultez et répondez aux messages envoyés via le formulaire de contact.</p>
+            <h1 class="page-title">Messagerie de Contact</h1>
+            <p class="page-subtitle">Consultez et répondez aux messages du site web.</p>
         </div>
 
         <div class="admin-card">
             <div class="card-header">
-                <h2 class="card-title">Messages reçus (${contacts.length})</h2>
+                <h2 class="card-title">Boîte de réception (${contacts.length})</h2>
             </div>
 
             <div class="table-container">
@@ -384,646 +446,154 @@ async function loadContacts() {
                     <thead>
                         <tr>
                             <th>Expéditeur</th>
-                            <th>Contact</th>
                             <th>Sujet</th>
                             <th>Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${contacts.map(contact => `
+                        ${contacts.length > 0 ? contacts.map(contact => `
                             <tr>
-                                <td><span style="font-weight: 600;">${sanitizeHTML(contact.name)}</span></td>
                                 <td>
-                                    <div style="font-size: 0.8125rem;">${sanitizeHTML(contact.email)}</div>
-                                    <div style="font-size: 0.75rem; color: var(--admin-text-muted);">${sanitizeHTML(contact.phone || '')}</div>
+                                    <div class="font-bold text-dark">${sanitizeHTML(contact.name)}</div>
+                                    <div class="text-muted text-xs">${sanitizeHTML(contact.email)}</div>
                                 </td>
-                                <td><span class="badge badge--primary">${sanitizeHTML(contact.subject || 'Sans sujet')}</span></td>
-                                <td><span style="color: var(--admin-text-muted); font-size: 0.8125rem;">${new Date(contact.date || contact.created_at).toLocaleDateString('fr-FR')}</span></td>
+                                <td><span class="badge badge--info">${sanitizeHTML(contact.subject || 'Sans sujet')}</span></td>
+                                <td class="text-muted text-xs">${new Date(contact.date || contact.created_at).toLocaleDateString('fr-FR')}</td>
                                 <td>
-                                    <button class="admin-btn admin-btn--outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="viewContactMessage('${contact.id}')">
-                                        Voir
-                                    </button>
+                                    <button class="admin-btn admin-btn--outline btn-sm" onclick="viewContactMessage('${contact.id}')"><i class="ri-eye-line"></i> Lire</button>
                                 </td>
                             </tr>
-                        `).join('')}
-                        ${contacts.length === 0 ? `
-                            <tr>
-                                <td colspan="5" style="text-align: center; padding: 3rem; color: var(--admin-text-muted);">
-                                    Aucun message pour le moment.
-                                </td>
-                            </tr>
-                        ` : ''}
+                        `).join('') : `
+                            <tr><td colspan="4" class="text-center p-12 text-muted">Aucun message pour le moment.</td></tr>
+                        `}
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Modal pour afficher le message complet -->
+        <!-- Contact Modal -->
         <div id="contact-modal" class="admin-modal">
-            <div class="admin-modal-content" style="max-width: 600px;">
+            <div class="admin-modal-content max-w-lg">
                 <div class="modal-header">
                     <h2 class="modal-title">Détails du Message</h2>
-                    <button class="modal-close" onclick="closeContactModal()">&times;</button>
+                    <button class="modal-close" onclick="closeContactModal()"><i class="ri-close-line"></i></button>
                 </div>
-                <div id="contact-details" style="padding: 1.5rem;"></div>
+                <div id="contact-details" class="p-0"></div>
             </div>
         </div>
     `;
-
-    window.viewContactMessage = async (contactId) => {
-        const contacts = await getContacts();
-        const contact = contacts.find(c => c.id === contactId);
-        if (!contact) return;
-
-        const detailsDiv = document.getElementById('contact-details');
-        detailsDiv.innerHTML = `
-            <div style="display: grid; gap: 1rem;">
-                <div style="display: grid; grid-template-columns: 100px 1fr; gap: 0.5rem; font-size: 0.875rem;">
-                    <span style="color: var(--admin-text-muted);">Nom:</span>
-                    <span style="font-weight: 600;">${sanitizeHTML(contact.name)}</span>
-                    
-                    <span style="color: var(--admin-text-muted);">Email:</span>
-                    <a href="mailto:${sanitizeHTML(contact.email)}" style="color: var(--admin-primary);">${sanitizeHTML(contact.email)}</a>
-                    
-                    <span style="color: var(--admin-text-muted);">Tél:</span>
-                    <span>${sanitizeHTML(contact.phone || 'N/A')}</span>
-                    
-                    <span style="color: var(--admin-text-muted);">Sujet:</span>
-                    <span style="font-weight: 600;">${sanitizeHTML(contact.subject || 'Sans sujet')}</span>
-                    
-                    <span style="color: var(--admin-text-muted);">Date:</span>
-                    <span>${new Date(contact.date || contact.created_at).toLocaleString('fr-FR')}</span>
-                </div>
-                
-                <div style="border-top: 1px solid var(--admin-border); padding-top: 1rem;">
-                    <p style="color: var(--admin-text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Message</p>
-                    <div style="line-height: 1.6; color: var(--admin-text); background: var(--admin-bg-alt); padding: 1rem; border-radius: 0.5rem; white-space: pre-wrap;">${sanitizeHTML(contact.message)}</div>
-                </div>
-                
-                <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
-                    <a href="mailto:${sanitizeHTML(contact.email)}?subject=RE: ${encodeURIComponent(contact.subject || '')}" class="admin-btn admin-btn--primary">
-                        Répondre par email
-                    </a>
-                </div>
-            </div>
-        `;
-        document.getElementById('contact-modal').classList.add('active');
-    };
-
-    window.closeContactModal = () => {
-        document.getElementById('contact-modal').classList.remove('active');
-    };
 }
 
-// Initialize
-export async function init() {
-    try {
-        if (!await checkAuth()) return;
-
-        // Initialize storage - charge les données JSON dans localStorage
-        await initStorage();
-
-        // Handle navigation
-        const navLinks = document.querySelectorAll('.nav-link');
-
-        function updateActiveLink(hash) {
-            navLinks.forEach(link => {
-                if (link.getAttribute('href') === hash) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const hash = link.getAttribute('href');
-                window.location.hash = hash;
-                updateActiveLink(hash);
-                loadPage(hash.substring(1));
-            });
-        });
-
-        // Initial load with timeout
-        const hash = window.location.hash || '#dashboard';
-        updateActiveLink(hash);
-
-        console.log('Chargement de la page admin:', hash);
-
-        // Timeout de sécurité pour le chargement
-        const loadPromise = loadPage(hash.substring(1));
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Le chargement prend trop de temps (timeout 10s)')), 10000)
-        );
-
-        try {
-            await Promise.race([loadPromise, timeoutPromise]);
-            console.log('Page chargée avec succès');
-        } catch (err) {
-            console.error('Erreur chargement page:', err);
-            const main = document.getElementById('admin-main');
-            if (main) {
-                main.innerHTML = `
-                    <div class="text-center p-8 text-red-600">
-                        <h3 class="text-xl font-bold mb-2">Erreur de chargement</h3>
-                        <p>${err.message}</p>
-                        <button onclick="window.location.reload()" class="mt-4 btn btn--primary">Réessayer</button>
-                    </div>
-                `;
-            }
-        }
-
-        // Logout
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            await logout();
-            window.location.href = 'login.html';
-        });
-
-        // Expose admin module functions globally for onclick handlers
-        window.adminModule = {
-            showVideoForm,
-            editVideo: showVideoForm,
-            deleteVideo: deleteVideoItem,
-
-            showFormationForm,
-            editFormation: showFormationForm,
-            deleteFormation: deleteFormationItem,
-
-            showMachineForm,
-            editMachine: showMachineForm,
-            deleteMachine: deleteMachineItem,
-
-            showBlogForm,
-            editBlogPost: showBlogForm,
-            deleteBlogPost: deleteBlogPostItem,
-
-            showBlogForm,
-            editBlogPost: showBlogForm,
-            deleteBlogPost: deleteBlogPostItem,
-
-            deleteReservation: deleteReservationItem,
-            confirmReservation: confirmReservationItem,
-
-            deleteFormationRegistration: deleteFormationRegistrationItem,
-            confirmFormationRegistration: confirmFormationRegistrationItem,
-
-            closeModal
-        };
-
-        // Initialiser les sélecteurs de médias
-        initMediaPickers();
-
-    } catch (error) {
-        console.error('Erreur critique admin:', error);
-        const main = document.getElementById('admin-main');
-        if (main) {
-            main.innerHTML = `
-                <div class="text-center p-20" style="color: #dc2626;">
-                    <h3>Une erreur est survenue lors du chargement</h3>
-                    <p>Veuillez rafraîchir la page ou contacter le support.</p>
-                    <pre style="background: #f3f4f6; padding: 1rem; margin-top: 1rem; border-radius: 0.5rem; text-align: left; overflow: auto;">${error.message}\n${error.stack}</pre>
-                </div>
-            `;
-        }
-    }
-}
-=======
-import { getSession, logout, getVideos, getFormations, getMachines, getBlogPosts, getNewsletterSubscribers, getContacts, initStorage, getReservations, getFormationRegistrations } from '../storage.js';
-import {
-    loadVideosManager, loadFormationsManager, loadMachinesManager, loadBlogManager,
-    saveVideo, saveFormation, saveMachine, saveBlogPost,
-    showVideoForm, deleteVideoItem,
-    showFormationForm, deleteFormationItem,
-    showMachineForm, deleteMachineItem,
-    showBlogForm, deleteBlogPostItem,
-    loadReservationsManager, deleteReservationItem, confirmReservationItem,
-    loadFormationRegistrationsManager, deleteFormationRegistrationItem, confirmFormationRegistrationItem,
-    closeModal
-} from '../admin.js';
-import { loadMembresManager, initMemberFormHandlers } from './admin-membres.js';
-import { loadProjectsManager, initProjectFormHandlers } from './admin-projects.js';
-import { createMediaPicker, initMediaPickers, getMediaValue } from '../media-picker.js';
-
-// Check auth
-async function checkAuth() {
-    const session = await getSession();
-    if (!session) {
-        window.location.href = 'login.html';
-        return false;
-    }
-    const emailEl = document.getElementById('admin-email');
-    if (emailEl) emailEl.textContent = session.email;
-    return true;
-}
-
-// Load page
-async function loadPage(page) {
-    const main = document.getElementById('admin-main');
-
-    if (!main) return;
-
-    switch (page) {
-        case 'dashboard':
-            main.innerHTML = await loadDashboard();
-            // Quick actions handlers
-            main.querySelectorAll('[data-action]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const action = btn.dataset.action;
-                    const link = document.querySelector(`.nav-link[href="#${action}"]`);
-                    if (link) link.click();
-                });
-            });
-            break;
-        case 'videos':
-            main.innerHTML = await loadVideosManager();
-            initFormHandlers();
-            break;
-        case 'formations':
-            main.innerHTML = await loadFormationsManager();
-            initFormHandlers();
-            break;
-        case 'machines':
-            main.innerHTML = await loadMachinesManager();
-            initFormHandlers();
-            break;
-        case 'reservations':
-            main.innerHTML = await loadReservationsManager();
-            break;
-        case 'inscriptions-formations':
-            main.innerHTML = await loadFormationRegistrationsManager();
-            break;
-        case 'blog':
-            main.innerHTML = await loadBlogManager();
-            initFormHandlers();
-            break;
-        case 'newsletter':
-            await loadNewsletter();
-            break;
-        case 'contacts':
-            await loadContacts();
-            break;
-        case 'membres':
-            main.innerHTML = await loadMembresManager('members');
-            initMemberFormHandlers();
-            break;
-        case 'messages':
-            main.innerHTML = await loadMembresManager('messages');
-            initMemberFormHandlers();
-            break;
-        case 'annonces':
-            main.innerHTML = await loadMembresManager('annonces');
-            initMemberFormHandlers();
-            break;
-        case 'chantiers':
-            main.innerHTML = await loadProjectsManager('chantiers');
-            initProjectFormHandlers();
-            break;
-        case 'conceptions':
-            main.innerHTML = await loadProjectsManager('conceptions');
-            initProjectFormHandlers();
-            break;
-    }
-}
-
-// Load dashboard
-async function loadDashboard() {
-    const videos = await getVideos();
-    const formations = await getFormations();
-    const machines = await getMachines();
-    const posts = await getBlogPosts();
-    const subscribers = await getNewsletterSubscribers();
-    const contacts = await getContacts();
-
-    // Use imported functions directly
-    const reservations = await getReservations();
-    const registrations = await getFormationRegistrations();
-
+function renderErrorState(message) {
     return `
-        <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">📊 Dashboard</h1>
-            <p class="text-gray-600">Vue d'ensemble de votre plateforme GAL</p>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon stat-icon--primary">🎬</div>
-                <div class="stat-content">
-                    <div class="stat-value">${videos.length}</div>
-                    <div class="stat-label">Vidéos</div>
-                </div>
+        <div class="text-center p-12 flex flex-col items-center justify-center h-full">
+            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center text-red-500 mb-4">
+                <i class="ri-error-warning-line text-3xl"></i>
             </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon stat-icon--success">📚</div>
-                <div class="stat-content">
-                    <div class="stat-value">${formations.length}</div>
-                    <div class="stat-label">Formations</div>
-                </div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon stat-icon--warning">🛠️</div>
-                <div class="stat-content">
-                    <div class="stat-value">${machines.length}</div>
-                    <div class="stat-label">Machines</div>
-                </div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon stat-icon--info">📝</div>
-                <div class="stat-content">
-                    <div class="stat-value">${posts.length}</div>
-                    <div class="stat-label">Articles</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid--2 gap-6 mb-6">
-            <div class="admin-card">
-                <div class="d-flex justify-between align-center mb-4">
-                    <h2 class="text-lg font-bold">🎓 Inscriptions Formations</h2>
-                    <a href="#inscriptions-formations" class="text-primary hover:underline text-sm">Voir tout →</a>
-                </div>
-                <div class="stat-value text-red-700">${registrations.length}</div>
-                <p class="text-muted mt-2">${registrations.filter(r => r.status === 'En attente').length} en attente de confirmation</p>
-                <div class="mt-4">
-                    <button class="btn btn--sm btn--primary" data-action="inscriptions-formations">
-                        Gérer les inscriptions
-                    </button>
-                </div>
-            </div>
-
-            <div class="admin-card">
-                <div class="d-flex justify-between align-center mb-4">
-                    <h2 class="text-lg font-bold">📅 Réservations Machines</h2>
-                    <a href="#reservations" class="text-primary hover:underline text-sm">Voir tout →</a>
-                </div>
-                <div class="stat-value text-red-700">${reservations.length}</div>
-                <p class="text-muted mt-2">${reservations.filter(r => r.status === 'En attente').length} en attente de confirmation</p>
-                <div class="mt-4">
-                    <button class="btn btn--sm btn--primary" data-action="reservations">
-                        Gérer les réservations
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid--2 gap-6 mb-6">
-            <div class="admin-card">
-                <h2 class="text-lg font-bold mb-4">📧 Abonnés Newsletter</h2>
-                <div class="stat-value">${subscribers.length}</div>
-                <p class="text-muted mt-2">Personnes inscrites</p>
-                <div class="mt-4">
-                    <button class="btn btn--sm btn--outline" data-action="newsletter">
-                        Voir les abonnés
-                    </button>
-                </div>
-            </div>
-            
-            <div class="admin-card">
-                <h2 class="text-lg font-bold mb-4">✉️ Messages de Contact</h2>
-                <div class="stat-value">${contacts.length}</div>
-                <p class="text-muted mt-2">Messages reçus</p>
-                <div class="mt-4">
-                    <button class="btn btn--sm btn--outline" data-action="contacts">
-                        Lire les messages
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="admin-card">
-            <h2 class="text-lg font-bold mb-4">⚡ Actions rapides</h2>
-            <div class="quick-actions">
-                <button class="btn btn--primary" data-action="videos">
-                    <span>🎬</span> Ajouter une vidéo
-                </button>
-                <button class="btn btn--primary" data-action="formations">
-                    <span>📚</span> Ajouter une formation
-                </button>
-                <button class="btn btn--primary" data-action="machines">
-                    <span>🛠️</span> Ajouter une machine
-                </button>
-                <button class="btn btn--primary" data-action="blog">
-                    <span>📝</span> Nouvel article
-                </button>
-            </div>
+            <h3 class="text-xl font-bold mb-2 text-gray-800">Erreur de chargement</h3>
+            <p class="text-gray-500 mb-6 max-w-md">${message}</p>
+            <button onclick="window.location.reload()" class="admin-btn admin-btn--primary">
+                <i class="ri-refresh-line"></i> Réessayer
+            </button>
         </div>
     `;
 }
 
-// Initialize form handlers
-function initFormHandlers() {
-    setTimeout(() => {
-        const videoForm = document.getElementById('video-form');
-        if (videoForm) {
-            const newVideoForm = videoForm.cloneNode(true);
-            videoForm.parentNode.replaceChild(newVideoForm, videoForm);
-
-            newVideoForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData();
-                formData.append('id', document.getElementById('video-id').value);
-                formData.append('title', document.getElementById('video-title').value);
-                formData.append('category', document.getElementById('video-category').value);
-                formData.append('url', document.getElementById('video-url').value);
-                formData.append('thumbnail', document.getElementById('video-thumbnail').value);
-                formData.append('duration', document.getElementById('video-duration').value);
-                await saveVideo(formData);
-            });
-        }
-
-        const formationForm = document.getElementById('formation-form');
-        if (formationForm) {
-            const newFormationForm = formationForm.cloneNode(true);
-            formationForm.parentNode.replaceChild(newFormationForm, formationForm);
-
-            newFormationForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData();
-                formData.append('id', document.getElementById('formation-id').value);
-                formData.append('title', document.getElementById('formation-title').value);
-                formData.append('description', document.getElementById('formation-description').value);
-                formData.append('level', document.getElementById('formation-level').value);
-                formData.append('duration', document.getElementById('formation-duration').value);
-                formData.append('price', document.getElementById('formation-price').value);
-                formData.append('modules', document.getElementById('formation-modules').value);
-                await saveFormation(formData);
-            });
-        }
-
-        const machineForm = document.getElementById('machine-form');
-        if (machineForm) {
-            const newMachineForm = machineForm.cloneNode(true);
-            machineForm.parentNode.replaceChild(newMachineForm, machineForm);
-
-            newMachineForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData();
-                formData.append('id', document.getElementById('machine-id').value);
-                formData.append('name', document.getElementById('machine-name').value);
-                formData.append('category', document.getElementById('machine-category').value);
-                formData.append('image', document.getElementById('machine-image').value);
-                formData.append('price', document.getElementById('machine-price').value);
-                formData.append('status', document.getElementById('machine-status').value);
-                formData.append('specs', document.getElementById('machine-specs').value);
-                await saveMachine(formData);
-            });
-        }
-
-        const blogForm = document.getElementById('blog-form');
-        if (blogForm) {
-            const newBlogForm = blogForm.cloneNode(true);
-            blogForm.parentNode.replaceChild(newBlogForm, blogForm);
-
-            newBlogForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData();
-                formData.append('id', document.getElementById('blog-id').value);
-                formData.append('title', document.getElementById('blog-title').value);
-                formData.append('category', document.getElementById('blog-category').value);
-                formData.append('author', document.getElementById('blog-author').value);
-                formData.append('excerpt', document.getElementById('blog-excerpt').value);
-                formData.append('content', document.getElementById('blog-content').value);
-                formData.append('image', document.getElementById('blog-image').value);
-                formData.append('tags', document.getElementById('blog-tags').value);
-                await saveBlogPost(formData);
-            });
-        }
-    }, 100);
+/**
+ * Handlers Initializers
+ */
+function initDashboardHandlers() {
+    document.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.dataset.action;
+            const link = document.querySelector(`.nav-link[href="#${action}"]`);
+            if (link) {
+                link.click();
+            } else {
+                window.location.hash = action;
+            }
+        });
+    });
 }
 
-// Load newsletter
-async function loadNewsletter() {
-    const subscribers = await getNewsletterSubscribers();
-    const main = document.getElementById('admin-main');
-    if (!main) return;
-
-    main.innerHTML = `
-                <div class="admin-card">
-                    <h2>Abonnés Newsletter (${subscribers.length})</h2>
-                    <div class="table-responsive mt-4">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Email</th>
-                                    <th>Date d'inscription</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${subscribers.map(sub => `
-                                    <tr>
-                                        <td>${sub.email}</td>
-                                        <td>${new Date(sub.dateSubscribed).toLocaleDateString('fr-FR')}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
+function initMainFormHandlers() {
+    // Forms are handled by specific modules now
 }
 
-// Load contacts
-async function loadContacts() {
+/**
+ * Global Window Functions (for HTML onclicks)
+ */
+window.viewContactMessage = async (contactId) => {
     const contacts = await getContacts();
-    const main = document.getElementById('admin-main');
-    if (!main) return;
+    const contact = contacts.find(c => c.id === contactId);
+    if (!contact) return;
 
-    main.innerHTML = `
-                <div class="admin-card">
-                    <h2>Messages de Contact (${contacts.length})</h2>
-                    <div class="table-responsive mt-4">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Nom</th>
-                                    <th>Email</th>
-                                    <th>Téléphone</th>
-                                    <th>Sujet</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${contacts.map(contact => `
-                                    <tr>
-                                        <td>${contact.name}</td>
-                                        <td>${contact.email}</td>
-                                        <td>${contact.phone || 'N/A'}</td>
-                                        <td>${contact.subject || 'Sans sujet'}</td>
-                                        <td>${new Date(contact.date).toLocaleDateString('fr-FR')}</td>
-                                        <td>
-                                            <button class="btn btn--sm btn--primary" onclick="viewContactMessage('${contact.id}')">
-                                                Voir le message
-                                            </button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
+    const detailsDiv = document.getElementById('contact-details');
+    detailsDiv.innerHTML = `
+        <div class="space-y-6">
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm border border-gray-100">
+                            <span class="font-bold text-lg">${sanitizeHTML(contact.name.charAt(0))}</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-900">${sanitizeHTML(contact.name)}</div>
+                            <div class="text-sm text-primary cursor-pointer hover:underline">${sanitizeHTML(contact.email)}</div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-muted bg-white px-2 py-1 rounded border border-gray-100">
+                        ${new Date(contact.date || contact.created_at).toLocaleString('fr-FR')}
                     </div>
                 </div>
-
-                <!-- Modal pour afficher le message complet -->
-                <div id="contact-modal" class="modal" style="display: none;">
-                    <div class="modal-content">
-                        <span class="close" onclick="closeContactModal()">&times;</span>
-                        <div id="contact-details"></div>
-                    </div>
+                
+                <div class="mb-2">
+                    <span class="text-xs font-bold text-muted uppercase tracking-wider">Sujet</span>
+                    <div class="font-medium text-gray-900">${sanitizeHTML(contact.subject || 'Sans sujet')}</div>
                 </div>
-            `;
-
-    window.viewContactMessage = async (contactId) => {
-        const contacts = await getContacts();
-        const contact = contacts.find(c => c.id === contactId);
-        if (!contact) return;
-
-        const detailsDiv = document.getElementById('contact-details');
-        detailsDiv.innerHTML = `
-            <h2>Détails du message</h2>
-            <div class="contact-info">
-                <p><strong>Nom :</strong> ${contact.name}</p>
-                <p><strong>Email :</strong> <a href="mailto:${contact.email}">${contact.email}</a></p>
-                <p><strong>Téléphone :</strong> <a href="tel:${contact.phone}">${contact.phone || 'N/A'}</a></p>
-                <p><strong>Sujet :</strong> ${contact.subject || 'Sans sujet'}</p>
-                <p><strong>Date :</strong> ${new Date(contact.date).toLocaleString('fr-FR')}</p>
-                <hr>
-                <p><strong>Message :</strong></p>
-                <div class="message-content">${contact.message}</div>
             </div>
-        `;
-        document.getElementById('contact-modal').style.display = 'block';
-    };
 
-    window.closeContactModal = () => {
-        document.getElementById('contact-modal').style.display = 'none';
-    };
-}
+            <div>
+                <span class="text-xs font-bold text-muted uppercase tracking-wider block mb-2">Message</span>
+                <div class="p-4 rounded-xl border border-gray-200 text-gray-700 whitespace-pre-wrap leading-relaxed bg-white">
+                    ${sanitizeHTML(contact.message)}
+                </div>
+            </div>
 
-// Initialize
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                <button class="admin-btn admin-btn--outline" onclick="closeContactModal()">Fermer</button>
+                <a href="mailto:${contact.email}?subject=RE: ${encodeURIComponent(contact.subject || '')}" class="admin-btn admin-btn--primary">
+                    <i class="ri-reply-line"></i> Répondre
+                </a>
+            </div>
+        </div>
+    `;
+    document.getElementById('contact-modal').classList.add('active');
+};
+
+window.closeContactModal = () => {
+    document.getElementById('contact-modal').classList.remove('active');
+};
+
+/**
+ * Initialization
+ */
 export async function init() {
     try {
         if (!await checkAuth()) return;
 
-        // Initialize storage - charge les données JSON dans localStorage
+        // Initialize storage
         await initStorage();
 
         // Handle navigation
         const navLinks = document.querySelectorAll('.nav-link');
 
-        function updateActiveLink(hash) {
+        const updateActiveLink = (hash) => {
             navLinks.forEach(link => {
-                if (link.getAttribute('href') === hash) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
+                link.classList.toggle('active', link.getAttribute('href') === hash);
             });
-        }
+        };
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -1035,87 +605,34 @@ export async function init() {
             });
         });
 
-        // Initial load with timeout
+        // Initial load
         const hash = window.location.hash || '#dashboard';
         updateActiveLink(hash);
-
-        console.log('Chargement de la page admin:', hash);
-
-        // Timeout de sécurité pour le chargement
-        const loadPromise = loadPage(hash.substring(1));
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Le chargement prend trop de temps (timeout 10s)')), 10000)
-        );
-
-        try {
-            await Promise.race([loadPromise, timeoutPromise]);
-            console.log('Page chargée avec succès');
-        } catch (err) {
-            console.error('Erreur chargement page:', err);
-            const main = document.getElementById('admin-main');
-            if (main) {
-                main.innerHTML = `
-                    <div class="text-center p-8 text-red-600">
-                        <h3 class="text-xl font-bold mb-2">Erreur de chargement</h3>
-                        <p>${err.message}</p>
-                        <button onclick="window.location.reload()" class="mt-4 btn btn--primary">Réessayer</button>
-                    </div>
-                `;
-            }
-        }
+        await loadPage(hash.substring(1));
 
         // Logout
-        document.getElementById('logout-btn').addEventListener('click', async () => {
+        document.getElementById('logout-btn')?.addEventListener('click', async () => {
             await logout();
             window.location.href = 'login.html';
         });
 
-        // Expose admin module functions globally for onclick handlers
+        // Global exposing for onclicks
         window.adminModule = {
-            showVideoForm,
-            editVideo: showVideoForm,
-            deleteVideo: deleteVideoItem,
-
-            showFormationForm,
-            editFormation: showFormationForm,
-            deleteFormation: deleteFormationItem,
-
-            showMachineForm,
-            editMachine: showMachineForm,
-            deleteMachine: deleteMachineItem,
-
-            showBlogForm,
-            editBlogPost: showBlogForm,
-            deleteBlogPost: deleteBlogPostItem,
-
-            showBlogForm,
-            editBlogPost: showBlogForm,
-            deleteBlogPost: deleteBlogPostItem,
-
-            deleteReservation: deleteReservationItem,
-            confirmReservation: confirmReservationItem,
-
-            deleteFormationRegistration: deleteFormationRegistrationItem,
-            confirmFormationRegistration: confirmFormationRegistrationItem,
-
+            showVideoForm, editVideo: showVideoForm, deleteVideo: deleteVideoItem,
+            showFormationForm, editFormation: showFormationForm, deleteFormation: deleteFormationItem,
+            showMachineForm, editMachine: showMachineForm, deleteMachine: deleteMachineItem,
+            showBlogForm, editBlogPost: showBlogForm, deleteBlogPost: deleteBlogPostItem,
+            deleteReservation: deleteReservationItem, confirmReservation: confirmReservationItem,
+            deleteFormationRegistration: deleteFormationRegistrationItem, confirmFormationRegistration: confirmFormationRegistrationItem,
             closeModal
         };
 
-        // Initialiser les sélecteurs de médias
+        // Init media pickers if any
         initMediaPickers();
 
     } catch (error) {
-        console.error('Erreur critique admin:', error);
+        console.error('Critical Admin Error:', error);
         const main = document.getElementById('admin-main');
-        if (main) {
-            main.innerHTML = `
-                <div class="text-center p-20" style="color: #dc2626;">
-                    <h3>Une erreur est survenue lors du chargement</h3>
-                    <p>Veuillez rafraîchir la page ou contacter le support.</p>
-                    <pre style="background: #f3f4f6; padding: 1rem; margin-top: 1rem; border-radius: 0.5rem; text-align: left; overflow: auto;">${error.message}\n${error.stack}</pre>
-                </div>
-            `;
-        }
+        if (main) main.innerHTML = renderErrorState(error.message);
     }
 }
->>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef

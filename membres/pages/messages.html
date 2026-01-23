@@ -1,12 +1,14 @@
-<<<<<<< HEAD
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messages - Espace Membres GAL</title>
-    <link rel="icon" type="image/png" href="public/images/favicon.jpg">
+    <link rel="icon" type="image/png" href="../../public/images/favicon.jpg">
+    <!-- Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- Styles -->
     <link rel="stylesheet" href="../../css/main.css">
     <link rel="stylesheet" href="../../css/components.css">
     <link rel="stylesheet" href="../../css/utilities.css">
@@ -24,154 +26,84 @@
                 <p>Bienvenue dans votre espace personnel</p>
             </div>
         </div>
-        <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
+        <button class="mobile-menu-btn" id="mobile-menu-btn"><i class="ri-menu-line"></i></button>
         <div class="member-user-section">
             <div class="member-user-avatar" id="member-avatar">M</div>
             <div class="member-user-info">
                 <span class="member-user-name" id="member-name">Membre</span>
                 <span class="member-user-email" id="member-email">email@example.com</span>
             </div>
-            <button class="btn btn--sm btn--outline logout-btn" id="logout-btn">Déconnexion</button>
+            <button class="member-btn member-btn--outline logout-btn" id="logout-btn">
+                <i class="ri-logout-box-line"></i>
+                <span class="hidden md:inline">Déconnexion</span>
+            </button>
         </div>
     </header>
 
     <nav class="member-nav-container">
         <ul class="member-nav">
-            <li class="member-nav__item"><a href="dashboard.html" class="member-nav__link"><span
-                        class="member-nav__icon">📊</span> Tableau de bord</a></li>
-            <li class="member-nav__item"><a href="chantiers.html" class="member-nav__link"><span
-                        class="member-nav__icon">🏗️</span> Chantiers</a></li>
-            <li class="member-nav__item"><a href="conceptions.html" class="member-nav__link"><span
-                        class="member-nav__icon">📐</span> Conceptions</a></li>
-            <li class="member-nav__item"><a href="annonces.html" class="member-nav__link"><span
-                        class="member-nav__icon">📢</span> Annonces</a></li>
-            <li class="member-nav__item"><a href="messages.html" class="member-nav__link active"><span
-                        class="member-nav__icon">💬</span> Messages</a></li>
-            <li class="member-nav__item"><a href="roi.html" class="member-nav__link"><span
-                        class="member-nav__icon">📜</span> Règlement</a></li>
+            <li class="member-nav__item">
+                <a href="dashboard.html" class="member-nav__link">
+                    <i class="ri-dashboard-line member-nav__icon"></i>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            <li class="member-nav__item">
+                <a href="chantiers.html" class="member-nav__link">
+                    <i class="ri-building-2-line member-nav__icon"></i>
+                    <span>Chantiers</span>
+                </a>
+            </li>
+            <li class="member-nav__item">
+                <a href="conceptions.html" class="member-nav__link">
+                    <i class="ri-pencil-ruler-2-line member-nav__icon"></i>
+                    <span>Conceptions</span>
+                </a>
+            </li>
+            <li class="member-nav__item">
+                <a href="annonces.html" class="member-nav__link">
+                    <i class="ri-notification-3-line member-nav__icon"></i>
+                    <span>Annonces</span>
+                </a>
+            </li>
+            <li class="member-nav__item">
+                <a href="messages.html" class="member-nav__link active">
+                    <i class="ri-message-3-line member-nav__icon"></i>
+                    <span>Messages</span>
+                </a>
+            </li>
+            <li class="member-nav__item">
+                <a href="roi.html" class="member-nav__link">
+                    <i class="ri-file-text-line member-nav__icon"></i>
+                    <span>Règlement</span>
+                </a>
+            </li>
         </ul>
     </nav>
 
     <main class="member-main">
         <div class="page-header mb-8">
-            <h2 class="text-3xl font-bold mb-2">💬 Messages</h2>
-            <p class="text-muted">Messages et communications de l'administration GAL</p>
+            <h2 class="text-2xl font-bold flex items-center gap-2">
+                <i class="ri-chat-1-fill text-primary"></i> Messagerie Privée
+            </h2>
+            <p class="text-muted">Échanges avec l'administration et notifications</p>
         </div>
 
-        <div id="messages-list">
-            <div class="empty-state">
-                <span class="empty-state__icon">💬</span>
-                <h3>Aucun message pour le moment</h3>
-                <p>Les messages de l'administration apparaîtront ici</p>
+        <div id="messages-list" class="flex flex-col gap-4">
+            <div class="text-center py-12">
+                <i class="ri-loader-4-line ri-spin text-3xl text-primary"></i>
+                <p class="mt-2 text-muted">Chargement de vos messages...</p>
             </div>
         </div>
     </main>
 
     <script type="module">
         import { initMemberPage } from '../js/member-common.js';
-        import { init } from '../js/messages.js';
-
         document.addEventListener('DOMContentLoaded', async () => {
-            const member = await initMemberPage();
-            if (member) {
-                init();
-            }
+            await initMemberPage();
         });
     </script>
+    <script type="module" src="../js/pages/messages-init.js"></script>
 </body>
 
-=======
-﻿<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages - Espace Membres GAL</title>
-    <link rel="icon" type="image/png" href="public/images/favicon.jpg">
-    <link rel="stylesheet" href="../../css/main.css">
-    <link rel="stylesheet" href="../../css/components.css">
-    <link rel="stylesheet" href="../../css/utilities.css">
-    <link rel="stylesheet" href="../../css/member.css">
-</head>
-
-<body>
-    <header class="member-top-header">
-        <div class="member-brand">
-            <a href="../../index.html">
-                <img src="../../public/logo-gal-official.jpg" alt="GAL Logo" class="member-brand__logo">
-            </a>
-            <div class="member-brand__info">
-                <h1>Espace Membres</h1>
-                <p>Bienvenue dans votre espace personnel</p>
-            </div>
-        </div>
-        <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
-        <div class="member-user-section">
-            <div class="member-user-avatar" id="member-avatar">M</div>
-            <div class="member-user-info">
-                <span class="member-user-name" id="member-name">Membre</span>
-                <span class="member-user-email" id="member-email">email@example.com</span>
-            </div>
-            <button class="btn btn--sm btn--outline logout-btn" id="logout-btn">Déconnexion</button>
-        </div>
-    </header>
-
-    <nav class="member-nav-container">
-        <ul class="member-nav">
-            <li class="member-nav__item"><a href="dashboard.html" class="member-nav__link"><span
-                        class="member-nav__icon">📊</span> Tableau de bord</a></li>
-            <li class="member-nav__item"><a href="chantiers.html" class="member-nav__link"><span
-                        class="member-nav__icon">🏗️</span> Chantiers</a></li>
-            <li class="member-nav__item"><a href="conceptions.html" class="member-nav__link"><span
-                        class="member-nav__icon">📐</span> Conceptions</a></li>
-            <li class="member-nav__item"><a href="annonces.html" class="member-nav__link"><span
-                        class="member-nav__icon">📢</span> Annonces</a></li>
-            <li class="member-nav__item"><a href="messages.html" class="member-nav__link active"><span
-                        class="member-nav__icon">💬</span> Messages</a></li>
-            <li class="member-nav__item"><a href="roi.html" class="member-nav__link"><span
-                        class="member-nav__icon">📜</span> Règlement</a></li>
-        </ul>
-    </nav>
-
-    <main class="member-main">
-        <div class="page-header mb-8">
-            <h2 class="text-3xl font-bold mb-2">💬 Messages</h2>
-            <p class="text-muted">Messages et communications de l'administration GAL</p>
-        </div>
-
-        <div id="messages-list">
-            <div class="empty-state">
-                <span class="empty-state__icon">💬</span>
-                <h3>Aucun message pour le moment</h3>
-                <p>Les messages de l'administration apparaîtront ici</p>
-            </div>
-        </div>
-    </main>
-
-    <script type="module">
-        import { getCurrentMember, logout } from '../js/auth.js';
-        import { init } from '../js/messages.js';
-
-        const member = getCurrentMember();
-        if (!member) {
-            window.location.href = '../login.html';
-        } else {
-            document.getElementById('member-name').textContent = member.name;
-            document.getElementById('member-email').textContent = member.email;
-            const initial = member.name.charAt(0).toUpperCase();
-            document.getElementById('member-avatar').textContent = initial;
-        }
-
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            logout();
-        });
-
-        // Charger les messages avec commentaires
-        init();
-    </script>
-    <script src="../js/menu.js"></script>
-</body>
-
->>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef
 </html>
