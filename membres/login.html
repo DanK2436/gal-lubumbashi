@@ -4,57 +4,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAL Membres | Connexion</title>
+    <title>GAL Membres | Portail Artisan</title>
     <link rel="icon" type="image/png" href="../public/images/favicon.jpg">
 
     <!-- Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/components.css">
-    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/member.css">
 
     <style>
-        /* Surcharges locales pour le login membre (identique Admin) */
-        .input-icon-wrapper {
+        :root {
+            --primary: #DC2626;
+            --primary-dark: #B91C1C;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --bg-body: #F8FAFC;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .login-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* Visual Side */
+        .login-visual {
+            flex: 1.2;
             position: relative;
+            background: url('../public/images/member_login_v2_bg.png') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+        }
+
+        .login-visual::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.85) 0%, rgba(185, 28, 28, 0.7) 100%);
+        }
+
+        .visual-overlay-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3rem;
+            border-radius: 32px;
+            color: white;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .visual-overlay-card h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        /* Form Side */
+        .login-form-side {
+            flex: 0.8;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            z-index: 10;
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            margin: 0 auto 1.5rem;
+            display: block;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .login-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .login-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Inputs */
+        .input-group {
             margin-bottom: 1.5rem;
         }
 
-        .input-icon {
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.6rem;
+            padding-left: 0.2rem;
+        }
+
+        .input-field {
+            position: relative;
+        }
+
+        .input-field i {
             position: absolute;
             left: 1.25rem;
             top: 50%;
             transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1.25rem;
-            pointer-events: none;
-            transition: color 0.3s;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            transition: all 0.3s;
         }
 
-        .input-with-icon {
-            padding-left: 3.5rem !important;
+        .input-field input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 3.25rem;
+            border: 2px solid #F1F5F9;
+            border-radius: 16px;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #F8FAFC;
+            color: var(--text-main);
         }
 
-        .input-icon-wrapper:focus-within .input-icon {
-            color: var(--color-primary);
+        .input-field input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08);
+        }
+
+        .input-field input:focus+i {
+            color: var(--primary);
+        }
+
+        /* Form Options (Remember Me) */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.25rem;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .checkbox-container:hover {
+            color: var(--text-main);
+        }
+
+        .checkbox-container input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Button */
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .login-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(220, 38, 38, 0.3);
         }
 
         .error-message {
-            background: rgba(220, 38, 38, 0.1);
-            border: 1px solid rgba(220, 38, 38, 0.2);
-            color: #fca5a5;
+            background: #FFF1F2;
+            color: #E11D48;
             padding: 1rem;
             border-radius: 12px;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             margin-bottom: 2rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            backdrop-filter: blur(4px);
-            animation: shake 0.4s ease-in-out;
+            border: 1px solid #FFE4E6;
+            animation: shake 0.4s;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes shake {
@@ -73,171 +288,283 @@
             }
         }
 
-        /* Checkbox custom style */
-        .custom-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-            cursor: pointer;
+        /* Mobile Minimalist Rendering */
+        @media (max-width: 900px) {
+            body {
+                background: url('../public/images/member_login_v2_bg.png') center/cover no-repeat fixed;
+                padding: 1.5rem;
+                overflow-y: auto;
+                position: relative;
+            }
+
+            /* Overlay for mobile readability */
+            body::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
+                z-index: 1;
+            }
+
+            .login-visual {
+                display: none;
+            }
+
+            .login-form-side {
+                background: transparent;
+                flex: 1;
+                padding: 0;
+                position: relative;
+                z-index: 2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .form-wrapper {
+                background: rgba(255, 255, 255, 0.15);
+                /* Ultra transparent */
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                padding: 2.5rem 2rem;
+                border-radius: 32px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                max-width: 100%;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .login-header h1 {
+                color: white;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .login-header p {
+                color: rgba(255, 255, 255, 0.8);
+            }
+
+            .input-group label {
+                color: white;
+            }
+
+            .login-logo {
+                background: white;
+                padding: 5px;
+                animation: floatLogo 3s ease-in-out infinite;
+                box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+            }
+
+            @keyframes floatLogo {
+
+                0%,
+                100% {
+                    transform: translateY(0) scale(1);
+                }
+
+                50% {
+                    transform: translateY(-10px) scale(1.05);
+                }
+            }
+
+            .input-field input {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
+                color: white;
+            }
+
+            .input-field input::placeholder {
+                color: rgba(255, 255, 255, 0.5);
+            }
+
+            .input-field i {
+                color: rgba(255, 255, 255, 0.7);
+            }
+
+            .form-options,
+            .checkbox-container {
+                color: rgba(255, 255, 255, 0.9) !important;
+            }
+
+            .login-header {
+                margin-bottom: 2rem;
+            }
+
+            .login-logo {
+                width: 65px;
+                height: 65px;
+            }
+
+            .login-header h1 {
+                font-size: 1.6rem;
+            }
+
+            .input-field input {
+                background: white;
+            }
+
+            .login-btn {
+                margin-top: 1.5rem;
+                padding: 1.1rem;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
         }
 
-        .custom-checkbox input {
-            accent-color: var(--color-primary);
-            width: 1rem;
-            height: 1rem;
-        }
+        /* Ultra Minimalist for Small Phones */
+        @media (max-width: 480px) {
+            .form-wrapper {
+                padding: 2rem 1.5rem;
+                border-radius: 24px;
+            }
 
-        .custom-checkbox:hover {
-            color: white;
+            .login-header h1 {
+                font-size: 1.4rem;
+            }
         }
     </style>
 </head>
 
-<body class="member-login-body">
-
-    <!-- Background Elements -->
-    <div
-        style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.15), transparent 70%); pointer-events: none;">
-    </div>
-
-    <div class="login-glass-card">
-        <div class="text-center mb-10">
-            <div style="position: relative; width: 80px; height: 80px; margin: 0 auto 1.5rem;">
-                <div
-                    style="position: absolute; inset: -4px; background: linear-gradient(135deg, var(--color-primary), #b91c1c); border-radius: 50%; animation: pulse-subtle 3s infinite; opacity: 0.5;">
-                </div>
-                <img src="../public/logo-gal-official.jpg" alt="GAL Logo"
-                    style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; border: 2px solid rgba(255,255,255,0.2);">
+<body>
+    <div class="login-container">
+        <!-- Visual -->
+        <div class="login-visual">
+            <div class="visual-overlay-card">
+                <h2>L'Excellence au bout des mains</h2>
+                <p>Bienvenue dans votre espace dédié aux artisans de Lubumbashi. Gérez vos projets, accédez à vos
+                    ressources et collaborez avec la communauté.</p>
             </div>
-
-            <h1
-                style="font-size: 1.75rem; font-weight: 800; color: white; margin-bottom: 0.5rem; letter-spacing: -0.01em;">
-                Espace Membre
-            </h1>
-            <p style="color: rgba(255,255,255,0.5); font-size: 0.95rem;">Bienvenue sur votre portail artisan</p>
         </div>
 
-        <div id="error-box" style="display: none;"></div>
+        <!-- Form -->
+        <div class="login-form-side">
+            <div class="form-wrapper">
+                <div class="login-header">
+                    <img src="../public/logo-gal-official.jpg" alt="Logo GAL" class="login-logo">
+                    <h1>Espace Membre</h1>
+                    <p>Accédez à votre compte artisan</p>
+                </div>
 
-        <form id="login-form">
-            <div class="input-icon-wrapper">
-                <i class="ri-mail-line input-icon"></i>
-                <input type="email" id="email" name="email" class="member-form-input input-with-icon"
-                    placeholder="Email membre" required autocomplete="email">
+                <div id="error-box" style="display: none;"></div>
+
+                <form id="login-form">
+                    <div class="input-group">
+                        <label>Identifiant (Email ou Téléphone)</label>
+                        <div class="input-field">
+                            <i class="ri-user-line"></i>
+                            <input type="text" name="identifier" id="identifier" placeholder="Email ou N° de téléphone"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Mot de passe</label>
+                        <div class="input-field">
+                            <i class="ri-lock-2-line"></i>
+                            <input type="password" name="password" id="password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="remember" id="remember">
+                            <span>Rester connecté</span>
+                        </label>
+                        <a href="#" style="color: var(--primary); text-decoration: none;">Besoin d'aide ?</a>
+                    </div>
+
+                    <button type="submit" class="login-btn" id="submit-btn">
+                        Se connecter
+                    </button>
+                </form>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <a href="../index.html"
+                        style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="ri-arrow-left-line"></i> Retour au site
+                    </a>
+                </div>
             </div>
-
-            <div class="input-icon-wrapper">
-                <i class="ri-lock-password-line input-icon"></i>
-                <input type="password" id="password" name="password" class="member-form-input input-with-icon"
-                    placeholder="Mot de passe" required autocomplete="current-password">
-            </div>
-
-            <label class="custom-checkbox">
-                <input type="checkbox" id="remember" name="remember">
-                <span>Rester connecté</span>
-            </label>
-
-            <button type="submit" class="admin-btn admin-btn--primary w-full"
-                style="justify-content: center; padding: 1rem; font-size: 1rem; margin-top: 0.5rem; border-radius: 12px; background: linear-gradient(135deg, var(--color-primary) 0%, #b91c1c 100%); border: none;">
-                <span>Accéder à mon espace</span> <i class="ri-arrow-right-line"></i>
-            </button>
-        </form>
-
-        <div class="text-center mt-8 space-y-4">
-            <div class="text-xs text-muted" style="color: rgba(255,255,255,0.3);">
-                Pas encore de compte ? Contactez l'administration.
-            </div>
-
-            <a href="../index.html"
-                class="flex items-center justify-center gap-2 text-sm text-muted hover:text-white transition-colors"
-                style="color: rgba(255,255,255,0.4); text-decoration: none; margin-top: 1.5rem;">
-                <i class="ri-arrow-left-line"></i> Retour au site public
-            </a>
         </div>
     </div>
 
     <script type="module">
-        import { supabaseLogin, getMemberByEmail } from '../js/supabase-service.js';
+        import { supabaseLogin, getMemberByIdentifier, supabaseLogout } from '../js/supabase-service.js';
 
         const form = document.getElementById('login-form');
         const errorBox = document.getElementById('error-box');
+        const submitBtn = document.getElementById('submit-btn');
 
-        // Vérification session active
-        const isAuth = !!(localStorage.getItem('memberToken') || sessionStorage.getItem('memberToken'));
-        if (isAuth) window.location.href = 'pages/dashboard.html';
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
+            errorBox.style.display = 'none';
+            const originalBtnContent = submitBtn.innerHTML;
 
-                errorBox.style.display = 'none';
-                const submitBtn = form.querySelector('button[type="submit"]');
-                const originalBtnContent = submitBtn.innerHTML;
+            // Loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Connexion...';
 
-                // Loading state
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Authentification...';
-                submitBtn.style.opacity = '0.8';
+            const formData = new FormData(form);
+            const identifier = formData.get('identifier');
+            const password = formData.get('password');
+            const remember = formData.get('remember') === 'on';
 
-                const formData = new FormData(form);
-                const email = formData.get('email');
-                const password = formData.get('password');
-                const remember = formData.get('remember') === 'on';
+            try {
+                // 1. Résoudre le membre par son identifiant (Email ou Téléphone)
+                const memberData = await getMemberByIdentifier(identifier);
 
-                try {
-                    // Authentification via Supabase Auth
-                    // Simuler un léger délai pour l'UX
-                    await new Promise(r => setTimeout(r, 600));
-
-                    const user = await supabaseLogin(email, password);
-
-                    if (user) {
-                        // Récupérer les données complémentaires du profil membre
-                        const memberData = await getMemberByEmail(email);
-
-                        const userData = {
-                            id: user.id,
-                            email: user.email,
-                            role: 'member',
-                            ...(memberData || {})
-                        };
-
-                        // Stockage de la session
-                        const storage = remember ? localStorage : sessionStorage;
-                        storage.setItem('memberToken', 'supa_' + user.id);
-                        localStorage.setItem('memberData', JSON.stringify(userData));
-
-                        // Success animation
-                        submitBtn.innerHTML = '<i class="ri-check-line"></i> Succès !';
-                        submitBtn.style.background = '#10b981';
-
-                        setTimeout(() => {
-                            window.location.href = 'pages/dashboard.html';
-                        }, 500);
-                    }
-                } catch (error) {
-                    console.error('Erreur de connexion:', error);
-
-                    // Error display
-                    errorBox.innerHTML = `
-                        <div class="error-message">
-                            <i class="ri-error-warning-fill text-xl"></i>
-                            <span>${error.message || 'Email ou mot de passe incorrect.'}</span>
-                        </div>
-                    `;
-                    errorBox.style.display = 'block';
-
-                    // Reset button
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnContent;
-                    submitBtn.style.opacity = '1';
-                    submitBtn.style.background = 'linear-gradient(135deg, var(--color-primary) 0%, #b91c1c 100%)';
+                if (!memberData) {
+                    throw new Error('Identifiant non reconnu. Veuillez vérifier votre email ou téléphone.');
                 }
-            });
-        }
+
+                // 2. Authentification Supabase avec l'email du membre
+                // On utilise toujours l'email pour l'auth backend
+                const user = await supabaseLogin(memberData.email, password);
+
+                if (user) {
+                    const userData = {
+                        ...memberData, // Charger les données de la table members en premier
+                        id: user.id,   // S'assurer que les infos Supabase Auth sont prioritaires
+                        email: user.email,
+                        name: memberData.name || 'Artisan',
+                        role: 'member',
+                        phone: memberData.phone || ''
+                    };
+
+                    const storage = remember ? localStorage : sessionStorage;
+                    storage.setItem('memberToken', 'supa_' + user.id);
+                    localStorage.setItem('memberData', JSON.stringify(userData));
+
+                    submitBtn.innerHTML = '<i class="ri-check-line"></i> Bienvenue !';
+                    submitBtn.style.background = '#10B981';
+
+                    setTimeout(() => {
+                        window.location.href = 'pages/dashboard.html';
+                    }, 800);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+
+                let errorMsg = error.message;
+                if (errorMsg.includes('Invalid login credentials')) {
+                    errorMsg = 'Mot de passe incorrect pour cet utilisateur.';
+                }
+
+                errorBox.innerHTML = `
+                    <div class="error-message">
+                        <i class="ri-error-warning-line"></i>
+                        <span>${errorMsg}</span>
+                    </div>
+                `;
+                errorBox.style.display = 'block';
+
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+            }
+        });
     </script>
 </body>
 

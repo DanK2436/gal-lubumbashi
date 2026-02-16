@@ -1,9 +1,9 @@
 -- ================================================
--- FONCTION RPC POUR CRÉER UN UTILISATEUR DEPUIS L'ADMIN
--- GAL LUBUMBASHI - 2026
+-- FONCTION RPC POUR CRÉER DES UTILISATEURS AUTH
+-- Version : 1.1 - 2026-02-15
 -- ================================================
 
--- Extension requise pour le hachage des mots de passe
+-- Activer l'extension pour le hachage des mots de passe
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Fonction de création d'utilisateur sécurisée
@@ -43,8 +43,11 @@ BEGIN
     raw_user_meta_data,
     created_at,
     updated_at,
-    is_super_admin,
-    confirmed_at
+    last_sign_in_at,
+    confirmation_token,
+    recovery_token,
+    email_change_token_new,
+    email_change
   ) VALUES (
     '00000000-0000-0000-0000-000000000000',
     user_id,
@@ -57,8 +60,11 @@ BEGIN
     user_metadata,
     now(),
     now(),
-    false,
-    now()
+    now(),
+    '',
+    '',
+    '',
+    ''
   );
 
   -- Création d'une identité (souvent requise pour le login)
@@ -76,7 +82,7 @@ BEGIN
     user_id,
     format('{"sub":"%s","email":"%s"}', user_id::text, email)::jsonb,
     'email',
-    user_id, -- provider_id est souvent l'user_id pour le provider email
+    user_id::text, -- Pour le provider 'email', provider_id est l'ID de l'utilisateur
     now(),
     now(),
     now()
@@ -86,9 +92,29 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION create_user_command IS 'Crée un utilisateur Supabase Auth directement depuis SQL. Usage réservé aux Admins.';
+-- Fonction pour mettre à jour le mot de passe d'un utilisateur Auth
+CREATE OR REPLACE FUNCTION update_user_password_command(
+  target_email text,
+  new_password text
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  UPDATE auth.users
+  SET encrypted_password = crypt(new_password, gen_salt('bf')),
+      updated_at = now()
+  WHERE email = target_email;
+END;
+$$;
 
--- Accorder l'exécution aux utilisateurs authentifiés (les admins appelleront ça)
--- Vous pouvez restreindre ça selon vos Policies, mais SECURITY DEFINER protège l'intérieur
+COMMENT ON FUNCTION create_user_command IS 'Crée un utilisateur Supabase Auth directement depuis SQL. Usage réservé aux Admins.';
+COMMENT ON FUNCTION update_user_password_command IS 'Met à jour le mot de passe d''un utilisateur Auth. Usage réservé aux Admins.';
+
+-- Accorder l'exécution
 GRANT EXECUTE ON FUNCTION create_user_command TO authenticated;
 GRANT EXECUTE ON FUNCTION create_user_command TO service_role;
+GRANT EXECUTE ON FUNCTION update_user_password_command TO authenticated;
+GRANT EXECUTE ON FUNCTION update_user_password_command TO service_role;

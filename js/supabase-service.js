@@ -278,7 +278,7 @@ export async function getMemberByEmail(email) {
         const { data, error } = await supabase
             .from('members')
             .select('*')
-            .eq('email', email)
+            .ilike('email', email.trim())
             .single();
 
         if (error) {
@@ -290,6 +290,40 @@ export async function getMemberByEmail(email) {
         return data;
     } catch (error) {
         console.error("Erreur getMemberByEmail:", error);
+        return null;
+    }
+}
+
+/**
+ * Récupérer un membre par identifiant (Email ou Téléphone)
+ * @param {string} identifier 
+ * @returns {Promise<Object|null>}
+ */
+export async function getMemberByIdentifier(identifier) {
+    if (!isSupabaseReady() || !identifier) return null;
+    const cleanId = identifier.trim();
+
+    try {
+        // 1. Chercher par Email
+        let { data, error } = await supabase
+            .from('members')
+            .select('*')
+            .ilike('email', cleanId)
+            .maybeSingle();
+
+        if (data) return data;
+
+        // 2. Chercher par Téléphone (format exact ou simplifié)
+        // On enlève les espaces et symboles pour une recherche plus souple si nécessaire
+        ({ data, error } = await supabase
+            .from('members')
+            .select('*')
+            .or(`phone.eq.${cleanId},phone.ilike.%${cleanId}%`)
+            .maybeSingle());
+
+        return data;
+    } catch (error) {
+        console.error("Erreur getMemberByIdentifier:", error);
         return null;
     }
 }
@@ -358,7 +392,7 @@ export async function deleteFile(bucketName, filePath) {
 }
 
 /**
- * Ex�cuter une fonction RPC (Remote Procedure Call) Postgres
+ * Ex�cuter une fonction RPC (Remote Procedure Call) Postgres
  * @param {string} functionName 
  * @param {Object} params 
  * @returns {Promise<any>}
@@ -370,7 +404,8 @@ export async function executeRpc(functionName, params = {}) {
         if (error) throw error;
         return data;
     } catch (error) {
-        console.error(\Erreur RPC \:\, error);
+        console.error(`Erreur RPC :`, error);
+
         throw error;
     }
 }

@@ -9,10 +9,9 @@
     <!-- Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
     <!-- Styles -->
-    <link rel="stylesheet" href="../../css/main.css">
-    <link rel="stylesheet" href="../../css/components.css">
-    <link rel="stylesheet" href="../../css/utilities.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/member.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -82,17 +81,25 @@
     </nav>
 
     <main class="member-main">
-        <div class="page-header mb-8">
-            <h2 class="text-2xl font-bold flex items-center gap-2">
-                <i class="ri-chat-1-fill text-primary"></i> Messagerie Privée
-            </h2>
-            <p class="text-muted">Échanges avec l'administration et notifications</p>
+        <div class="page-banner">
+            <h2>Messagerie & Discussions</h2>
+            <p>Communiquez avec l'administration et les autres membres sur vos projets en cours.</p>
         </div>
 
-        <div id="messages-list" class="flex flex-col gap-4">
-            <div class="text-center py-12">
-                <i class="ri-loader-4-line ri-spin text-3xl text-primary"></i>
-                <p class="mt-2 text-muted">Chargement de vos messages...</p>
+        <div class="member-section">
+            <div class="member-section__header">
+                <h2>Boîte de Réception</h2>
+                <div class="flex gap-2">
+                    <!-- Actions messages -->
+                </div>
+            </div>
+
+            <div id="messages-list" class="flex flex-col gap-6">
+                <!-- Loading State -->
+                <div class="text-center py-12">
+                    <i class="ri-loader-4-line ri-spin text-3xl" style="color: var(--m-primary);"></i>
+                    <p class="mt-2 text-muted">Chargement de vos messages...</p>
+                </div>
             </div>
         </div>
     </main>
@@ -103,7 +110,7 @@
             await initMemberPage();
         });
     </script>
-    <script type="module" src="../js/pages/messages-init.js"></script>
+    <script type="module" src="../js/messages.js"></script>
 </body>
 
 </html>

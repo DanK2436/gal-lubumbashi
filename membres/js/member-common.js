@@ -47,9 +47,16 @@ function updateHeaderProfile(member) {
     const emailEl = document.getElementById('member-email');
     const avatarEl = document.getElementById('member-avatar');
 
-    if (nameEl) nameEl.textContent = member.name;
-    if (emailEl) emailEl.textContent = member.email;
-    if (avatarEl) avatarEl.textContent = member.name.charAt(0).toUpperCase();
+    if (nameEl) nameEl.textContent = member.name || 'Artisan';
+    if (emailEl) emailEl.textContent = member.email || '';
+    if (avatarEl) {
+        const initial = (member.name || 'A').charAt(0).toUpperCase();
+        avatarEl.textContent = initial;
+    }
+
+    // Mise à jour de la bannière de bienvenue si présente
+    const bannerWelcome = document.getElementById('banner-welcome');
+    if (bannerWelcome) bannerWelcome.textContent = `Bienvenue, ${member.name}`;
 }
 
 function initMobileMenu() {

@@ -243,11 +243,11 @@ const translations = {
         'blog.no_results': 'No articles found',
 
         // Newsletter
-        'newsletter.title': 'Stay informed',
-        'newsletter.subtitle': 'Subscribe to our newsletter',
-        'newsletter.email_placeholder': 'Your email',
-        'newsletter.success': 'You are now subscribed!',
-        'newsletter.error': 'This email is already registered',
+        'newsletter.title': 'Restez informé',
+        'newsletter.subtitle': 'Abonnez-vous à notre newsletter',
+        'newsletter.email_placeholder': 'Votre email',
+        'newsletter.success': 'Abonné',
+        'newsletter.error': 'Cet email est déjà inscrit',
 
         // Footer
         'footer.about': 'About',
@@ -333,6 +333,8 @@ const translations = {
         'newsletter.title': 'Stay informed',
         'newsletter.subtitle': 'Subscribe to our newsletter',
         'newsletter.email_placeholder': 'Your email',
+        'newsletter.success': 'Subscribed',
+        'newsletter.error': 'This email is already registered',
 
         // Actions
         'actions.whatsapp': 'Contact via WhatsApp',

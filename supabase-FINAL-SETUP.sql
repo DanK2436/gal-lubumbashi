@@ -48,6 +48,20 @@ BEGIN
             '', '', '', ''
         );
         RAISE NOTICE '✅ Utilisateur Admin créé dans auth.users';
+
+        -- AJOUT DE L'IDENTITÉ (Crucial pour le login)
+        INSERT INTO auth.identities (
+            id, user_id, identity_data, provider, provider_id, 
+            last_sign_in_at, created_at, updated_at
+        ) VALUES (
+            gen_random_uuid(),
+            new_user_id,
+            format('{"sub":"%s","email":"%s"}', new_user_id::text, 'admin@gal-lubumbashi.com')::jsonb,
+            'email',
+            new_user_id::text, -- provider_id est l''ID de l''utilisateur pour le provider email
+            now(), now(), now()
+        );
+        RAISE NOTICE '✅ Identité Admin créée dans auth.identities';
     ELSE
         RAISE NOTICE 'ℹ️ L''utilisateur admin existe déjà dans auth.users';
     END IF;

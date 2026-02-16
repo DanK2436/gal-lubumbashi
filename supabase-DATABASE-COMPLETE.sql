@@ -166,6 +166,7 @@ CREATE TABLE members (
     password VARCHAR(255) NOT NULL,
     company VARCHAR(255),
     specialty VARCHAR(255),
+    auth_user_id UUID, -- Lien vers auth.users de Supabase
     status VARCHAR(50) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'suspended')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

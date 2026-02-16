@@ -6,15 +6,13 @@ export function init() {
 
     // Parallax effect for mouse movement
     const handleMouseMove = (e) => {
-        const bgElements = document.getElementById('bg-elements');
         const heroContent = document.getElementById('hero-content');
 
-        if (bgElements && heroContent) {
+        if (heroContent) {
             const x = (e.clientX / window.innerWidth) * 2 - 1;
             const y = (e.clientY / window.innerHeight) * 2 - 1;
 
-            bgElements.style.transform = `translate(${x * -20}px, ${y * -20}px)`;
-            heroContent.style.transform = `translate(${x * 10}px, ${y * 10}px)`;
+            heroContent.style.transform = `translate(${x * 15}px, ${y * 15}px)`;
         }
     };
 
@@ -101,11 +99,21 @@ function initProverbes() {
 
         // Changer le proverbe après l'animation de sortie
         setTimeout(() => {
+            // Repositionnement invisible à gauche avant de rentrer
+            proverbeElement.style.transition = 'none';
+            proverbeElement.style.transform = 'translateX(-100%)';
+
+            // Force reflow
+            proverbeElement.offsetHeight;
+
             // Passer au proverbe suivant
             currentProverbIndex = (currentProverbIndex + 1) % proverbsAfricains.length;
             proverbeElement.textContent = proverbsAfricains[currentProverbIndex];
 
-            // Animation d'entrée (slide-in depuis la gauche)
+            // Réactiver la transition
+            proverbeElement.style.transition = 'opacity 1s ease-in-out, transform 1s ease-in-out';
+
+            // Animation d'entrée (slide-in depuis la gauche vers 0)
             requestAnimationFrame(() => {
                 proverbeElement.style.opacity = '1';
                 proverbeElement.style.transform = 'translateX(0)';
@@ -116,8 +124,14 @@ function initProverbes() {
     // Définir le premier proverbe
     proverbeElement.textContent = proverbsAfricains[0];
 
-    // Démarrer le défilement automatique toutes les 15 secondes
-    setInterval(changeProverbe, 15000);
+    // Démarrer le défilement automatique toutes les 10 secondes
+    setInterval(changeProverbe, 10000);
 
     console.log('✅ Proverbes défilants initialisés');
 }
+// Initialisation automatique si chargé en tant que module direct
+if (import.meta.url === window.location.href || !window.location.hash || document.querySelector('script[src*="home.js"]')) {
+    init();
+}
+
+export default { init };

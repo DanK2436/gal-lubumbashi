@@ -9,52 +9,253 @@
 
     <!-- Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/components.css">
-    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/admin.css">
 
     <style>
-        /* Surcharges locales spécifiques au login */
-        .input-icon-wrapper {
+        :root {
+            --primary: #DC2626;
+            --primary-dark: #B91C1C;
+            --bg-canvas: #0F172A;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-canvas);
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .login-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* Side Visual */
+        .login-visual {
+            flex: 1.2;
+            position: relative;
+            background: url('../public/images/admin_login_bg.png') center/cover no-repeat;
+            display: flex;
+            align-items: flex-end;
+            padding: 4rem;
+            overflow: hidden;
+        }
+
+        .login-visual::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.2) 100%);
+        }
+
+        .visual-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            max-width: 600px;
+        }
+
+        .visual-content h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .visual-content p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* Form Side */
+        .login-form-side {
+            flex: 0.8;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            position: relative;
+            box-shadow: -20px 0 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 400px;
+            animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(220, 38, 38, 0.15);
+        }
+
+        .form-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Floating Label Inputs */
+        .input-group {
             position: relative;
             margin-bottom: 1.5rem;
         }
 
-        .input-icon {
-            position: absolute;
-            left: 1.25rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1.25rem;
-            pointer-events: none;
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
             transition: color 0.3s;
         }
 
-        .input-with-icon {
-            padding-left: 3.5rem !important;
+        .input-wrapper {
+            position: relative;
         }
 
-        .input-icon-wrapper:focus-within .input-icon {
-            color: var(--admin-primary);
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: color 0.3s;
         }
 
-        .error-message {
-            background: rgba(220, 38, 38, 0.1);
-            border: 1px solid rgba(220, 38, 38, 0.2);
-            color: #fca5a5;
-            padding: 1rem;
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid #F1F5F9;
             border-radius: 12px;
-            font-size: 0.875rem;
-            margin-bottom: 2rem;
+            font-size: 1rem;
+            color: var(--text-main);
+            background: #F8FAFC;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.05);
+        }
+
+        .input-group:focus-within label {
+            color: var(--primary);
+        }
+
+        .input-group:focus-within i {
+            color: var(--primary);
+        }
+
+        /* Error Box */
+        .error-message {
+            background: #FEF2F2;
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            backdrop-filter: blur(4px);
+            gap: 1rem;
+            color: #991B1B;
+            font-size: 0.9rem;
             animation: shake 0.4s ease-in-out;
+        }
+
+        /* Button */
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+            margin-top: 2rem;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Footer */
+        .login-footer {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         @keyframes shake {
@@ -72,65 +273,78 @@
                 transform: translateX(5px);
             }
         }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .login-visual {
+                display: none;
+            }
+
+            .login-form-side {
+                flex: 1;
+            }
+        }
     </style>
 </head>
 
-<body class="admin-login-body">
+<body>
+    <div class="login-container">
+        <!-- Visual Side -->
+        <div class="login-visual">
+            <div class="visual-content">
+                <h2>Bâtir l'avenir de l'artisanat de Lubumbashi</h2>
+                <p>Accédez à votre espace de gestion centralisé pour piloter les activités, monitorer les performances
+                    et coordonner les équipes d'artisans experts.</p>
+            </div>
+        </div>
 
-    <!-- Background Elements -->
-    <div
-        style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.15), transparent 70%); pointer-events: none;">
-    </div>
-
-    <div class="login-glass-card">
-        <div class="text-center mb-10">
-            <div style="position: relative; width: 100px; height: 100px; margin: 0 auto 1.5rem;">
-                <div
-                    style="position: absolute; inset: -4px; background: linear-gradient(135deg, var(--admin-primary), transparent); border-radius: 24px; animation: pulse-subtle 3s infinite;">
+        <!-- Form Side -->
+        <div class="login-form-side">
+            <div class="form-wrapper">
+                <img src="../public/logo-gal-official.jpg" alt="GAL Logo" class="login-logo">
+                <div class="form-header">
+                    <h1>Administration</h1>
+                    <p>Veuillez vous authentifier pour continuer</p>
                 </div>
-                <img src="../public/logo-gal-official.jpg" alt="GAL Logo"
-                    style="width: 100%; height: 100%; border-radius: 20px; object-fit: cover; position: relative; border: 2px solid rgba(255,255,255,0.1);">
-            </div>
 
-            <h1
-                style="font-size: 2rem; font-weight: 900; color: white; margin-bottom: 0.5rem; letter-spacing: -0.025em;">
-                GAL ADMIN
-            </h1>
-            <p style="color: rgba(255,255,255,0.5); font-size: 0.95rem;">Portail de gestion centralisé</p>
+                <div id="error-box" style="display: none;"></div>
+
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="email">Email professionnel</label>
+                        <div class="input-wrapper">
+                            <i class="ri-mail-line"></i>
+                            <input type="email" id="email" class="form-input" placeholder="admin@gal-lubumbashi.com"
+                                required autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Mot de passe</label>
+                        <div class="input-wrapper">
+                            <i class="ri-lock-password-line"></i>
+                            <input type="password" id="password" class="form-input" placeholder="••••••••" required
+                                autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submit-btn">
+                        <span>Authentification Sécurisée</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </button>
+                </form>
+
+                <div class="login-footer">
+                    <a href="../index.html" class="back-link">
+                        <i class="ri-arrow-left-line"></i>
+                        Retour au site public
+                    </a>
+                    <p style="margin-top: 2rem; font-size: 0.75rem; color: #CBD5E1;">
+                        &copy; 2025 GAL • Portail de gestion sécurisé
+                    </p>
+                </div>
+            </div>
         </div>
-
-        <div id="error-box" style="display: none;"></div>
-
-        <form id="login-form">
-            <div class="input-icon-wrapper">
-                <i class="ri-mail-line input-icon"></i>
-                <input type="email" id="email" class="admin-form-input input-with-icon"
-                    placeholder="Email administrateur" required autocomplete="email">
-            </div>
-
-            <div class="input-icon-wrapper">
-                <i class="ri-lock-password-line input-icon"></i>
-                <input type="password" id="password" class="admin-form-input input-with-icon" placeholder="Mot de passe"
-                    required autocomplete="current-password">
-            </div>
-
-            <button type="submit" class="admin-btn admin-btn--primary w-full"
-                style="justify-content: center; padding: 1rem; font-size: 1rem; margin-top: 1rem; border-radius: 12px;">
-                <span>Connexion sécurisée</span> <i class="ri-arrow-right-line"></i>
-            </button>
-        </form>
-
-        <div class="text-center mt-10">
-            <a href="../index.html"
-                class="flex items-center justify-center gap-2 text-sm text-muted hover:text-white transition-colors"
-                style="color: rgba(255,255,255,0.4); text-decoration: none;">
-                <i class="ri-arrow-left-line"></i> Retour au site public
-            </a>
-        </div>
-    </div>
-
-    <div style="position: absolute; bottom: 2rem; color: rgba(255,255,255,0.2); font-size: 0.75rem;">
-        &copy; 2025 GAL - Secured Environment
     </div>
 
     <script type="module">
@@ -139,18 +353,17 @@
 
         const loginForm = document.getElementById('login-form');
         const errorBox = document.getElementById('error-box');
+        const submitBtn = document.getElementById('submit-btn');
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             errorBox.style.display = 'none';
-            const submitBtn = loginForm.querySelector('button[type="submit"]');
             const originalBtnContent = submitBtn.innerHTML;
 
             // Loading state
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Authentification...';
-            submitBtn.style.opacity = '0.8';
+            submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Authentification en cours...';
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -169,7 +382,7 @@
                 let role = 'admin';
 
                 // Check 1: Hardcoded Super Admin (sécurité de base)
-                if (user.email === 'admin@gal-lubumbashi.com') {
+                if (email === 'admin@gal-lubumbashi.com') {
                     isAdmin = true;
                     role = 'super_admin';
                 } else {
@@ -177,7 +390,7 @@
                     const { data: adminRecord, error: adminError } = await supabase
                         .from('admins')
                         .select('role')
-                        .eq('email', user.email)
+                        .ilike('email', user.email)
                         .eq('is_active', true)
                         .maybeSingle();
 
@@ -203,26 +416,26 @@
                 localStorage.setItem('gal_auth', JSON.stringify(session));
 
                 // Success animation
-                submitBtn.innerHTML = '<i class="ri-check-line"></i> Succès !';
-                submitBtn.classList.remove('admin-btn--primary');
-                submitBtn.style.background = '#10b981';
+                submitBtn.innerHTML = '<i class="ri-check-line"></i> Accès Autorisé';
+                submitBtn.style.background = '#10B981';
+                submitBtn.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.2)';
 
                 setTimeout(() => {
                     window.location.href = 'index.html';
-                }, 500);
+                }, 800);
 
             } catch (error) {
                 console.error('Erreur login:', error);
 
                 let errorMsg = error.message;
                 if (errorMsg.includes('Invalid login credentials')) {
-                    errorMsg = 'Email ou mot de passe incorrect.';
+                    errorMsg = 'Identifiants invalides ou privilèges insuffisants.';
                 }
 
                 // Error display
                 errorBox.innerHTML = `
                     <div class="error-message">
-                        <i class="ri-error-warning-fill text-xl"></i>
+                        <i class="ri-error-warning-fill" style="font-size: 1.2rem;"></i>
                         <span>${errorMsg}</span>
                     </div>
                 `;
@@ -231,9 +444,8 @@
                 // Reset button
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnContent;
-                submitBtn.style.opacity = '1';
-                submitBtn.classList.add('admin-btn--primary');
                 submitBtn.style.background = '';
+                submitBtn.style.boxShadow = '';
             }
         });
     </script>

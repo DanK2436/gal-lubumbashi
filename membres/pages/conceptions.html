@@ -9,10 +9,9 @@
     <!-- Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
     <!-- Styles -->
-    <link rel="stylesheet" href="../../css/main.css">
-    <link rel="stylesheet" href="../../css/components.css">
-    <link rel="stylesheet" href="../../css/utilities.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/member.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -82,22 +81,30 @@
     </nav>
 
     <main class="member-main">
-        <div class="page-header flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-2xl font-bold flex items-center gap-2">
-                    <i class="ri-pencil-ruler-2-fill text-primary"></i> Mes Conceptions
-                </h2>
-                <p class="text-muted">Gérez vos projets et designs techniques</p>
-            </div>
-            <button class="member-btn member-btn--primary" onclick="alert('Fonctionnalité à venir')">
-                <i class="ri-add-line"></i> Nouvelle conception
-            </button>
+        <div class="page-banner">
+            <h2>Mes Conceptions & Plans</h2>
+            <p>Gérez vos designs techniques, visualisations 3D et études de projets.</p>
         </div>
 
-        <div id="conceptions-list" class="content-grid">
-            <div class="text-center py-12">
-                <i class="ri-loader-4-line ri-spin text-3xl text-primary"></i>
-                <p class="mt-2 text-muted">Chargement de vos conceptions...</p>
+        <div class="member-section">
+            <div class="member-section__header">
+                <h2>Projets Techniques</h2>
+                <button class="member-btn member-btn--primary" onclick="alert('Fonctionnalité à venir')">
+                    <i class="ri-add-line"></i> Nouvelle conception
+                </button>
+            </div>
+
+            <div id="conceptions-grid" class="content-grid">
+                <!-- Loading State -->
+                <div class="text-center py-12">
+                    <i class="ri-loader-4-line ri-spin text-3xl" style="color: var(--m-primary);"></i>
+                    <p class="mt-2 text-muted">Chargement de vos conceptions...</p>
+                </div>
+            </div>
+
+            <div id="empty-state" style="display: none;" class="text-center py-12">
+                <i class="ri-pencil-ruler-2-line text-4xl text-muted"></i>
+                <p class="mt-2 text-muted">Aucune conception enregistrée.</p>
             </div>
         </div>
     </main>
@@ -108,7 +115,7 @@
             await initMemberPage();
         });
     </script>
-    <script type="module" src="../js/pages/conceptions-init.js"></script>
+    <script type="module" src="../js/pages/conceptions.js"></script>
 </body>
 
 </html>

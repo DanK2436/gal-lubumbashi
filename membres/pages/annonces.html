@@ -9,10 +9,9 @@
     <!-- Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
     <!-- Styles -->
-    <link rel="stylesheet" href="../../css/main.css">
-    <link rel="stylesheet" href="../../css/components.css">
-    <link rel="stylesheet" href="../../css/utilities.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/member.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -82,17 +81,35 @@
     </nav>
 
     <main class="member-main">
-        <div class="page-header mb-8">
-            <h2 class="text-2xl font-bold flex items-center gap-2">
-                <i class="ri-notification-3-fill text-primary"></i> Annonces Officielles
-            </h2>
-            <p class="text-muted">Informations importantes et communiqués du Groupement</p>
+        <div class="page-banner">
+            <h2>Annonces & Communiqués</h2>
+            <p>Retrouvez toutes les informations officielles et les actualités internes du Groupement.</p>
         </div>
 
-        <div id="annonces-list" class="flex flex-col gap-6">
-            <div class="text-center py-12">
-                <i class="ri-loader-4-line ri-spin text-3xl text-primary"></i>
-                <p class="mt-2 text-muted">Chargement des annonces...</p>
+        <div class="member-section">
+            <div class="member-section__header">
+                <h2>Flux d'Actualités</h2>
+                <div class="flex gap-2">
+                    <select id="filter-priority" class="member-btn member-btn--outline" style="padding: 0.5rem 1rem;">
+                        <option value="">Toutes les priorités</option>
+                        <option value="haute">Haute priorité</option>
+                        <option value="normale">Normale</option>
+                        <option value="basse">Basse</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="annonces-list" class="flex flex-col gap-6">
+                <!-- Loading State -->
+                <div class="text-center py-12">
+                    <i class="ri-loader-4-line ri-spin text-3xl" style="color: var(--m-primary);"></i>
+                    <p class="mt-2 text-muted">Chargement des annonces...</p>
+                </div>
+            </div>
+
+            <div id="empty-state" style="display: none;" class="text-center py-12">
+                <i class="ri-notification-off-line text-4xl text-muted"></i>
+                <p class="mt-2 text-muted">Aucune annonce à afficher</p>
             </div>
         </div>
     </main>
@@ -103,7 +120,7 @@
             await initMemberPage();
         });
     </script>
-    <script type="module" src="../js/pages/annonces-init.js"></script>
+    <script type="module" src="../js/pages/annonces.js"></script>
 </body>
 
 </html>

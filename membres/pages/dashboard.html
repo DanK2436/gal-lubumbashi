@@ -11,10 +11,9 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../../css/main.css">
-    <link rel="stylesheet" href="../../css/components.css">
-    <link rel="stylesheet" href="../../css/utilities.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/member.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -84,11 +83,17 @@
     </nav>
 
     <main class="member-main">
+        <!-- Page Banner -->
+        <div class="page-banner">
+            <h2 id="banner-welcome">Bienvenue, Artisan</h2>
+            <p>Pilotez vos chantiers, suivez vos conceptions et restez informé des dernières annonces du Groupement.</p>
+        </div>
+
         <!-- Stats -->
-        <div class="stats-grid mb-8">
+        <div class="stats-grid">
             <div class="stat-card stat-card--blue">
-                <div class="stat-icon-wrapper bg-blue-50 text-blue-600 p-3 rounded-xl">
-                    <i class="ri-building-2-line text-3xl"></i>
+                <div class="stat-icon-wrapper">
+                    <i class="ri-building-2-line"></i>
                 </div>
                 <div class="stat-info">
                     <h3 id="chantiers-count" class="stat-card__value">0</h3>
@@ -96,8 +101,8 @@
                 </div>
             </div>
             <div class="stat-card stat-card--orange">
-                <div class="stat-icon-wrapper bg-orange-50 text-orange-600 p-3 rounded-xl">
-                    <i class="ri-pencil-ruler-2-line text-3xl"></i>
+                <div class="stat-icon-wrapper">
+                    <i class="ri-pencil-ruler-2-line"></i>
                 </div>
                 <div class="stat-info">
                     <h3 id="conceptions-count" class="stat-card__value">0</h3>
@@ -105,8 +110,8 @@
                 </div>
             </div>
             <div class="stat-card stat-card--green">
-                <div class="stat-icon-wrapper bg-green-50 text-green-600 p-3 rounded-xl">
-                    <i class="ri-notification-3-line text-3xl"></i>
+                <div class="stat-icon-wrapper">
+                    <i class="ri-notification-3-line"></i>
                 </div>
                 <div class="stat-info">
                     <h3 id="annonces-count" class="stat-card__value">0</h3>

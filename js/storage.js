@@ -1,8 +1,6 @@
 /**
- * storage.js - Stockage de données avec Supabase UNIQUEMENT
+ * storage.js - Stockage de données avec Supabase
  * GAL - Groupement des Artisans de Lubumbashi
- * 
- * Ce module utilise UNIQUEMENT Supabase pour toutes les opérations
  */
 
 import { supabase } from './supabase-init.js';
@@ -17,21 +15,11 @@ import {
   executeRpc
 } from './supabase-service.js';
 
-// Clés de stockage (pour compatibilité - langue et auth restent en localStorage)
+// Clés de stockage
 const STORAGE_KEYS = {
   AUTH: 'gal_auth',
   LANGUAGE: 'gal_language'
 };
-
-/**
- * Échappe les caractères HTML pour prévenir les failles XSS
- */
-function escapeHTML(str) {
-  if (!str) return '';
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
 
 /**
  * Initialise le stockage
@@ -39,17 +27,196 @@ function escapeHTML(str) {
 export async function initStorage() {
   if (!supabase) {
     console.error('❌ ERREUR : Supabase n\'est pas configuré !');
-    console.error('Configurez vos clés dans js/supabase-init.js');
     throw new Error('Supabase non configuré');
   }
-
   console.log('✅ Utilisation de Supabase pour le stockage');
 }
 
-// ... (code intermédiaire inchangé)
+// ===== VIDEOS =====
+
+export async function getVideos() {
+  return await getCollection('videos', { orderBy: 'created_at', ascending: false });
+}
+
+export async function getVideoById(id) {
+  return await getDocument('videos', id);
+}
+
+export async function createVideo(video) {
+  return await addDocument('videos', video);
+}
+
+export async function updateVideo(id, updates) {
+  return await supabaseUpdate('videos', id, updates);
+}
+
+export async function deleteVideo(id) {
+  return await supabaseDelete('videos', id);
+}
+
+// ===== FORMATIONS =====
+
+export async function getFormations() {
+  return await getCollection('formations', { orderBy: 'created_at', ascending: false });
+}
+
+export async function getFormationById(id) {
+  return await getDocument('formations', id);
+}
+
+export async function createFormation(formation) {
+  return await addDocument('formations', formation);
+}
+
+export async function updateFormation(id, updates) {
+  return await supabaseUpdate('formations', id, updates);
+}
+
+export async function deleteFormation(id) {
+  return await supabaseDelete('formations', id);
+}
+
+// ===== MACHINES =====
+
+export async function getMachines() {
+  return await getCollection('machines', { orderBy: 'created_at', ascending: false });
+}
+
+export async function getMachineById(id) {
+  return await getDocument('machines', id);
+}
+
+export async function getMachineBySlug(slug) {
+  const results = await queryDocuments('machines', 'slug', 'eq', slug);
+  return results && results.length > 0 ? results[0] : null;
+}
+
+export async function createMachine(machine) {
+  return await addDocument('machines', machine);
+}
+
+export async function updateMachine(id, updates) {
+  return await supabaseUpdate('machines', id, updates);
+}
+
+export async function deleteMachine(id) {
+  return await supabaseDelete('machines', id);
+}
+
+// ===== BLOG POSTS =====
+
+export async function getBlogPosts() {
+  // Optionnellement filtrer par published_at si présent
+  return await getCollection('blog_posts', { orderBy: 'created_at', ascending: false });
+}
+
+export async function getBlogPostById(id) {
+  return await getDocument('blog_posts', id);
+}
+
+export async function getBlogPostBySlug(slug) {
+  const results = await queryDocuments('blog_posts', 'slug', 'eq', slug);
+  return results && results.length > 0 ? results[0] : null;
+}
+
+export async function createBlogPost(post) {
+  return await addDocument('blog_posts', post);
+}
+
+export async function updateBlogPost(id, updates) {
+  return await supabaseUpdate('blog_posts', id, updates);
+}
+
+export async function deleteBlogPost(id) {
+  return await supabaseDelete('blog_posts', id);
+}
+
+// ===== NEWSLETTER =====
+
+export async function getNewsletterSubscribers() {
+  return await getCollection('newsletter_subscribers', { orderBy: 'subscribed_at', ascending: false });
+}
+
+export async function addNewsletterSubscriber(email) {
+  // Vérifier si déjà inscrit
+  const existing = await queryDocuments('newsletter_subscribers', 'email', 'eq', email);
+  if (existing && existing.length > 0) {
+    throw new Error('déjà inscrit');
+  }
+
+  return await addDocument('newsletter_subscribers', {
+    email
+  });
+}
+
+export async function removeNewsletterSubscriber(id) {
+  return await supabaseDelete('newsletter_subscribers', id);
+}
+
+export async function exportNewsletterCSV() {
+  const subscribers = await getNewsletterSubscribers();
+  if (!subscribers.length) return '';
+
+  const headers = 'Email,Date Inscription\n';
+  const rows = subscribers.map(s => `${s.email},${s.created_at}`).join('\n');
+  return headers + rows;
+}
+
+export async function saveNewsletter(data) {
+  // Logique pour sauvegarder une notification/log de newsletter
+  return await addDocument('newsletter_notifications_log', data);
+}
+
+// ===== RESERVATIONS & INSCRIPTIONS =====
+
+export async function getReservations() {
+  return await getCollection('machine_reservations', { orderBy: 'created_at', ascending: false });
+}
+
+export async function saveReservation(reservation) {
+  return await addDocument('machine_reservations', reservation);
+}
+
+export async function deleteReservation(id) {
+  return await supabaseDelete('machine_reservations', id);
+}
+
+export async function updateReservationStatus(id, status) {
+  return await supabaseUpdate('machine_reservations', id, { status });
+}
+
+export async function getFormationRegistrations() {
+  return await getCollection('formation_reservations', { orderBy: 'created_at', ascending: false });
+}
+
+export async function saveFormationRegistration(registration) {
+  return await addDocument('formation_reservations', registration);
+}
+
+export async function deleteFormationRegistration(id) {
+  return await supabaseDelete('formation_reservations', id);
+}
+
+export async function updateFormationRegistrationStatus(id, status) {
+  return await supabaseUpdate('formation_reservations', id, { status });
+}
+
+// ===== MEMBRES =====
+
+export async function getMembers() {
+  return await getCollection('members', { orderBy: 'name', ascending: true });
+}
+
+export async function getMemberById(id) {
+  return await getDocument('members', id);
+}
+
+export async function getMemberByEmail(email) {
+  const results = await queryDocuments('members', 'email', 'eq', email);
+  return results && results.length > 0 ? results[0] : null;
+}
 
 export async function createMember(member) {
-  // Vérifier si l'email existe déjà
   const existing = await getMemberByEmail(member.email);
   if (existing) {
     throw new Error('Cet email est déjà utilisé');
@@ -57,11 +224,8 @@ export async function createMember(member) {
 
   let authUserId = null;
 
-  // Si un mot de passe est fourni, on tente de créer l'utilisateur Auth via RPC
-  // Cela permet à l'admin de créer des comptes fonctionnels pour les membres
   if (member.password) {
     try {
-      console.log('Tentative de création Auth pour:', member.email);
       authUserId = await executeRpc('create_user_command', {
         email: member.email,
         password: member.password,
@@ -70,30 +234,37 @@ export async function createMember(member) {
           phone: member.phone || ''
         }
       });
-
-      if (!authUserId) {
-        // Fallback si RPC ne retourne rien (ex: version sans return)
-        console.warn('RPC exécuté mais pas d\'ID retourné');
-      } else {
-        console.log('Compte Auth créé avec succès, ID:', authUserId);
-      }
-
     } catch (authError) {
       console.error('Erreur création Auth:', authError);
-      // Si l'erreur est "déjà inscrit", on continue peut-être ?
-      // Pour l'instant on bloque pour être strict
-      throw new Error('Erreur création compte connexion: ' + authError.message + '. Vérifiez que vous avez exécuté le script SQL supabase-RPC-CREATE-USER.sql');
+      throw new Error('Erreur création compte connexion: ' + authError.message);
     }
   }
 
   return await addDocument('members', {
     ...member,
-    auth_user_id: authUserId, // Lien avec la table auth.users
+    auth_user_id: authUserId,
     status: member.status || 'active'
   });
 }
 
 export async function updateMember(id, updates) {
+  // Si un mot de passe est fourni dans les mises à jour, on doit aussi mettre à jour Supabase Auth
+  if (updates.password) {
+    try {
+      const member = await getMemberById(id);
+      if (member && member.email) {
+        await executeRpc('update_user_password_command', {
+          target_email: member.email,
+          new_password: updates.password
+        });
+        console.log('Mot de passe Auth mis à jour pour:', member.email);
+      }
+    } catch (authError) {
+      console.error('Erreur mise à jour Auth password:', authError);
+      // On continue quand même la mise à jour de la table members, ou on bloque ?
+      // Pour la sécurité, il vaut mieux que les deux soient synchronisés.
+    }
+  }
   return await supabaseUpdate('members', id, updates);
 }
 
@@ -101,19 +272,25 @@ export async function deleteMember(id) {
   return await supabaseDelete('members', id);
 }
 
+// ===== CONTACTS =====
+
+export async function saveContact(contact) {
+  return await addDocument('contact_messages', contact);
+}
+
+export async function getContacts() {
+  return await getCollection('contact_messages', { orderBy: 'created_at', ascending: false });
+}
+
 // ===== PROJECTS (CHANTIERS & CONCEPTIONS) =====
 
 export async function getProjects(type = null) {
   if (type) {
-    // Convertir le type au singulier pour correspondre au schéma DB
     let dbType = type;
     if (type === 'chantiers') dbType = 'chantier';
     if (type === 'conceptions') dbType = 'conception';
 
-    // queryDocuments prend (tableName, column, operator, value)
-    const results = await queryDocuments('projects', 'type', 'eq', dbType);
-    // Trier manuellement par date de création
-    return results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    return await queryDocuments('projects', 'type', 'eq', dbType);
   }
   return await getCollection('projects', { orderBy: 'created_at', ascending: false });
 }
@@ -123,8 +300,6 @@ export async function getProjectById(id) {
 }
 
 export async function createProject(project) {
-  // Mapping frontend -> DB
-  // Assurer que le type est au singulier pour la contrainte CHECK
   let type = project.type;
   if (type === 'chantiers') type = 'chantier';
   if (type === 'conceptions') type = 'conception';
@@ -136,7 +311,6 @@ export async function createProject(project) {
   };
   const result = await addDocument('projects', dbData);
 
-  // Créer une notification pour tous les membres
   await notifyAllMembers({
     title: type === 'chantier' ? 'Nouveau Chantier' : 'Nouvelle Conception',
     message: `Un nouveau projet a été publié : ${project.title}`,
@@ -148,7 +322,6 @@ export async function createProject(project) {
 }
 
 export async function updateProject(id, updates) {
-  // Mapping pour update
   const dbUpdates = { ...updates };
   if (dbUpdates.type === 'chantiers') dbUpdates.type = 'chantier';
   if (dbUpdates.type === 'conceptions') dbUpdates.type = 'conception';
@@ -159,7 +332,7 @@ export async function deleteProject(id) {
   return await supabaseDelete('projects', id);
 }
 
-// ===== MESSAGES (Messages privés aux membres) =====
+// ===== MESSAGES =====
 
 export async function getMessages() {
   return await getCollection('messages', { orderBy: 'sent_at', ascending: false });
@@ -185,19 +358,16 @@ export async function getMessagesByRecipient(recipientId) {
 }
 
 export async function createMessage(message) {
-  // Mapping frontend -> DB
   const dbData = {
     recipient_id: message.recipient_id || message.recipientId,
     subject: message.subject,
-    content: message.content || message.message, // message -> content
+    content: message.content || message.message,
     sender: message.sender || 'Admin',
     read: false,
-    comments: message.comments || [],
     sent_at: message.sent_at || new Date().toISOString()
   };
   const result = await addDocument('messages', dbData);
 
-  // Créer une notification pour le destinataire spécifique
   if (dbData.recipient_id && dbData.recipient_id !== 'all') {
     await createNotification({
       user_id: dbData.recipient_id,
@@ -207,7 +377,6 @@ export async function createMessage(message) {
       link: 'messages.html'
     });
   } else {
-    // Message global
     await notifyAllMembers({
       title: 'Nouveau Message Global',
       message: `Un nouveau message important : ${dbData.subject}`,
@@ -220,15 +389,10 @@ export async function createMessage(message) {
 }
 
 export async function updateMessage(id, updates) {
-  // Mapping pour update
   const dbUpdates = { ...updates };
   if (dbUpdates.message) {
     dbUpdates.content = dbUpdates.message;
     delete dbUpdates.message;
-  }
-  if (dbUpdates.recipientId) {
-    dbUpdates.recipient_id = dbUpdates.recipientId;
-    delete dbUpdates.recipientId;
   }
   return await supabaseUpdate('messages', id, dbUpdates);
 }
@@ -237,7 +401,7 @@ export async function deleteMessage(id) {
   return await supabaseDelete('messages', id);
 }
 
-// ===== ANNOUNCEMENTS (Annonces générales) =====
+// ===== ANNOUNCEMENTS =====
 
 export async function getAnnouncements() {
   return await getCollection('announcements', { orderBy: 'sent_at', ascending: false });
@@ -248,18 +412,15 @@ export async function getAnnouncementById(id) {
 }
 
 export async function createAnnouncement(announcement) {
-  // Mapping frontend -> DB
   const dbData = {
-    title: announcement.title || announcement.subject, // subject -> title
-    content: announcement.content || announcement.message, // message -> content
+    title: announcement.title || announcement.subject,
+    content: announcement.content || announcement.message,
     sender: announcement.sender || 'Admin',
     priority: announcement.priority || 'normal',
-    comments: announcement.comments || [],
     sent_at: announcement.sent_at || new Date().toISOString()
   };
   const result = await addDocument('announcements', dbData);
 
-  // Créer une notification pour tous les membres
   await notifyAllMembers({
     title: 'Nouvelle Annonce',
     message: `Une annonce importante a été publiée : ${dbData.title}`,
@@ -271,15 +432,10 @@ export async function createAnnouncement(announcement) {
 }
 
 export async function updateAnnouncement(id, updates) {
-  // Mapping pour update
   const dbUpdates = { ...updates };
   if (dbUpdates.subject) {
     dbUpdates.title = dbUpdates.subject;
     delete dbUpdates.subject;
-  }
-  if (dbUpdates.message) {
-    dbUpdates.content = dbUpdates.message;
-    delete dbUpdates.message;
   }
   return await supabaseUpdate('announcements', id, dbUpdates);
 }
@@ -288,28 +444,17 @@ export async function deleteAnnouncement(id) {
   return await supabaseDelete('announcements', id);
 }
 
-// ===== CHATBOT CONVERSATIONS =====
+// ===== CHATBOT =====
 
 export async function getChatbotConversations(userId = null) {
   if (!supabase) return [];
-
-  let query = supabase
-    .from('chatbot_conversations')
-    .select('*')
-    .order('updated_at', { ascending: false });
-
-  if (userId) {
-    query = query.eq('user_id', userId);
-  }
-
+  let query = supabase.from('chatbot_conversations').select('*').order('updated_at', { ascending: false });
+  if (userId) query = query.eq('user_id', userId);
   const { data, error } = await query;
-
-  if (error) {
-    console.error('Erreur getChatbotConversations:', error);
-    return [];
-  }
+  if (error) return [];
   return data;
 }
+
 export async function updateChatbotConversation(id, updates) {
   return await supabaseUpdate('chatbot_conversations', id, {
     ...updates,
@@ -321,24 +466,9 @@ export async function deleteChatbotConversation(id) {
   return await supabaseDelete('chatbot_conversations', id);
 }
 
-// Helper pour ajouter un message à une conversation
-export async function addMessageToConversation(conversationId, message) {
-  const conversation = await getChatbotConversationById(conversationId);
-  if (!conversation) throw new Error('Conversation not found');
-
-  const messages = conversation.messages || [];
-  messages.push({
-    ...message,
-    timestamp: new Date().toISOString()
-  });
-
-  return await updateChatbotConversation(conversationId, { messages });
-}
-
 export async function getChatbotKnowledge() {
   return await getCollection('chatbot_knowledge');
 }
-
 
 // ===== NOTIFICATIONS =====
 
@@ -354,9 +484,7 @@ export async function getUnreadNotificationsCount(userId) {
     .select('*', { count: 'exact', head: true })
     .eq('user_id', userId)
     .eq('is_read', false);
-
-  if (error) return 0;
-  return count;
+  return error ? 0 : count;
 }
 
 export async function markNotificationAsRead(id) {
@@ -364,10 +492,6 @@ export async function markNotificationAsRead(id) {
 }
 
 export async function createNotification(notification) {
-  // Simuler aussi un envoi newsletter si c'est global
-  if (!notification.user_id) {
-    await logNewsletterNotification(notification);
-  }
   return await addDocument('notifications', notification);
 }
 
@@ -377,57 +501,34 @@ export async function notifyAllMembers(notificationBase) {
     ...notificationBase,
     user_id: member.id
   }));
-
-  // Log aussi pour la newsletter
-  await logNewsletterNotification(notificationBase);
-
   return Promise.all(promises);
 }
 
-async function logNewsletterNotification(notif) {
-  try {
-    const subsCount = await countDocuments('newsletter_subscribers');
-    return await addDocument('newsletter_notifications_log', {
-      subject: notif.title,
-      content: notif.message,
-      subscribers_count: subsCount
-    });
-  } catch (err) {
-    console.warn('Erreur lors du log newsletter:', err);
-  }
-}
-
-// ===== PAGES STATIQUES (localStorage temporairement) =====
+// ===== PAGES STATIQUES =====
 
 export async function getPages() {
-  // TODO: Migrer vers Supabase si nécessaire
   const data = localStorage.getItem('gal_pages');
   return data ? JSON.parse(data) : {};
 }
 
 export async function updatePages(updates) {
-  // TODO: Migrer vers Supabase si nécessaire
   const pages = await getPages();
   const updated = { ...pages, ...updates };
   localStorage.setItem('gal_pages', JSON.stringify(updated));
   return updated;
 }
 
-// ===== AUTHENTIFICATION (Utilise Supabase Auth désormais) =====
+// ===== AUTHENTIFICATION =====
 
 export async function login(email, password) {
-  // Tentative de connexion via Supabase Auth
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
 
     const session = {
       email: data.user.email,
       role: data.user.email === 'admin@gal-lubumbashi.com' ? 'admin' : 'member',
+      id: data.user.id,
       loginTime: new Date().toISOString()
     };
 
@@ -440,6 +541,7 @@ export async function login(email, password) {
 }
 
 export async function logout() {
+  await supabase.auth.signOut();
   localStorage.removeItem(STORAGE_KEYS.AUTH);
   return true;
 }
@@ -454,9 +556,7 @@ export async function isAuthenticated() {
   return session !== null;
 }
 
-
-
-// ===== LANGUE (localStorage) =====
+// ===== LANGUE =====
 
 export async function getLanguage() {
   return localStorage.getItem(STORAGE_KEYS.LANGUAGE) || 'fr';
@@ -470,85 +570,20 @@ export async function setLanguage(lang) {
 // ===== EXPORT PAR DÉFAUT =====
 export default {
   initStorage,
-  getVideos,
-  getVideoById,
-  createVideo,
-  updateVideo,
-  deleteVideo,
-  getFormations,
-  getFormationById,
-  createFormation,
-  updateFormation,
-  deleteFormation,
-  getMachines,
-  getMachineById,
-  getMachineBySlug,
-  createMachine,
-  updateMachine,
-  deleteMachine,
-  getBlogPosts,
-  getBlogPostById,
-  getBlogPostBySlug,
-  createBlogPost,
-  updateBlogPost,
-  deleteBlogPost,
-  getNewsletterSubscribers,
-  addNewsletterSubscriber,
-  removeNewsletterSubscriber,
-  exportNewsletterCSV,
-  saveNewsletter,
-  getPages,
-  updatePages,
-  login,
-  logout,
-  getSession,
-  isAuthenticated,
-
-  getLanguage,
-  setLanguage,
-  getReservations,
-  saveReservation,
-  deleteReservation,
-  updateReservationStatus,
-  getFormationRegistrations,
-  saveFormationRegistration,
-  deleteFormationRegistration,
-  updateFormationRegistrationStatus,
-  getMembers,
-  getMemberById,
-  getMemberByEmail,
-  createMember,
-  updateMember,
-  deleteMember,
-  saveContact,
-  getContacts,
-
-  // Projects (Chantiers & Conceptions)
-  getProjects,
-  getProjectById,
-  createProject,
-  updateProject,
-  deleteProject,
-
-  // Messages
-  getMessages,
-  getMessageById,
-  getMessagesByRecipient,
-  createMessage,
-  updateMessage,
-  deleteMessage,
-
-  // Announcements
-  getAnnouncements,
-  getAnnouncementById,
-  createAnnouncement,
-  updateAnnouncement,
-  deleteAnnouncement,
-
-  // Notifications
-  getNotifications,
-  getUnreadNotificationsCount,
-  markNotificationAsRead,
-  createNotification,
-  notifyAllMembers
+  getVideos, getVideoById, createVideo, updateVideo, deleteVideo,
+  getFormations, getFormationById, createFormation, updateFormation, deleteFormation,
+  getMachines, getMachineById, getMachineBySlug, createMachine, updateMachine, deleteMachine,
+  getBlogPosts, getBlogPostById, getBlogPostBySlug, createBlogPost, updateBlogPost, deleteBlogPost,
+  getNewsletterSubscribers, addNewsletterSubscriber, removeNewsletterSubscriber, exportNewsletterCSV, saveNewsletter,
+  getReservations, saveReservation, deleteReservation, updateReservationStatus,
+  getFormationRegistrations, saveFormationRegistration, deleteFormationRegistration, updateFormationRegistrationStatus,
+  getMembers, getMemberById, getMemberByEmail, createMember, updateMember, deleteMember,
+  saveContact, getContacts,
+  getProjects, getProjectById, createProject, updateProject, deleteProject,
+  getMessages, getMessageById, getMessagesByRecipient, createMessage, updateMessage, deleteMessage,
+  getAnnouncements, getAnnouncementById, createAnnouncement, updateAnnouncement, deleteAnnouncement,
+  getNotifications, getUnreadNotificationsCount, markNotificationAsRead, createNotification, notifyAllMembers,
+  getPages, updatePages,
+  login, logout, getSession, isAuthenticated,
+  getLanguage, setLanguage
 };

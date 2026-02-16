@@ -74,7 +74,7 @@ function addNotificationIconToHeader() {
                 padding: 1rem;
                 border-bottom: 1px solid #e2e8f0;
                 display: flex;
-                justify-between: space-between;
+                justify-content: space-between;
                 align-items: center;
                 background: #f8fafc;
             ">
@@ -188,7 +188,7 @@ async function loadNotificationsList() {
             </div>
             ${notif.is_read ? '' : '<div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; margin-top: 5px;"></div>'}
         </div>
-    }).join('');
+    ).join('');
 
     // Tout marquer comme lu
     const markAllReadBtn = document.getElementById('mark-all-read');

@@ -9,10 +9,9 @@
     <!-- Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
     <!-- Styles -->
-    <link rel="stylesheet" href="../../css/main.css">
-    <link rel="stylesheet" href="../../css/components.css">
-    <link rel="stylesheet" href="../../css/utilities.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/member.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -82,23 +81,31 @@
     </nav>
 
     <main class="member-main">
-        <div class="page-header flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-2xl font-bold flex items-center gap-2">
-                    <i class="ri-building-2-fill text-primary"></i> Chantiers Disponibles
-                </h2>
-                <p class="text-muted">Explorez les opportunités de travail actuelles</p>
-            </div>
-            <!-- Filtres éventuels -->
+        <div class="page-banner">
+            <h2>Chantiers & Opportunités</h2>
+            <p>Découvrez les nouveaux projets du Groupement et soumettez votre candidature.</p>
         </div>
 
-        <div id="chantiers-list" class="content-grid">
-            <!-- Loading State -->
-            <div class="text-center py-12">
-                <i class="ri-loader-4-line ri-spin text-3xl text-primary"></i>
-                <p class="mt-2 text-muted">Chargement des chantiers...</p>
+        <div class="member-section">
+            <div class="member-section__header">
+                <h2>Liste des Chantiers</h2>
+                <div class="flex gap-2">
+                    <!-- Filtres éventuels -->
+                </div>
             </div>
-            <!-- Sera rempli par JS avec des cards modernes -->
+
+            <div id="chantiers-list" class="content-grid">
+                <!-- Loading State -->
+                <div class="text-center py-12">
+                    <i class="ri-loader-4-line ri-spin text-3xl" style="color: var(--m-primary);"></i>
+                    <p class="mt-2 text-muted">Chargement des chantiers...</p>
+                </div>
+            </div>
+
+            <div id="empty-state" style="display: none;" class="text-center py-12">
+                <i class="ri-building-2-line text-4xl text-muted"></i>
+                <p class="mt-2 text-muted">Aucun chantier disponible pour le moment.</p>
+            </div>
         </div>
     </main>
 
@@ -110,7 +117,7 @@
             await initMemberPage();
         });
     </script>
-    <script type="module" src="../js/pages/chantiers-init.js"></script>
+    <script type="module" src="../js/pages/chantiers.js"></script>
 </body>
 
 </html>

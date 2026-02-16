@@ -1,4 +1,14 @@
-<<<<<<< HEAD
+/* Mobile menu fix: ensure menu is above overlays and can be forced visible
+   `show-mobile-menu` is toggled by JS to override interfering rules */
+#mobile-menu {
+    z-index: 9999;
+    pointer-events: auto;
+}
+
+.show-mobile-menu {
+    display: block !important;
+}
+
 /* Styles de base pour GAL Web */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
@@ -85,92 +95,4 @@ html {
     display: block;
     text-align: center;
     transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-=======
-/* Styles de base pour GAL Web */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    line-height: 1.6;
-}
-
-/* Animations personnalisées */
-@keyframes fade-in {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-.animate-fade-in {
-    animation: fade-in 0.3s ease-out;
-}
-
-/* Smooth scrolling */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #b91c1c;
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #991b1b;
-}
-
-/* Animation pour les proverbes défilants */
-@keyframes slide-in-from-left {
-    from {
-        opacity: 0;
-        transform: translateX(-100%);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes slide-out-to-right {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    to {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-}
-
-.proverbe-slide-in {
-    animation: slide-in-from-left 1s ease-in-out;
-    transition: all 1s ease-in-out;
-}
-
-#proverbe-text {
-    display: block;
-    text-align: center;
-    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
->>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef
 }

@@ -189,14 +189,14 @@ export function init() {
             const formData = new FormData(e.target);
 
             const registrationData = {
-                formationId: id,
-                formationTitle: formation.title || 'Formation sans titre',
+                formation_id: id,
+                formation_title: formation.title || 'Formation sans titre',
                 level: formation.level || 'Non spécifié',
-                userName: formData.get('fullName'),
-                userEmail: formData.get('email'),
-                userPhone: formData.get('phone'),
+                name: formData.get('fullName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
                 message: formData.get('message') || '',
-                date: new Date().toISOString(),
+                created_at: new Date().toISOString(),
                 status: 'pending'
             };
 

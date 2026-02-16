@@ -9,163 +9,308 @@
 
     <!-- Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../../css/main.css">
-    <link rel="stylesheet" href="../../css/components.css">
-    <link rel="stylesheet" href="../../css/utilities.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/member.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* Document Official Style */
-        .official-doc-container {
-            background: #fdfbf7;
-            /* Papier légèrement crème */
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 4rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            position: relative;
-            border-radius: 4px;
-            /* Un peu carré comme du papier */
+        :root {
+            --doc-bg: #fdfbf7;
+            --doc-ink: #1e293b;
+            --doc-border: #e2e8f0;
+            --doc-accent: #dc2626;
+            --doc-gold: #b59a5d;
         }
 
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Sidebar Navigation */
+        .doc-nav {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--doc-border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .doc-nav__title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--m-text-muted);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--doc-border);
+        }
+
+        .doc-nav__link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            color: var(--doc-ink);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .doc-nav__link:hover {
+            background: var(--doc-bg);
+            color: var(--doc-accent);
+        }
+
+        .doc-nav__link i {
+            font-size: 1.1rem;
+            color: var(--m-text-muted);
+        }
+
+        /* Official Document Style */
+        .official-doc-container {
+            background: var(--doc-bg);
+            background-image:
+                radial-gradient(#e2e8f0 0.5px, transparent 0.5px),
+                radial-gradient(#e2e8f0 0.5px, transparent 0.5px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            max-width: 850px;
+            margin: 0 auto 4rem;
+            padding: 5rem 4rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Decorative Border Hooks */
         .official-doc-container::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, var(--color-primary) 0%, #b91c1c 100%);
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px solid rgba(181, 154, 93, 0.2);
+            pointer-events: none;
         }
 
         .doc-watermark {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.03;
-            width: 60%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            opacity: 0.04;
+            width: 70%;
             pointer-events: none;
             filter: grayscale(1);
         }
 
         .doc-header {
             text-align: center;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 2rem;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .doc-header-line {
+            width: 100px;
+            height: 3px;
+            background: var(--doc-gold);
+            margin: 1.5rem auto;
+            border-radius: 99px;
         }
 
         .doc-title {
-            font-family: 'Times New Roman', Times, serif;
-            /* Look officiel */
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1a202c;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.75rem;
+            font-weight: 800;
+            color: var(--doc-ink);
             margin-bottom: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: -0.02em;
+            line-height: 1;
         }
 
         .doc-subtitle {
-            font-size: 0.9rem;
-            color: #64748b;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: var(--doc-gold);
             text-transform: uppercase;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.3em;
+            font-weight: 600;
+        }
+
+        .chapter-box {
+            margin-bottom: 3.5rem;
         }
 
         .chapter-title {
-            font-size: 1.1rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
             font-weight: 800;
-            color: var(--color-primary);
+            color: var(--doc-ink);
             text-transform: uppercase;
-            margin-top: 2.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.25rem;
+            letter-spacing: 0.05em;
         }
 
-        .chapter-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #e5e7eb;
+        .chapter-title i {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 1px solid var(--doc-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: var(--doc-accent);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .article-box {
-            margin-bottom: 1.5rem;
-            padding-left: 1.5rem;
-            border-left: 3px solid #e2e8f0;
-            transition: all 0.2s;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .article-box:hover {
-            border-left-color: var(--color-primary);
-            background: linear-gradient(to right, rgba(220, 38, 38, 0.02), transparent);
+            background: white;
+            border-color: var(--doc-gold);
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
 
         .article-title {
+            font-family: 'Outfit', sans-serif;
             font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-            display: block;
+            color: var(--doc-ink);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .article-title::before {
+            content: '';
+            width: 12px;
+            height: 2px;
+            background: var(--doc-accent);
+            border-radius: 99px;
         }
 
         .article-content {
-            color: #4a5568;
-            line-height: 1.7;
-            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.8;
+            font-size: 1rem;
             text-align: justify;
         }
 
+        .article-content strong {
+            color: var(--doc-ink);
+        }
+
         .doc-footer {
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid #e5e7eb;
+            margin-top: 5rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--doc-border);
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
-            font-size: 0.85rem;
-            color: #64748b;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--m-text-muted);
+        }
+
+        /* Digital Stamp Effect */
+        .official-seal {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border: 4px double rgba(220, 38, 38, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.6rem;
+            font-weight: 800;
+            color: rgba(220, 38, 38, 0.4);
+            transform: rotate(-15deg);
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .official-seal::after {
+            content: 'APPROUVÉ';
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            padding: 2px 10px;
+            position: absolute;
+            transform: rotate(-5deg);
         }
 
         .signature-box {
             text-align: center;
-            border: 1px dashed #cbd5e1;
-            padding: 1rem 2rem;
-            border-radius: 8px;
+        }
+
+        .signature-label {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--doc-ink);
             margin-top: 1rem;
         }
 
         @media print {
+            body {
+                background: white;
+            }
 
+            .official-doc-container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+
+            .doc-nav,
             .member-top-header,
             .member-nav-container,
-            .fab-actions {
+            .print-btn,
+            .page-banner {
                 display: none !important;
             }
 
             .member-main {
                 padding: 0;
             }
-
-            .official-doc-container {
-                box-shadow: none;
-                margin: 0;
-                padding: 2rem;
-            }
-
-            body {
-                background: white;
-            }
         }
 
-        @media (max-width: 768px) {
-            .official-doc-container {
-                padding: 2rem 1.5rem;
+        @media (max-width: 1100px) {
+            .doc-nav {
+                display: none;
             }
         }
     </style>
@@ -238,124 +383,165 @@
     </nav>
 
     <main class="member-main">
-
-        <div class="text-right mb-4 print:hidden">
-            <button class="member-btn member-btn--primary" onclick="window.print()">
-                <i class="ri-printer-line"></i> Imprimer / PDF
-            </button>
+        <div class="page-banner">
+            <h2>Cadre Réglementaire</h2>
+            <p>Le socle de nos valeurs, de notre éthique et des procédures opérationnelles du Groupement.</p>
         </div>
 
-        <div class="official-doc-container">
-            <img src="../../public/logo-gal-official.jpg" class="doc-watermark" alt="Watermark">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Sidebar Nav -->
+            <aside class="hidden lg:block">
+                <div class="doc-nav">
+                    <div class="doc-nav__title">Navigation rapide</div>
+                    <a href="#chapitre-1" class="doc-nav__link"><i class="ri-scales-3-line"></i> Généralités</a>
+                    <a href="#chapitre-2" class="doc-nav__link"><i class="ri-money-dollar-circle-line"></i> Finance</a>
+                    <a href="#chapitre-3" class="doc-nav__link"><i class="ri-hard-hat-line"></i> Travail</a>
+                    <a href="#chapitre-4" class="doc-nav__link"><i class="ri-shield-check-line"></i> Sécurité</a>
 
-            <div class="doc-header">
-                <div class="text-sm font-bold text-gray-400 mb-2">RÉPUBLIQUE DÉMOCRATIQUE DU CONGO</div>
-                <h1 class="doc-title">Règlement d'Ordre Intérieur</h1>
-                <div class="doc-subtitle">Groupement des Artisans de Lubumbashi (G.A.L)</div>
+                    <div class="mt-8 pt-6 border-t border-slate-100">
+                        <button class="member-btn member-btn--primary w-full justify-center print-btn"
+                            onclick="window.print()">
+                            <i class="ri-printer-line"></i> Exporter en PDF
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Document -->
+            <div class="lg:col-span-3">
+                <div class="official-doc-container" id="printable-doc">
+                    <img src="../../public/logo-gal-official.jpg" class="doc-watermark" alt="Filigrane GAL">
+
+                    <div class="doc-header">
+                        <div class="text-xs font-bold text-slate-400 mb-4 tracking-widest uppercase">République
+                            Démocratique du Congo</div>
+                        <h1 class="doc-title">Règlement d'Ordre Intérieur</h1>
+                        <div class="doc-subtitle">Groupement des Artisans de Lubumbashi</div>
+                        <div class="doc-header-line"></div>
+                        <p class="text-slate-500 font-medium italic">"L'Excellence par la Discipline"</p>
+                    </div>
+
+                    <div class="chapter-box" id="chapitre-1">
+                        <div class="chapter-title"><i class="ri-scales-3-line"></i> CHAPITRE I : DISPOSITIONS GÉNÉRALES
+                        </div>
+
+                        <div class="article-box">
+                            <span class="article-title">Article 1 : Nature et Autorité</span>
+                            <div class="article-content">
+                                Le présent règlement définit les règles de fonctionnement, de discipline, de sécurité et
+                                de
+                                répartition financière au sein du <strong>G.A.L.</strong> L'adhésion au Groupement en
+                                tant qu'artisan partenaire
+                                ou technicien implique l'acceptation totale de ce ROI. Le G.A.L. fonctionne comme une
+                                entreprise
+                                commerciale : la hiérarchie et les procédures doivent être respectées.
+                            </div>
+                        </div>
+
+                        <div class="article-box">
+                            <span class="article-title">Article 2 : Champ d'application</span>
+                            <div class="article-content">
+                                Ce règlement s'applique à tous les chantiers, ateliers et bureaux gérés par le
+                                Groupement, ainsi
+                                qu'aux comportements des artisans vis-à-vis des clients publics et privés.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter-box" id="chapitre-2">
+                        <div class="chapter-title"><i class="ri-money-dollar-circle-line"></i> CHAPITRE II :
+                            ORGANISATION FINANCIÈRE</div>
+
+                        <div class="article-box">
+                            <span class="article-title">Article 3 : Modèle Économique (Règle des 30%)</span>
+                            <div class="article-content">
+                                Aucun droit d'entrée ou cotisation mensuelle n'est exigée. Le fonctionnement est basé
+                                sur la productivité :
+                                <ul class="space-y-3 mt-4">
+                                    <li class="flex items-start gap-2">
+                                        <i class="ri-checkbox-circle-fill text-emerald-500 mt-1"></i>
+                                        <span><strong>Répartition :</strong> Sur chaque facture payée par le client
+                                            (hors matériaux), une retenue de 30% est effectuée par le G.A.L. Les 70%
+                                            restants sont versés aux techniciens.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="ri-checkbox-circle-fill text-emerald-500 mt-1"></i>
+                                        <span><strong>Affectation :</strong> Ces 30% financent le marketing, l'outillage
+                                            lourd commun, les taxes étatiques et la réserve de garantie.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="article-box">
+                            <span class="article-title">Article 4 : Intégrité financière</span>
+                            <div class="article-content">
+                                <strong>Paiements Directs :</strong> Il est strictement interdit à un artisan
+                                d'encaisser directement des fonds du client. Toutes les transactions doivent transiter
+                                par la Caisse Centrale. Toute fraude entraîne une exclusion définitive sans préavis.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter-box" id="chapitre-3">
+                        <div class="chapter-title"><i class="ri-hard-hat-line"></i> CHAPITRE III : QUALITÉ & OPÉRATIONS
+                        </div>
+
+                        <div class="article-box">
+                            <span class="article-title">Article 5 : Hiérarchie de Chantier</span>
+                            <div class="article-content">
+                                Le <strong>Chef de Chantier</strong> désigné par la Direction est le seul décisionnaire
+                                technique sur site. Ses instructions opérationnelles sont impératives pour garantir la
+                                synchronisation des corps de métiers.
+                            </div>
+                        </div>
+
+                        <div class="article-box">
+                            <span class="article-title">Article 6 : Garantie de Résultat</span>
+                            <div class="article-content">
+                                Toute malfaçon constatée relevant d'une négligence manifeste sera corrigée aux frais
+                                exclusifs de l'artisan responsable (main d'œuvre et matériaux de remplacement).
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter-box" id="chapitre-4">
+                        <div class="chapter-title"><i class="ri-shield-check-line"></i> CHAPITRE IV : ÉTHIQUE & SÉCURITÉ
+                        </div>
+
+                        <div class="article-box">
+                            <span class="article-title">Article 8 : Standards HSE</span>
+                            <div class="article-content">
+                                Le port des <strong>EPI</strong> (Équipements de Protection Individuelle) floqués GAL
+                                est obligatoire. L'image de marque du Groupement repose sur le professionnalisme visuel
+                                de ses membres.
+                            </div>
+                        </div>
+
+                        <div class="article-box">
+                            <span class="article-title">Article 9 : Discipline</span>
+                            <div class="article-content">
+                                Tolérance zéro concernant la consommation de substances psychotropes sur les chantiers.
+                                Respect absolu de la vie privée du client et discrétion professionnelle totale.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="doc-footer">
+                        <div class="official-seal">
+                            GROUPEMENT<br>DES ARTISANS<br>LUBUMBASHI
+                        </div>
+                        <div class="signature-box">
+                            <div class="italic text-slate-400 text-xs mb-4">Document certifié conforme</div>
+                            <div class="border-b border-doc-ink w-48 mx-auto py-2">
+                                <img src="../../public/logo-gal-official.jpg" class="h-8 mx-auto opacity-20 grayscale"
+                                    alt="Stamp">
+                            </div>
+                            <div class="signature-label">Le Comité de Direction</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <section>
-                <div class="chapter-title"><i class="ri-scales-3-line"></i> CHAPITRE I : DISPOSITIONS GÉNÉRALES</div>
-                <div class="article-box">
-                    <span class="article-title">Article 1 : Nature et Autorité</span>
-                    <div class="article-content">
-                        Le présent règlement définit les règles de fonctionnement, de discipline, de sécurité et de
-                        répartition financière au sein du G.A.L. L'adhésion au Groupement en tant qu'artisan partenaire
-                        ou technicien implique l'acceptation totale de ce ROI. Le G.A.L. fonctionne comme une entreprise
-                        commerciale : la hiérarchie et les procédures doivent être respectées.
-                    </div>
-                </div>
-                <div class="article-box">
-                    <span class="article-title">Article 2 : Champ d'application</span>
-                    <div class="article-content">
-                        Ce règlement s'applique à tous les chantiers, ateliers et bureaux gérés par le Groupement, ainsi
-                        qu'aux comportements des artisans vis-à-vis des clients.
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <div class="chapter-title"><i class="ri-money-dollar-circle-line"></i> CHAPITRE II : ORGANISATION
-                    FINANCIÈRE</div>
-                <div class="article-box">
-                    <span class="article-title">Article 3 : Modèle Économique (La règle des 30%)</span>
-                    <div class="article-content">
-                        Contrairement à une association classique, aucune cotisation mensuelle n'est exigée. Le
-                        fonctionnement repose sur le principe du "Gagnant-Gagnant" par chantier.
-                        <ul class="list-disc pl-5 mt-2">
-                            <li><strong>Répartition :</strong> Sur chaque facture payée par le client (hors achat
-                                matériaux), une retenue automatique de 30% est prélevée par l'Entreprise (G.A.L.). Les
-                                70% restants sont répartis entre les techniciens ayant exécuté le travail.</li>
-                            <li><strong>Usage des 30% :</strong> Cette somme sert au fonctionnement du bureau, à l'achat
-                                d'outillage lourd commun, au marketing, aux taxes de l'État et au fonds de réserve de
-                                l'entreprise.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="article-box">
-                    <span class="article-title">Article 4 : Centralisation des Paiements</span>
-                    <div class="article-content">
-                        <strong>Interdiction formelle d'encaissement direct :</strong> Il est strictement interdit à un
-                        artisan de recevoir de l'argent main à main de la part du client. Tous les paiements (acomptes
-                        et soldes) doivent passer par la Caisse Centrale ou le compte bancaire du Groupement. Tout
-                        contrevenant sera immédiatement exclu.
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <div class="chapter-title"><i class="ri-hard-hat-line"></i> CHAPITRE III : ORGANISATION DU TRAVAIL</div>
-                <div class="article-box">
-                    <span class="article-title">Article 5 : Le Chef de Chantier</span>
-                    <div class="article-content">
-                        Pour chaque projet, la Direction désigne un Chef de Chantier. Il est le seul interlocuteur
-                        technique face au client sur le terrain et répartit les tâches. Ses ordres ne se discutent pas
-                        pendant les heures de travail.
-                    </div>
-                </div>
-                <div class="article-box">
-                    <span class="article-title">Article 6 : Qualité et "Malfaçons"</span>
-                    <div class="article-content">
-                        Le Groupement vise l'excellence. Si un travail est mal fait par négligence, l'artisan
-                        responsable doit le refaire à ses propres frais (matériaux et temps).
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <div class="chapter-title"><i class="ri-shield-check-line"></i> CHAPITRE IV : HYGIÈNE & SÉCURITÉ (HSE)
-                </div>
-                <div class="article-box">
-                    <span class="article-title">Article 8 : Équipements de Protection Individuelle (EPI)</span>
-                    <div class="article-content">
-                        L'accès au chantier est interdit sans EPI : Casque, chaussures de sécurité, gilet haute
-                        visibilité GAL.
-                    </div>
-                </div>
-                <div class="article-box">
-                    <span class="article-title">Article 9 : Tolérance Zéro</span>
-                    <div class="article-content">
-                        Interdiction stricte de l'alcool et des stupéfiants sur les lieux de travail. Expulsion
-                        immédiate en cas d'infraction.
-                    </div>
-                </div>
-            </section>
-
-            <div class="doc-footer">
-                <div>
-                    <strong>Groupement des Artisans de Lubumbashi</strong><br>
-                    Document officiel interne<br>
-                    Mis à jour le 20 Janvier 2026
-                </div>
-                <div class="signature-box">
-                    <div
-                        style="font-family: 'Times New Roman', serif; font-style: italic; font-size: 1.2rem; color: #1e293b;">
-                        Lu et approuvé
-                    </div>
-                    <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.5rem;">SIGNATURE NUMÉRIQUE</div>
-                </div>
-            </div>
-
         </div>
     </main>
 
@@ -364,6 +550,16 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             await initMemberPage();
+
+            // Smooth Scroll logic
+            document.querySelectorAll('.doc-nav__link').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
         });
     </script>
 </body>

@@ -457,10 +457,10 @@ export async function loadMachinesManager() {
     const machines = await getMachines();
 
     return `
-    < div class="page-header" >
+        <div class="page-header">
             <h1 class="page-title">Gestion du Parc Machines</h1>
             <p class="page-subtitle">Inventaire et maintenance des équipements disponibles.</p>
-        </div >
+        </div>
 
         <div class="admin-card">
             <div class="card-header">
@@ -690,10 +690,10 @@ export async function loadBlogManager() {
     const posts = await getBlogPosts();
 
     return `
-    < div class="page-header" >
+        <div class="page-header">
             <h1 class="page-title">Gestion du Blog</h1>
             <p class="page-subtitle">Publiez des articles, tutoriels et actualités pour la communauté.</p>
-        </div >
+        </div>
 
         <div class="admin-card">
             <div class="card-header">
@@ -826,10 +826,10 @@ export async function loadReservationsManager() {
     const reservations = await getReservations();
 
     return `
-    < div class="page-header" >
+    <div class="page-header">
             <h1 class="page-title">Réservations Machines</h1>
             <p class="page-subtitle">Suivez et validez les demandes de réservation du parc machines.</p>
-        </div >
+        </div>
 
     <div class="admin-card">
         <div class="card-header">
@@ -922,10 +922,10 @@ export async function loadFormationRegistrationsManager() {
     const registrations = await getFormationRegistrations();
 
     return `
-    < div class="page-header" >
+    <div class="page-header">
             <h1 class="page-title">Inscriptions Formations</h1>
             <p class="page-subtitle">Gérez les demandes de participation aux différentes formations.</p>
-        </div >
+        </div>
 
     <div class="admin-card">
         <div class="card-header">

@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/animations.css">
     <link rel="stylesheet" href="../css/components.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .clip-path-slant {
@@ -110,69 +114,119 @@
             </div>
         </div>
     </nav>
-    <main>
-        <div class="bg-white min-h-screen py-20">
-            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <span class="text-red-700 font-bold uppercase tracking-widest text-sm"
-                        data-i18n="nav.faq">Aide</span>
-                    <h1 class="text-4xl md:text-5xl font-black text-gray-900 mt-2 uppercase"
-                        data-i18n="contact.faq.title">
-                        Questions Fréquentes</h1>
-                    <p class="mt-4 text-gray-500" data-i18n="services.subtitle">Tout ce que vous devez savoir sur le
-                        Groupement
-                        des Artisans de Lubumbashi.</p>
-                </div>
+    <main class="bg-slate-50 min-h-screen">
+        <!-- Hero Section FAQ -->
+        <div class="bg-white border-b border-gray-100 py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <span
+                    class="inline-flex items-center gap-2 text-red-700 font-bold uppercase tracking-widest text-xs mb-4 bg-red-50 px-4 py-2 rounded-full">
+                    <i class="ri-questionnaire-line"></i> Centre d'assistance GAL
+                </span>
+                <h1 class="text-4xl md:text-6xl font-black text-gray-900 mt-2 uppercase tracking-tight"
+                    style="font-family: 'Outfit', sans-serif;">
+                    Comment pouvons-nous <br><span class="text-red-700">vous aider ?</span>
+                </h1>
+                <p class="mt-6 text-gray-500 text-lg max-w-2xl mx-auto">
+                    Retrouvez ici toutes les réponses aux questions les plus fréquentes sur nos services, nos machines
+                    et l'adhésion au Groupement.
+                </p>
 
-                <!-- Search & Filters -->
-                <div class="mb-12 space-y-6">
-                    <div class="relative">
-                        <input type="text" id="search-faq"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-lg py-4 px-6 pl-12 focus:outline-none focus:border-red-700 transition-colors"
-                            placeholder="Rechercher une question..."
-                            data-i18n-placeholder="formations.search_placeholder">
-                        <svg class="h-6 w-6 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                <!-- Centered Search Bar -->
+                <div class="mt-12 max-w-2xl mx-auto relative group">
+                    <div
+                        class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none transition-colors group-focus-within:text-red-700 text-gray-400">
+                        <i class="ri-search-line text-2xl"></i>
+                    </div>
+                    <input type="text" id="search-faq"
+                        class="w-full bg-slate-50 border-2 border-transparent rounded-2xl py-6 px-16 text-lg focus:outline-none focus:border-red-700 focus:bg-white transition-all shadow-xl shadow-red-900/5"
+                        placeholder="Rechercher une question ou un mot-clé..."
+                        data-i18n-placeholder="formations.search_placeholder">
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+
+                <!-- Sidebar: Categories & Support -->
+                <aside class="space-y-8">
+                    <div>
+                        <h4
+                            class="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                            <i class="ri-list-settings-line"></i> Catégories
+                        </h4>
+                        <div class="flex flex-col gap-2" id="faq-filters">
+                            <button
+                                class="faq-category-btn active flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-100 text-gray-600 hover:text-red-700 hover:border-red-100 transition-all [&.active]:bg-red-700 [&.active]:text-white [&.active]:border-red-700 [&.active]:shadow-lg [&.active]:shadow-red-700/20"
+                                data-category="all">
+                                <i class="ri-grid-fill"></i> Tout explorer
+                            </button>
+                            <button
+                                class="faq-category-btn flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-100 text-gray-600 hover:text-red-700 hover:border-red-100 transition-all [&.active]:bg-red-700 [&.active]:text-white [&.active]:border-red-700"
+                                data-category="adhesion">
+                                <i class="ri-user-add-line"></i> Adhésion & Membres
+                            </button>
+                            <button
+                                class="faq-category-btn flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-100 text-gray-600 hover:text-red-700 hover:border-red-100 transition-all [&.active]:bg-red-700 [&.active]:text-white [&.active]:border-red-700"
+                                data-category="formations">
+                                <i class="ri-book-open-line"></i> Formations
+                            </button>
+                            <button
+                                class="faq-category-btn flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-100 text-gray-600 hover:text-red-700 hover:border-red-100 transition-all [&.active]:bg-red-700 [&.active]:text-white [&.active]:border-red-700"
+                                data-category="machines">
+                                <i class="ri-tools-line"></i> Machines & SAV
+                            </button>
+                            <button
+                                class="faq-category-btn flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-100 text-gray-600 hover:text-red-700 hover:border-red-100 transition-all [&.active]:bg-red-700 [&.active]:text-white [&.active]:border-red-700"
+                                data-category="services">
+                                <i class="ri-customer-service-2-line"></i> Services GAL
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="flex flex-wrap justify-center gap-2" id="faq-filters">
-                        <button
-                            class="faq-category-btn active px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 transition-all [&.active]:bg-red-700 [&.active]:text-white"
-                            data-category="all" data-i18n="formations.filter_all">Tout</button>
-                        <button
-                            class="faq-category-btn px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 transition-all [&.active]:bg-red-700 [&.active]:text-white"
-                            data-category="adhesion">Adhésion</button>
-                        <button
-                            class="faq-category-btn px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 transition-all [&.active]:bg-red-700 [&.active]:text-white"
-                            data-category="formations" data-i18n="nav.formations">Formations</button>
-                        <button
-                            class="faq-category-btn px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 transition-all [&.active]:bg-red-700 [&.active]:text-white"
-                            data-category="machines" data-i18n="nav.machines">Machines</button>
-                        <button
-                            class="faq-category-btn px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 transition-all [&.active]:bg-red-700 [&.active]:text-white"
-                            data-category="services">Services</button>
+                    <!-- Direct Support Cards -->
+                    <div class="bg-gray-900 rounded-3xl p-8 text-white relative overflow-hidden group">
+                        <div
+                            class="absolute -right-4 -top-4 w-24 h-24 bg-red-700 rounded-full opacity-20 blur-2xl transition-all group-hover:scale-150">
+                        </div>
+                        <h4 class="text-xl font-black mb-4 relative z-10" style="font-family: 'Outfit', sans-serif;">
+                            Toujours besoin d'aide ?</h4>
+                        <p class="text-gray-400 text-sm mb-6 relative z-10">Nos experts sont disponibles pour répondre à
+                            vos questions spécifiques en direct.</p>
+
+                        <div class="space-y-4 relative z-10">
+                            <a href="https://wa.me/243979022998"
+                                class="flex items-center gap-3 bg-green-600 hover:bg-green-700 transition-colors p-4 rounded-2xl font-bold text-sm">
+                                <i class="ri-whatsapp-line text-xl"></i> Échanger sur WhatsApp
+                            </a>
+                            <a href="contact.html"
+                                class="flex items-center gap-3 bg-white/10 hover:bg-white/20 transition-colors p-4 rounded-2xl font-bold text-sm">
+                                <i class="ri-mail-send-line text-xl"></i> Envoyer un Email
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- FAQ Content Area -->
+                <div class="lg:col-span-3">
+                    <div id="faq-accordion" class="space-y-0">
+                        <!-- Dynamic content via faq.js -->
+                    </div>
+
+                    <!-- No Results -->
+                    <div id="no-results"
+                        class="hidden text-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="ri-file-search-line text-4xl text-gray-300"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Aucune question trouvée</h3>
+                        <p class="text-gray-500 mt-2">Essayez d'utiliser des mots-clés plus généraux ou contactez-nous.
+                        </p>
+                        <button onclick="document.getElementById('search-faq').value=''; renderFaq();"
+                            class="mt-6 text-red-700 font-bold border-b-2 border-red-700 hover:border-transparent transition-all">VOIR
+                            TOUTES LES QUESTIONS</button>
                     </div>
                 </div>
-
-                <!-- FAQ List -->
-                <div id="faq-accordion" class="space-y-4">
-                    <!-- Dynamic content -->
-                </div>
-
-                <!-- No Results -->
-                <div id="no-results" class="hidden text-center py-12">
-                    <svg class="h-16 w-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p class="text-gray-500" data-i18n="machines.no_results">Aucun résultat trouvé.</p>
-                </div>
-
-                <!-- Contact CTA -->
 
             </div>
         </div>
@@ -260,7 +314,6 @@
     </footer>
     <script src="../js/menu.js"></script>
     <script type="module" src="../js/chatbot-standalone.js"></script>
-    <script src="../js/chatbot-standalone.js"></script>
     <script type="module" src="../js/newsletter.js"></script>
     <script type='module' src='../js/pages/faq.js'></script>
 </body>

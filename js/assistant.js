@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 /**
  * Assistant UI - Interface utilisateur pour le chatbot
  */
@@ -179,7 +179,7 @@ export default {
     openChat,
     closeChat
 };
-=======
+
 /**
  * Assistant UI - Interface utilisateur pour le chatbot
  */
@@ -360,4 +360,4 @@ export default {
     openChat,
     closeChat
 };
->>>>>>> cde1394e936ce6941ecebf39df979c7b61583aef
+

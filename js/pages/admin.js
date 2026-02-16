@@ -412,7 +412,7 @@ async function renderNewsletter() {
                                         ${sanitizeHTML(sub.email)}
                                     </div>
                                 </td>
-                                <td class="text-muted">${new Date(sub.dateSubscribed || sub.created_at).toLocaleDateString('fr-FR')}</td>
+                                <td class="text-muted">${new Date(sub.subscribed_at).toLocaleDateString('fr-FR')}</td>
                                 <td><span class="badge badge--success">Actif</span></td>
                             </tr>
                         `).join('') : `
