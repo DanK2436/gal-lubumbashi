@@ -464,26 +464,32 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--m-bg);
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        font-size: 1.25rem;
+        background: #f1f5f9;
+        border: 1px solid var(--m-border);
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        font-size: 1.5rem;
         cursor: pointer;
         color: var(--m-text-main);
+        transition: all 0.2s;
+        z-index: 2001;
+        /* Above nav container */
     }
 
     .member-nav-container {
         position: fixed;
-        top: 65px;
+        top: 0;
         left: -100%;
-        width: 80%;
-        height: calc(100vh - 65px);
+        width: 280px;
+        height: 100vh;
         background: white;
-        z-index: 999;
-        padding: 1rem;
-        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+        z-index: 2000;
+        padding: 80px 1.5rem 2rem;
+        /* padding-top to skip header area if needed */
+        box-shadow: 20px 0 50px rgba(0, 0, 0, 0.15);
+        display: block !important;
+        /* Overrule any logic that might hide it */
     }
 
     .member-nav-container.active {

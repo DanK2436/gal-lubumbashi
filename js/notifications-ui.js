@@ -188,7 +188,7 @@ async function loadNotificationsList() {
             </div>
             ${notif.is_read ? '' : '<div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; margin-top: 5px;"></div>'}
         </div>
-    ).join('');
+    `).join('');
 
     // Tout marquer comme lu
     const markAllReadBtn = document.getElementById('mark-all-read');
@@ -243,7 +243,7 @@ function formatDate(dateStr) {
     const diff = now - date;
 
     if (diff < 60000) return 'À l\'instant';
-    if (diff < 3600000) return `Il y a ${ Math.floor(diff / 60000) } min`;
-    if (diff < 86400000) return `Il y a ${ Math.floor(diff / 3600000) } h`;
+    if (diff < 3600000) return `Il y a ${Math.floor(diff / 60000)} min`;
+    if (diff < 86400000) return `Il y a ${Math.floor(diff / 3600000)} h`;
     return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 }

@@ -7,7 +7,10 @@ import { getCurrentMember, logout, isAuthenticated } from './auth.js';
 import { initNotificationsUI } from '../../js/notifications-ui.js';
 
 export async function initMemberPage() {
-    // 1. Vérifer l'authentification
+    // 1. Menu Mobile (Prioritaire pour l'UI)
+    initMobileMenu();
+
+    // 2. Vérifier l'authentification
     if (!isAuthenticated()) {
         window.location.href = '../login.html';
         return null;
@@ -19,13 +22,13 @@ export async function initMemberPage() {
         return null;
     }
 
-    // 2. Mettre à jour les informations du profil dans le header
+    // 3. Mettre à jour les informations du profil dans le header
     updateHeaderProfile(member);
 
-    // 3. Initialiser les notifications
-    await initNotificationsUI();
+    // 4. Initialiser les notifications (Asynchrone)
+    initNotificationsUI().catch(err => console.error('Erreur notifications:', err));
 
-    // 4. Gérer la déconnexion
+    // 5. Gérer la déconnexion
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.onclick = (e) => {
@@ -35,9 +38,6 @@ export async function initMemberPage() {
             }
         };
     }
-
-    // 5. Menu Mobile
-    initMobileMenu();
 
     return member;
 }
@@ -64,14 +64,32 @@ function initMobileMenu() {
     const navContainer = document.querySelector('.member-nav-container');
 
     if (mobileBtn && navContainer) {
-        mobileBtn.onclick = (e) => {
+        // Supprimer d'abord l'ancien listener s'il existe via onclick
+        mobileBtn.onclick = null;
+
+        const toggleMenu = (e) => {
+            e.preventDefault();
             e.stopPropagation();
             navContainer.classList.toggle('active');
+            console.log('Mobile menu toggled:', navContainer.classList.contains('active'));
         };
 
-        document.addEventListener('click', (e) => {
-            if (!navContainer.contains(e.target) && !mobileBtn.contains(e.target)) {
+        mobileBtn.addEventListener('click', toggleMenu);
+
+        // Fermer le menu si on clique sur un lien (mobile UX)
+        navContainer.querySelectorAll('.member-nav__link').forEach(link => {
+            link.addEventListener('click', () => {
                 navContainer.classList.remove('active');
+            });
+        });
+
+        // Fermer le menu en cliquant à l'extérieur
+        document.addEventListener('click', (e) => {
+            if (navContainer.classList.contains('active')) {
+                const isInside = navContainer.contains(e.target) || mobileBtn.contains(e.target);
+                if (!isInside) {
+                    navContainer.classList.remove('active');
+                }
             }
         });
     }
