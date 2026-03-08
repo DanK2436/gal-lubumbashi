@@ -509,8 +509,8 @@
             submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Connexion...';
 
             const formData = new FormData(form);
-            const identifier = formData.get('identifier');
-            const password = formData.get('password');
+            const identifier = formData.get('identifier')?.trim();
+            const password = formData.get('password')?.trim();
             const remember = formData.get('remember') === 'on';
 
             try {

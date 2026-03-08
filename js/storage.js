@@ -217,7 +217,8 @@ export async function getMemberByEmail(email) {
 }
 
 export async function createMember(member) {
-  const existing = await getMemberByEmail(member.email);
+  const email = member.email.trim().toLowerCase();
+  const existing = await getMemberByEmail(email);
   if (existing) {
     throw new Error('Cet email est déjà utilisé');
   }
@@ -227,7 +228,7 @@ export async function createMember(member) {
   if (member.password) {
     try {
       authUserId = await executeRpc('create_user_command', {
-        email: member.email,
+        email: email,
         password: member.password,
         user_metadata: {
           name: member.name,
@@ -235,37 +236,41 @@ export async function createMember(member) {
         }
       });
     } catch (authError) {
-      console.warn('⚠️ Le RPC create_user_command a échoué (peut-être non configuré sur Supabase). Le membre sera quand même ajouté à la base de données.', authError);
-      // On ne jette plus d'erreur ici pour permettre l'insertion dans la table 'members'
+      console.warn('⚠️ Le RPC create_user_command a échoué.', authError);
     }
   }
 
   return await addDocument('members', {
     ...member,
+    email: email, // Email normalisé
     auth_user_id: authUserId,
     status: member.status || 'active'
   });
 }
 
 export async function updateMember(id, updates) {
-  // Si un mot de passe est fourni dans les mises à jour, on doit aussi mettre à jour Supabase Auth
-  if (updates.password) {
+  const dbUpdates = { ...updates };
+  
+  if (dbUpdates.email) {
+    dbUpdates.email = dbUpdates.email.trim().toLowerCase();
+  }
+
+  // Si un mot de passe est fourni, on tente de mettre à jour Supabase Auth
+  if (dbUpdates.password) {
     try {
       const member = await getMemberById(id);
       if (member && member.email) {
         await executeRpc('update_user_password_command', {
-          target_email: member.email,
-          new_password: updates.password
+          target_email: member.email.toLowerCase(),
+          new_password: dbUpdates.password
         });
         console.log('Mot de passe Auth mis à jour pour:', member.email);
       }
     } catch (authError) {
       console.error('Erreur mise à jour Auth password:', authError);
-      // On continue quand même la mise à jour de la table members, ou on bloque ?
-      // Pour la sécurité, il vaut mieux que les deux soient synchronisés.
     }
   }
-  return await supabaseUpdate('members', id, updates);
+  return await supabaseUpdate('members', id, dbUpdates);
 }
 
 export async function deleteMember(id) {

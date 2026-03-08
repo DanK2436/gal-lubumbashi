@@ -39,52 +39,76 @@ export async function loadAnalyticsDashboard() {
             <!-- KPI Cards -->
             <div class="analytics-kpi-grid">
                 <div class="analytics-kpi-card kpi-blue">
-                    <div class="kpi-icon">👁️</div>
+                    <div class="kpi-icon-wrapper">
+                        <img src="../public/images/analytics/eye.png" alt="Visites" class="kpi-img">
+                    </div>
                     <div class="kpi-content">
                         <div class="kpi-value" id="kpi-today">${statsData.today.toLocaleString()}</div>
                         <div class="kpi-label">Visites Aujourd'hui</div>
                     </div>
-                    <div class="kpi-trend kpi-trend--up">📈</div>
+                    <div class="kpi-trend-wrapper">
+                        <img src="../public/images/analytics/trend.png" alt="Trend" class="kpi-trend-img">
+                    </div>
                 </div>
                 <div class="analytics-kpi-card kpi-green">
-                    <div class="kpi-icon">👤</div>
+                    <div class="kpi-icon-wrapper">
+                        <img src="../public/images/analytics/eye.png" alt="Uniques" class="kpi-img" style="filter: hue-rotate(90deg);">
+                    </div>
                     <div class="kpi-content">
                         <div class="kpi-value" id="kpi-unique">${statsData.uniqueToday.toLocaleString()}</div>
                         <div class="kpi-label">Visiteurs Uniques</div>
                     </div>
-                    <div class="kpi-trend kpi-trend--up">🆕</div>
+                    <div class="kpi-trend-wrapper">
+                        <img src="../public/images/analytics/trend.png" alt="New" class="kpi-trend-img">
+                    </div>
                 </div>
                 <div class="analytics-kpi-card kpi-orange">
-                    <div class="kpi-icon">📅</div>
+                    <div class="kpi-icon-wrapper">
+                        <img src="../public/images/analytics/calendar.png" alt="Semaine" class="kpi-img" style="filter: hue-rotate(30deg) saturate(1.5);">
+                    </div>
                     <div class="kpi-content">
                         <div class="kpi-value" id="kpi-week">${statsData.week.toLocaleString()}</div>
                         <div class="kpi-label">Cette Semaine</div>
                     </div>
-                    <div class="kpi-trend">📊</div>
+                    <div class="kpi-trend-wrapper">
+                         <img src="../public/images/analytics/trend.png" alt="Stats" class="kpi-trend-img" style="filter: grayscale(1);">
+                    </div>
                 </div>
                 <div class="analytics-kpi-card kpi-purple">
-                    <div class="kpi-icon">📆</div>
+                    <div class="kpi-icon-wrapper">
+                        <img src="../public/images/analytics/calendar.png" alt="Mois" class="kpi-img" style="filter: hue-rotate(260deg) saturate(1.2);">
+                    </div>
                     <div class="kpi-content">
                         <div class="kpi-value" id="kpi-month">${statsData.month.toLocaleString()}</div>
                         <div class="kpi-label">Ce Mois</div>
                     </div>
-                    <div class="kpi-trend">📈</div>
+                    <div class="kpi-trend-wrapper">
+                        <img src="../public/images/analytics/trend.png" alt="Trend" class="kpi-trend-img">
+                    </div>
                 </div>
                 <div class="analytics-kpi-card kpi-red">
-                    <div class="kpi-icon">📅</div>
+                    <div class="kpi-icon-wrapper">
+                        <img src="../public/images/analytics/calendar.png" alt="Année" class="kpi-img">
+                    </div>
                     <div class="kpi-content">
                         <div class="kpi-value" id="kpi-year">${statsData.year.toLocaleString()}</div>
                         <div class="kpi-label">Cette Année</div>
                     </div>
-                    <div class="kpi-trend">🗓️</div>
+                    <div class="kpi-trend-wrapper">
+                        <img src="../public/images/analytics/calendar.png" alt="Calendar" class="kpi-trend-img" style="width: 20px; opacity: 0.5;">
+                    </div>
                 </div>
                 <div class="analytics-kpi-card kpi-dark">
-                    <div class="kpi-icon">🌐</div>
+                    <div class="kpi-icon-wrapper">
+                        <img src="../public/images/analytics/globe.png" alt="Total" class="kpi-img">
+                    </div>
                     <div class="kpi-content">
                         <div class="kpi-value" id="kpi-total">${statsData.total.toLocaleString()}</div>
                         <div class="kpi-label">Total Historique</div>
                     </div>
-                    <div class="kpi-trend">♾️</div>
+                    <div class="kpi-trend-wrapper">
+                         <img src="../public/images/analytics/globe.png" alt="Total" class="kpi-trend-img" style="width: 20px; opacity: 0.5; animation: spin 10s linear infinite;">
+                    </div>
                 </div>
             </div>
 
@@ -92,16 +116,20 @@ export async function loadAnalyticsDashboard() {
             <div class="analytics-charts-row">
                 <div class="analytics-chart-card chart-large">
                     <div class="chart-header">
-                        <h3>📈 Trafic par Heure (24h)</h3>
+                        <h3><img src="../public/images/analytics/trend.png" style="height: 24px; vertical-align: middle; margin-right: 8px;"> Trafic par Heure (24h)</h3>
                         <div class="chart-badge">Temps réel</div>
                     </div>
-                    <canvas id="chart-hourly" height="280"></canvas>
+                    <div class="chart-container">
+                        <canvas id="chart-hourly"></canvas>
+                    </div>
                 </div>
                 <div class="analytics-chart-card chart-small">
                     <div class="chart-header">
-                        <h3>📱 Appareils</h3>
+                        <h3><img src="../public/images/analytics/set.png" style="height: 24px; width: 24px; object-fit: cover; object-position: center; border-radius: 4px; vertical-align: middle; margin-right: 8px;"> Appareils</h3>
                     </div>
-                    <canvas id="chart-devices" height="280"></canvas>
+                    <div class="chart-container">
+                        <canvas id="chart-devices"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -109,13 +137,15 @@ export async function loadAnalyticsDashboard() {
             <div class="analytics-charts-row">
                 <div class="analytics-chart-card chart-large">
                     <div class="chart-header">
-                        <h3>📊 Visites par Jour (30 jours)</h3>
+                        <h3><img src="../public/images/analytics/trend.png" style="height: 24px; vertical-align: middle; margin-right: 8px; filter: hue-rotate(260deg);"> Visites par Jour (30 jours)</h3>
                     </div>
-                    <canvas id="chart-daily" height="280"></canvas>
+                    <div class="chart-container">
+                        <canvas id="chart-daily"></canvas>
+                    </div>
                 </div>
                 <div class="analytics-chart-card chart-small">
                     <div class="chart-header">
-                        <h3>🔗 Sources de Trafic</h3>
+                        <h3><img src="../public/images/analytics/globe.png" style="height: 24px; vertical-align: middle; margin-right: 8px;"> Sources de Trafic</h3>
                     </div>
                     <div class="referrer-list" id="referrer-list">
                         ${renderReferrerList(statsData.topReferrers)}
@@ -127,13 +157,15 @@ export async function loadAnalyticsDashboard() {
             <div class="analytics-charts-row">
                 <div class="analytics-chart-card chart-large">
                     <div class="chart-header">
-                        <h3>📅 Visites par Mois (12 mois)</h3>
+                        <h3><img src="../public/images/analytics/calendar.png" style="height: 24px; vertical-align: middle; margin-right: 8px;"> Visites par Mois (12 mois)</h3>
                     </div>
-                    <canvas id="chart-monthly" height="280"></canvas>
+                    <div class="chart-container">
+                        <canvas id="chart-monthly"></canvas>
+                    </div>
                 </div>
                 <div class="analytics-chart-card chart-small">
                     <div class="chart-header">
-                        <h3>🏆 Pages les Plus Visitées</h3>
+                        <h3><img src="../public/images/analytics/trend.png" style="height: 24px; vertical-align: middle; margin-right: 8px; filter: brightness(1.2);"> Pages les Plus Visitées</h3>
                     </div>
                     <div class="top-pages-list" id="top-pages-list">
                         ${renderTopPages(statsData.topPages)}
@@ -150,83 +182,149 @@ export async function loadAnalyticsDashboard() {
         </div>
 
         <style>
-            .analytics-dashboard { max-width: 1400px; }
+            .analytics-dashboard { 
+                max-width: 1400px; 
+                padding: 1rem;
+                background: #f8fafc;
+            }
 
             .analytics-kpi-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 1.25rem;
-                margin-bottom: 2rem;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 2.5rem;
             }
 
             .analytics-kpi-card {
-                background: white;
-                border-radius: 16px;
-                padding: 1.5rem;
+                background: rgba(255, 255, 255, 0.8);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 20px;
+                padding: 1.75rem;
                 display: flex;
                 align-items: center;
-                gap: 1rem;
-                box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-                transition: transform 0.2s, box-shadow 0.2s;
-                border-left: 4px solid transparent;
+                gap: 1.25rem;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 position: relative;
                 overflow: hidden;
             }
 
             .analytics-kpi-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+                transform: translateY(-5px);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+                background: rgba(255, 255, 255, 0.95);
             }
 
-            .kpi-blue { border-left-color: #3B82F6; background: linear-gradient(135deg, #fff 0%, #EFF6FF 100%); }
-            .kpi-green { border-left-color: #10B981; background: linear-gradient(135deg, #fff 0%, #ECFDF5 100%); }
-            .kpi-orange { border-left-color: #F59E0B; background: linear-gradient(135deg, #fff 0%, #FFFBEB 100%); }
-            .kpi-purple { border-left-color: #8B5CF6; background: linear-gradient(135deg, #fff 0%, #F5F3FF 100%); }
-            .kpi-red { border-left-color: #EF4444; background: linear-gradient(135deg, #fff 0%, #FEF2F2 100%); }
-            .kpi-dark { border-left-color: #1E293B; background: linear-gradient(135deg, #fff 0%, #F8FAFC 100%); }
+            .kpi-icon-wrapper {
+                width: 60px;
+                height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 16px;
+                background: white;
+                box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            }
 
-            .kpi-icon { font-size: 2rem; }
-            .kpi-value { font-size: 1.75rem; font-weight: 800; color: #1E293B; font-family: 'Poppins', sans-serif; }
-            .kpi-label { font-size: 0.8rem; color: #64748B; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-            .kpi-trend { position: absolute; top: 1rem; right: 1rem; font-size: 1.2rem; }
+            .kpi-img {
+                width: 45px;
+                height: 45px;
+                object-fit: contain;
+                filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            }
+
+            .kpi-trend-wrapper {
+                position: absolute;
+                top: 1.25rem;
+                right: 1.25rem;
+            }
+
+            .kpi-trend-img {
+                width: 24px;
+                height: 24px;
+                object-fit: contain;
+            }
+
+            .kpi-blue { border-bottom: 4px solid #3B82F6; }
+            .kpi-green { border-bottom: 4px solid #10B981; }
+            .kpi-orange { border-bottom: 4px solid #F59E0B; }
+            .kpi-purple { border-bottom: 4px solid #8B5CF6; }
+            .kpi-red { border-bottom: 4px solid #EF4444; }
+            .kpi-dark { border-bottom: 4px solid #1E293B; }
+
+            .kpi-value { 
+                font-size: 2rem; 
+                font-weight: 800; 
+                color: #0f172a; 
+                font-family: 'Inter', system-ui, sans-serif;
+                line-height: 1;
+                margin-bottom: 0.25rem;
+            }
+            
+            .kpi-label { 
+                font-size: 0.75rem; 
+                color: #64748b; 
+                font-weight: 600; 
+                text-transform: uppercase; 
+                letter-spacing: 0.05em; 
+            }
+            
             .kpi-content { flex: 1; }
+
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
 
             .analytics-charts-row {
                 display: grid;
                 grid-template-columns: 2fr 1fr;
                 gap: 1.5rem;
-                margin-bottom: 1.5rem;
+                margin-bottom: 2rem;
             }
 
             .analytics-chart-card {
                 background: white;
-                border-radius: 16px;
-                padding: 1.5rem;
-                box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+                border-radius: 20px;
+                padding: 1.75rem;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+                border: 1px solid rgba(241, 245, 249, 0.8);
+            }
+
+            .chart-container {
+                position: relative;
+                height: 320px; /* Fixed height to prevent infinite growth */
+                width: 100%;
+                margin-top: 1rem;
             }
 
             .chart-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 1rem;
+                margin-bottom: 0.5rem;
             }
 
             .chart-header h3 {
-                font-size: 1rem;
-                font-weight: 600;
-                color: #1E293B;
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: #1e293b;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
             }
 
             .chart-badge {
-                background: #10B981;
-                color: white;
-                padding: 0.25rem 0.75rem;
-                border-radius: 20px;
-                font-size: 0.7rem;
-                font-weight: 600;
+                background: #ecfdf5;
+                color: #10b981;
+                padding: 0.35rem 0.85rem;
+                border-radius: 50px;
+                font-size: 0.65rem;
+                font-weight: 700;
                 text-transform: uppercase;
-                letter-spacing: 0.5px;
+                letter-spacing: 0.05em;
+                border: 1px solid #d1fae5;
                 animation: pulse 2s infinite;
             }
 
@@ -325,7 +423,9 @@ function renderReferrerList(referrers) {
     }
     return referrers.map(r => `
         <div class="referrer-item">
-            <span class="referrer-name" title="${r.source}">${r.source === 'direct' ? '🔗 Accès direct' : '🌐 ' + r.source}</span>
+            <span class="referrer-name" title="${r.source}">
+                ${r.source === 'direct' ? '<img src="../public/images/analytics/globe.png" style="height:16px; margin-right:8px;"> Accès direct' : '<img src="../public/images/analytics/globe.png" style="height:16px; margin-right:8px; filter:hue-rotate(180deg);"> ' + r.source}
+            </span>
             <span class="referrer-count">${r.count}</span>
         </div>
     `).join('');
@@ -337,7 +437,7 @@ function renderTopPages(pages) {
     }
     return pages.map(p => `
         <div class="top-page-item">
-            <span class="page-name" title="${p.url}">📄 ${p.title || p.url}</span>
+            <span class="page-name" title="${p.url}"><img src="../public/images/analytics/set.png" style="height:16px; width:16px; object-fit:cover; margin-right:8px; border-radius:2px;"> ${p.title || p.url}</span>
             <span class="page-count">${p.count}</span>
         </div>
     `).join('');
@@ -408,7 +508,7 @@ function initCharts(stats) {
         chartInstances.devices = new Chart(devicesCtx, {
             type: 'doughnut',
             data: {
-                labels: ['📱 Mobile', '📟 Tablette', '🖥️ Desktop'],
+                labels: ['Mobile', 'Tablette', 'Desktop'],
                 datasets: [{
                     data: [stats.devices.mobile, stats.devices.tablet, stats.devices.desktop],
                     backgroundColor: ['#3B82F6', '#F59E0B', '#10B981'],

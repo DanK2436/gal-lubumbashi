@@ -311,10 +311,10 @@
 
                 <form id="login-form">
                     <div class="input-group">
-                        <label for="email">Email professionnel</label>
+                        <label for="email">Identifiant (Email ou Téléphone)</label>
                         <div class="input-wrapper">
-                            <i class="ri-mail-line"></i>
-                            <input type="email" id="email" class="form-input" placeholder="Exemple@.com" required
+                            <i class="ri-user-line"></i>
+                            <input type="text" id="email" class="form-input" placeholder="Email ou N° de Téléphone" required
                                 autocomplete="email">
                         </div>
                     </div>
@@ -348,7 +348,7 @@
     </div>
 
     <script type="module">
-        import { supabaseLogin } from '../js/supabase-service.js';
+        import { supabaseLogin, getAdminByIdentifier } from '../js/supabase-service.js';
         import { supabase } from '../js/supabase-init.js';
 
         const loginForm = document.getElementById('login-form');
@@ -365,45 +365,48 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Authentification en cours...';
 
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const identifier = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
 
             try {
                 // Simulation d'un délai pour l'effet "traitement"
                 await new Promise(r => setTimeout(r, 600));
 
-                console.log('Tentative de connexion pour:', email);
-                const user = await supabaseLogin(email, password);
+                console.log('Tentative de connexion pour:', identifier);
+
+                // 1. Résoudre l'admin par email ou téléphone
+                const adminData = await getAdminByIdentifier(identifier);
+
+                if (!adminData && identifier !== 'admin@gal-lubumbashi.com') {
+                     throw new Error('Identifiant non reconnu.');
+                }
+
+                // Utiliser l'email résolu ou l'identifiant s'il ressemble à un email
+                const loginEmail = adminData ? adminData.email : identifier;
+                const user = await supabaseLogin(loginEmail, password);
 
                 // Check Admin Access via table 'admins'
                 console.log('Utilisateur connecté, vérification des droits admin...');
 
-                let isAdmin = false;
+                let isAuthorized = false;
                 let role = 'admin';
 
                 // Check 1: Hardcoded Super Admin (sécurité de base)
-                if (email === 'admin@gal-lubumbashi.com') {
-                    isAdmin = true;
+                if (user.email === 'admin@gal-lubumbashi.com') {
+                    isAuthorized = true;
                     role = 'super_admin';
-                } else {
-                    // Check 2: Database check
-                    const { data: adminRecord, error: adminError } = await supabase
-                        .from('admins')
-                        .select('role')
-                        .ilike('email', user.email)
-                        .eq('is_active', true)
-                        .maybeSingle();
-
-                    if (adminRecord) {
-                        isAdmin = true;
-                        role = adminRecord.role;
+                } else if (adminData) {
+                    // Check 2: Database check via already fetched adminData
+                    if (adminData.is_active) {
+                        isAuthorized = true;
+                        role = adminData.role;
                     }
                 }
 
-                if (!isAdmin) {
-                    // Déconnexion immédiate si pas admin
+                if (!isAuthorized) {
+                    // Déconnexion immédiate si pas admin actif
                     await supabase.auth.signOut();
-                    throw new Error('Accès refusé : Vous n\'avez pas les droits d\'administrateur.');
+                    throw new Error('Accès refusé : Compte inactif ou privilèges insuffisants.');
                 }
 
                 const session = {

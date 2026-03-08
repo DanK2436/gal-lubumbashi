@@ -12,6 +12,7 @@ import {
     getFormationRegistrations, deleteFormationRegistration, updateFormationRegistrationStatus
 } from './storage.js';
 import { createMediaPicker, initMediaPickers } from './media-picker.js';
+import { createSEOAssistantUI, updateSEOAssistant } from './seo-helper.js';
 
 /**
  * Sanitize HTML to prevent XSS
@@ -170,7 +171,8 @@ export async function loadVideosManager() {
                     </div>
 
                     <div style="margin-top: 2rem;">
-                        <button type="submit" class="admin-btn admin-btn--primary w-full" style="justify-content: center; padding: 1rem;">
+                        ${createSEOAssistantUI('video-seo')}
+                        <button type="submit" class="admin-btn admin-btn--primary w-full" style="justify-content: center; padding: 1rem; margin-top: 1rem;">
                             Enregistrer la vidéo
                         </button>
                     </div>
@@ -370,7 +372,8 @@ export async function loadFormationsManager() {
                     </div>
 
                     <div style="margin-top: 2rem;">
-                        <button type="submit" class="admin-btn admin-btn--primary w-full" style="justify-content: center; padding: 1rem;">
+                        ${createSEOAssistantUI('formation-seo')}
+                        <button type="submit" class="admin-btn admin-btn--primary w-full" style="justify-content: center; padding: 1rem; margin-top: 1rem;">
                             Enregistrer la formation
                         </button>
                     </div>
@@ -582,7 +585,8 @@ export async function loadMachinesManager() {
                     </div>
 
                     <div style="margin-top: 2rem;">
-                        <button type="submit" class="admin-btn admin-btn--primary w-full" style="justify-content: center; padding: 1rem;">
+                        ${createSEOAssistantUI('machine-seo')}
+                        <button type="submit" class="admin-btn admin-btn--primary w-full" style="justify-content: center; padding: 1rem; margin-top: 1rem;">
                             Enregistrer l'équipement
                         </button>
                     </div>
@@ -809,7 +813,8 @@ export async function loadBlogManager() {
                     </div>
 
                     <div style="margin-top: 2rem;">
-                        <button type="submit" class="admin-btn admin-btn--primary w-full" style="justify-content: center; padding: 1rem;">
+                        ${createSEOAssistantUI('blog-seo')}
+                        <button type="submit" class="admin-btn admin-btn--primary w-full" style="justify-content: center; padding: 1rem; margin-top: 1rem;">
                             Publier l'article
                         </button>
                     </div>
@@ -1202,6 +1207,20 @@ document.addEventListener('submit', async (e) => {
         data.append('image', document.getElementById('blog-image').value);
         data.append('tags', document.getElementById('blog-tags').value);
         await saveBlogPost(data);
+    }
+});
+
+// Initialisation des écouteurs SEO temps réel
+document.addEventListener('input', (e) => {
+    const id = e.target.id;
+    if (id.startsWith('video-')) {
+        updateSEOAssistant('video-seo', document.getElementById('video-title').value, document.getElementById('video-category').value);
+    } else if (id.startsWith('formation-')) {
+        updateSEOAssistant('formation-seo', document.getElementById('formation-title').value, document.getElementById('formation-description').value);
+    } else if (id.startsWith('machine-')) {
+        updateSEOAssistant('machine-seo', document.getElementById('machine-name').value, document.getElementById('machine-description').value);
+    } else if (id.startsWith('blog-')) {
+        updateSEOAssistant('blog-seo', document.getElementById('blog-title').value, document.getElementById('blog-excerpt').value + ' ' + document.getElementById('blog-content').value);
     }
 });
 

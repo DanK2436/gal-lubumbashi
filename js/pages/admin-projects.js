@@ -5,13 +5,9 @@
  */
 
 import { showToast } from '../ui.js';
-import {
-    getProjects,
-    createProject,
-    updateProject,
-    deleteProject
-} from '../storage.js';
+import { getProjects, createProject, updateProject, deleteProject } from '../storage.js';
 import { createMediaPicker, initMediaPickers } from '../media-picker.js';
+import { createSEOAssistantUI, updateSEOAssistant } from '../seo-helper.js';
 
 export async function loadProjectsManager(type) {
     const items = await getProjects(type);
@@ -111,7 +107,11 @@ function renderModal(type) {
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <div style="margin-top: 2rem;">
+                        ${createSEOAssistantUI('project-seo')}
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
                         <button type="button" class="admin-btn admin-btn--outline" onclick="window.adminProjects.closeModal()">Annuler</button>
                         <button type="button" class="admin-btn admin-btn--primary" onclick="window.adminProjects.handleSubmit(this)">Enregistrer le projet</button>
                     </div>
@@ -266,7 +266,15 @@ async function refreshPage(type) {
 }
 
 export function initProjectFormHandlers() {
-    // Les gestionnaires sont maintenant globaux via window.adminProjects.handleSubmit
-    console.log('initProjectFormHandlers appelé');
     initMediaPickers();
+    
+    // SEO Listeners
+    document.addEventListener('input', (e) => {
+        if (e.target.name === 'title' || e.target.name === 'description') {
+            const form = e.target.closest('#project-form');
+            if (form) {
+                updateSEOAssistant('project-seo', form.title.value, form.description.value);
+            }
+        }
+    });
 }

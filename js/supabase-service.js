@@ -13,9 +13,10 @@ const isSupabaseReady = () => !!supabase;
  */
 export async function supabaseLogin(email, password) {
     if (!isSupabaseReady()) throw new Error("Supabase non configuré");
+    const cleanEmail = email.trim().toLowerCase();
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
-            email,
+            email: cleanEmail,
             password
         });
 
@@ -301,29 +302,87 @@ export async function getMemberByEmail(email) {
  */
 export async function getMemberByIdentifier(identifier) {
     if (!isSupabaseReady() || !identifier) return null;
-    const cleanId = identifier.trim();
+    const cleanId = identifier.trim().toLowerCase();
 
     try {
         // 1. Chercher par Email
-        let { data, error } = await supabase
-            .from('members')
-            .select('*')
-            .ilike('email', cleanId)
-            .maybeSingle();
+        if (cleanId.includes('@')) {
+            const { data } = await supabase
+                .from('members')
+                .select('*')
+                .ilike('email', cleanId)
+                .maybeSingle();
+            if (data) return data;
+        }
 
-        if (data) return data;
+        // 2. Chercher par Téléphone
+        // On récupère uniquement les chiffres de l'identifiant pour la recherche
+        const digits = cleanId.replace(/\D/g, ''); 
+        
+        // Si c'est un numéro congolais (9 chiffres sans le 0/prefix), on cherche le suffixe
+        // Ex: si user tape 0812345678, digits = 0812345678, suffix = 812345678
+        const suffix = digits.length >= 9 ? digits.slice(-9) : digits;
 
-        // 2. Chercher par Téléphone (format exact ou simplifié)
-        // On enlève les espaces et symboles pour une recherche plus souple si nécessaire
-        ({ data, error } = await supabase
-            .from('members')
-            .select('*')
-            .or(`phone.eq.${cleanId},phone.ilike.%${cleanId}%`)
-            .maybeSingle());
+        let query = supabase.from('members').select('*');
+        
+        if (suffix.length >= 7) {
+            // Recherche par suffixe (très efficace pour les formats +243, 00243, 081...)
+            // On cherche aussi la correspondance exacte au cas où
+            query = query.or(`phone.ilike.%${suffix}%,phone.eq.${cleanId},phone.eq.${digits}`);
+        } else {
+            query = query.or(`phone.eq.${cleanId},phone.eq.${digits}`);
+        }
+
+        let { data } = await query.maybeSingle();
+        
+        // 3. Fallback : Essayer de chercher l'identifiant tel quel dans l'email (si pas de @)
+        if (!data) {
+             const { data: fallback } = await supabase
+                .from('members')
+                .select('*')
+                .ilike('email', cleanId)
+                .maybeSingle();
+             return fallback;
+        }
 
         return data;
     } catch (error) {
         console.error("Erreur getMemberByIdentifier:", error);
+        return null;
+    }
+}
+
+/**
+ * Récupérer un administrateur par identifiant (Email ou Téléphone)
+ */
+export async function getAdminByIdentifier(identifier) {
+    if (!isSupabaseReady() || !identifier) return null;
+    const cleanId = identifier.trim().toLowerCase();
+
+    try {
+        if (cleanId.includes('@')) {
+            const { data } = await supabase
+                .from('admins')
+                .select('*')
+                .ilike('email', cleanId)
+                .maybeSingle();
+            if (data) return data;
+        }
+
+        const digits = cleanId.replace(/\D/g, '');
+        const suffix = digits.length >= 9 ? digits.slice(-9) : digits;
+
+        let query = supabase.from('admins').select('*');
+        if (suffix.length >= 7) {
+            query = query.or(`phone.ilike.%${suffix}%,email.ilike.${cleanId}`);
+        } else {
+            query = query.eq('email', cleanId);
+        }
+
+        const { data } = await query.maybeSingle();
+        return data;
+    } catch (error) {
+        console.error("Erreur getAdminByIdentifier:", error);
         return null;
     }
 }
