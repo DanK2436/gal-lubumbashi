@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test Diagnostic Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        h1 {
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🕵️ Diagnostic Supabase</h1>
+    <p>Cliquez sur le bouton pour tester l'ajout de données dans chaque table.</p>
+
+    <button onclick="runTests()">Lancer les Tests</button>
+
+    <div id="results" style="margin-top: 20px;"></div>
+
+    <!-- Récupération de la config depuis votre fichier existant -->
+    <script type="module">
+        import { supabase } from './js/supabase-init.js';
+
+        window.runTests = async function () {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '⏳ Tests en cours...';
+
+            const tests = [
+                { name: '1. Table PROJECTS (Chantiers)', table: 'projects', data: { title: 'Test Chantier', type: 'chantier', description: 'Test auto' } },
+                { name: '2. Table MESSAGES', table: 'messages', data: { subject: 'Test', content: 'Ceci est un test', recipient_id: 'all' } },
+                { name: '3. Table ANNOUNCEMENTS', table: 'announcements', data: { title: 'Test Annonce', content: 'Test auto', priority: 'normal' } },
+                { name: '4. Table MACHINE_RESERVATIONS', table: 'machine_reservations', data: { machine_name: 'Test Machine', user_name: 'Test User', user_email: 'test@test.com' } }
+            ];
+
+            let html = '';
+
+            for (const test of tests) {
+                try {
+                    // Tentative d'insertion
+                    const { data, error } = await supabase
+                        .from(test.table)
+                        .insert(test.data)
+                        .select();
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    // Si succès, on supprime la donnée de test
+                    if (data && data.length > 0) {
+                        await supabase.from(test.table).delete().eq('id', data[0].id);
+                    }
+
+                    html += `
+                        <div class="card success">
+                            <h3>✅ ${test.name} : SUCCÈS</h3>
+                            <p>L'écriture fonctionne parfaitement.</p>
+                        </div>
+                    `;
+                } catch (err) {
+                    console.error(err);
+                    html += `
+                        <div class="card error">
+                            <h3>❌ ${test.name} : ÉCHEC</h3>
+                            <p><strong>Erreur :</strong> ${err.message}</p>
+                            <p><strong>Code :</strong> ${err.code || 'N/A'}</p>
+                            <p><strong>Détails :</strong> ${err.details || 'Aucun détail'}</p>
+                            <p><em>Conseil : ${getAdvice(err)}</em></p>
+                        </div>
+                    `;
+                }
+            }
+
+            resultsDiv.innerHTML = html;
+        };
+
+        function getAdvice(err) {
+            if (err.code === '42P01') return "La table n'existe pas. Exécutez le script SQL 'supabase-DATABASE-COMPLETE.sql'.";
+            if (err.code === '42703') return "Une colonne n'existe pas. Votre base de données n'est pas à jour. Exécutez 'supabase-RESET.sql' puis 'supabase-DATABASE-COMPLETE.sql'.";
+            if (err.code === '42501') return "Problème de permissions (RLS). Exécutez le script SQL complet pour remettre les droits.";
+            if (err.message.includes('fetch')) return "Problème de connexion internet ou URL Supabase incorrecte.";
+            return "Vérifiez le script SQL.";
+        }
+    </script>
+</body>
+
+</html>
